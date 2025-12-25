@@ -40,7 +40,7 @@ public class Game {
             Player.ammoBox = ImageIO.read(new File("src/main/resources/Sprites/ammo.png"));
             Player.shootingSprite = ImageIO.read(new File("src/main/resources/Sprites/Player/shoot/shootingSprite.png"));
             bullet.bulletImage = ImageIO.read(new File("src/main/resources/Sprites/Player/shoot/bullet.png"));
-            canvas.cloud = ImageIO.read(new File("src/main/resources/Sprites/clod.png"));
+            canvas.cloud = ImageIO.read(new File("src/main/resources/Sprites/cloud.png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

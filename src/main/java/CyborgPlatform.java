@@ -14,7 +14,7 @@ public class CyborgPlatform {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         canvas canvas = new canvas();
         game = new Game();
-        game.loadImgs();
+        game.loadImages();
         game.spawnEntities();
         MapBlocks.getMap();
         frame.add(canvas);

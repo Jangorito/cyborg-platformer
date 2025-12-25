@@ -24,7 +24,7 @@ public class MapBlocks {
     public static void getMap() {
         int tileX = 0;
         int tileY = 0;
-        File map1 = new File("src/main/resources/Map.txt");
+        File map1 = new File("src/main/resources/Maps.txt");
         try {
             Scanner s = new Scanner(map1);
             Image imageTile = mapImages[9];
