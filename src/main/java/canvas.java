@@ -3,11 +3,25 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
+/**
+ * Main Swing component: handles rendering, input, and the update loop.
+ *
+ * Responsibilities:
+ * - Renders the world, player and zombies and HUD each frame.
+ * - Advances game through update methods called during rendering
+ * - Stores states (player, enemies, bullets, cameraOffset).
+ * - Handles keyboard input and maps them to KeysPressed array.
+ *
+ * v1 design notes:
+ * - multiple static/global fields for player enemy and keysPressed objects, coupling can be separated to create classes such as InputHandler, Renderer, etc.
+ */
+
 public class canvas extends JComponent implements KeyListener, ActionListener, MouseListener {
     protected double last = System.nanoTime() / 1000000000.;
     protected static Player player;
     protected static ArrayList<Enemy> enemies;
     protected static ArrayList<bullet> activeBullets = new ArrayList<>();
+    // keysPressed is an input state array read by Player.update()
     protected static boolean[] keysPressed = new boolean[4];
     protected static boolean isLastDirectionForwards = true;
     protected static int cameraOffset;
@@ -20,7 +34,15 @@ public class canvas extends JComponent implements KeyListener, ActionListener, M
         setFocusable(true);
     }
 
-
+    /**
+     * Main render method.
+     * - uses {@code cameraOffset} to implement a simple camera.
+     * - Draws world, player&enemies and UI.
+     * - Also advances simulation by calling update methods which affect players, enemies and bullets.
+     *
+     * Note:
+     * - update + render mixed, separate for v2
+     */
     public void paint(Graphics g) {
         if (!CyborgPlatform.game.isWon) {
             ArrayList<bullet> bulletsCopy = new ArrayList<bullet>(activeBullets);
@@ -81,7 +103,9 @@ public class canvas extends JComponent implements KeyListener, ActionListener, M
         last = System.nanoTime() / 1000000000.;
     }
 
-
+    /**
+     * End screen graphic displayed when {@code CyborgPlatform.game.isWon} is true.
+     */
     public void end(Graphics g) {
 
         g.drawImage(Background.background[0], 0, 0, null);
@@ -111,6 +135,15 @@ public class canvas extends JComponent implements KeyListener, ActionListener, M
     public void keyTyped(KeyEvent e) {
 
     }
+     /**
+     * Keyboard input handler.
+     * Translates  key events into the keysPressed[] state used by {@link Player#update()}.
+     *
+     * keysPressed mapping (v1):
+     * - [0] = A (move left), [1] = D (move right), [2] = W (jump), [3] = SPACE (shoot)
+     * - ESC triggers restart by respawning entities and increments deathCounter.
+     * - ENTER exits application.
+     */
 
     @Override
     public void keyPressed(KeyEvent e) {

@@ -1,6 +1,18 @@
 import java.awt.*;
 import java.time.Duration;
 
+/**
+ * Player-controlled entity.
+ *
+ * Responsibilities:
+ * - Reads input state from {@link canvas#keysPressed}.
+ * - Applies movement rules and shooting cooldown.
+ * - Tracks attempts via {@link #deathCounter} and triggers respawn via {@link Game#spawnEntities()}.
+ * - Draws HUD elements (health, ammo, controls text).
+ *
+ * v1 note:
+ * - Player both simulates gameplay and draws UI; responsibilities should be separated for v2.
+ */
 public class Player extends entity {
     protected Point checkPoint = new Point(20, 300);
     protected boolean[] keys = canvas.keysPressed;
@@ -21,10 +33,24 @@ public class Player extends entity {
         super(idleSprites[0], x, y, health, 10, 30);
     }
 
+    /**
+     * Per-frame update for player.
+     *
+     * How:
+     * - Apply gravity.
+     * - Apply horizontal movement if not blocked by map collision.
+     * - Manage jump state (jumpCounter) and acceleration while jump key is held.
+     * - Check death conditions [if (out of bounds / health <= 0) {respawn}].
+     * - Handle shooting input with cooldown.
+     * - Update timers for damage flicker and shooting animation.
+     * - Check win condition based on x position.
+     * - update animation state and sprite.
+     */
 
     public void update() {
         gravity();
         int maxSpeed = 5;
+        // Query whether the next horizontal position causes a collision before doing movement.
         entity entityCopy = copy(x + speed, y);
         if (!entityCopy.intersect()) {
             x += speed;
@@ -129,6 +155,14 @@ public class Player extends entity {
         }
     }
 
+    /**
+     * Fires a bullet if the player is not on cooldown and has ammo.
+     *
+     * v1 behaviour:
+     * - Consumes 1 ammo per shot.
+     * - Creates a {@link bullet} instance and stores it in {@link canvas#activeBullets}.
+     * - Uses justShot + lastShot to limit fire rate.
+     */
 
     public void shoot() {
         if (!justShot && ammo != 0) {
@@ -163,7 +197,10 @@ public class Player extends entity {
         }
     }
 
-
+    /**
+     * Draws HUD (health hearts, ammo counter, attempts, controls text) called from rendering.
+     * - update and rander are mixed, v2 potentially decouples
+     */
     public void drawGUI(Graphics g) {
         Font font = canvas.font;
         font = font.deriveFont(60.0f);
@@ -208,6 +245,13 @@ public class Player extends entity {
 
     }
 
+    /**
+     * Handles player death / restart.
+     *
+     * How:
+     * - Increments deathCounter (attempts).
+     * - Respawns entities by calling {@link Game#spawnEntities()}.
+     */
 
     public void kill() {
         deathCounter++;

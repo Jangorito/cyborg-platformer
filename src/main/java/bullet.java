@@ -1,5 +1,13 @@
 import java.awt.*;
 
+/**
+ * Bullet fired by the player.
+ *
+ * Responsibilities:
+ * - Moves in the direction the player is facing (via {@code speed}).
+ * - Checks collision against enemies and map blocks.
+ * - Removes itself from {@link canvas#activeBullets} when it hits something or leaves the play area.
+ */
 public class
 bullet extends entity {
     public Point startPoint;
@@ -9,7 +17,11 @@ bullet extends entity {
         super(bulletImage, x, y, 1, 0, bulletImage.getWidth(null));
     }
 
-
+    /**
+     * Advances bullet position and handles its collisions.
+     * - Removes itself on collision or after travelling ~600 pixels.
+     * - If it overlaps an enemy, applies damage via {@link Enemy#damage()}.
+     */
     public void update() {
         bullet bulletCopy = copy(x + speed, y);
         if (!bulletCopy.intersect() && !bulletCopy.collidesEnemy()) {
@@ -20,7 +32,10 @@ bullet extends entity {
         }
     }
 
-
+    /**
+     * Creates a bullet copy at a new position for predictive collision checks.
+     * Only used for intersection testing.
+     */
     public bullet copy(int newX, int newY) {
         bullet copy = new bullet(newX, newY);
         copy.speed = 0;
@@ -30,14 +45,23 @@ bullet extends entity {
         return copy;
     }
 
-
+    /**
+     * @return Euclidean distance from the bullet's start point to its current position.
+     */
     public double travelledDistance() {
         int dx = startPoint.x - x;
         int dy = startPoint.y - y;
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-
+    /**
+     * Checks collision against all active enemies.
+     *
+     * How:
+     * - If a collision is detected, {@link Enemy#damage()} is called.
+     *
+     * @return true if the bullet overlaps at least one enemy.
+     */
     public boolean collidesEnemy() {
         boolean isInside = false;
         for (Enemy e : canvas.enemies) {

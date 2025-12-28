@@ -4,6 +4,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Represents a solid block used for level collisions and rendering.
+ *
+ * current structure:
+ * - A static list {@link #map} stores all blocks in the level.
+ * - Entities collide against these blocks via {@link entity#intersect()} and {@link entity#gravity()}.
+ * - The level layout is loaded from a text file (Maps.txt) where characters map to tile images.
+ *
+ * v2 note:
+ * - Map loading could be made more data-driven and configurable (e.g., external tile legend,
+ *   multiple levels, validation, separation of rendering vs collision layers).
+ */
 public class MapBlocks {
 
     public static ArrayList<MapBlocks> map = new ArrayList<>();
@@ -20,7 +32,12 @@ public class MapBlocks {
         this.y = y;
     }
 
-
+    /**
+     * Builds the level layout by adding MapBlocks from Maps.txt to the static map list.
+     * - Coordinates are a pixel-based 48x47 grid in v1.
+     * - '0' = empty space
+     * - {@link #mapWidth} is derived from the number of columns.
+     */
     public static void getMap() {
         int tileX = 0;
         int tileY = 0;
@@ -70,7 +87,9 @@ public class MapBlocks {
         }
     }
 
-
+    /**
+     * Draws all map tiles to the screen at corresponding world coordinates.
+     */
     public static void drawMap(Graphics g) {
         for (int i = 0; i < MapBlocks.map.size(); i++) {
             g.drawImage(MapBlocks.map.get(i).image, MapBlocks.map.get(i).x, MapBlocks.map.get(i).y, null);
@@ -78,6 +97,9 @@ public class MapBlocks {
     }
 }
 
+/**
+ * Draws layered background images across the full map.
+ */
 class Background {
     public static Image[] background;
 

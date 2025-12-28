@@ -1,5 +1,17 @@
 import java.awt.*;
 
+/**
+ * Basic Zombie entity.
+ *
+ * Responsibilities:
+ * - chase: zombie moves towards player when within range; increases speed when close.
+ * - Attempts jumps depending on closing distance or if a player is above.
+ * - Damages player on collision.
+ * - Updates & plays state-based animations (idle/walk/run/hurt).
+ *
+ * v1 note:
+ * - Behaviour is embedded inside the entity. v2 could move AI decisions to a dedicated system.
+ */
 public class Enemy extends entity {
     public Enemy(int x, int y, int health) {
         super(idleSprites[0], x, y, 2, 0, 30);
@@ -12,7 +24,15 @@ public class Enemy extends entity {
     public static Image[] runningSprites;
     public static Image hurtSprite;
 
-
+    /**
+     * AI behaviour (per-frame update for enemy):
+     *
+     * - If player is within an activation radius and on roughly similar vertical level,
+     *   move towards player (walk/run).
+     * - If grounded and conditions met, jump to navigate terrain / reach player.
+     * - Damages player on collision
+     * - Handles death
+     */
     public void doBehavior() {
         Player p = canvas.player;
         double distanceFromPlayer = distanceFromPlayer(p);
@@ -21,6 +41,7 @@ public class Enemy extends entity {
 
         double maxSpeed = 1;
         entity entityCopy = copy(x + speed, y);
+        // if player is close and not far above
         if (distanceFromPlayer <= 400 && y - p.y < 100) {
             if (!entityCopy.intersect()) {
                 x += speed;
@@ -74,7 +95,9 @@ public class Enemy extends entity {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-
+    /**
+     * Used to apply contact damage to player if zombie collides with player.
+     */
     public boolean collidesPlayer(Player p) {
         int x2 = x + image.getWidth(null);
         int y2 = y + image.getHeight(null);
@@ -150,7 +173,12 @@ public class Enemy extends entity {
         }
     }
 
-
+    /**
+     * Removes the enemy from the active list and awards ammo
+     * Called when health <= 0 or when the enemy falls out of bounds
+     *
+     * in v2 conditions should be changed such that ammo gets incremented only when zombie is shot to death
+     */
     public void kill() {
         canvas.player.ammo += 2;
         canvas.enemies.remove(this);

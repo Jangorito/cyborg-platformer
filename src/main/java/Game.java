@@ -6,11 +6,35 @@ import java.util.ArrayList;
 
 import static java.lang.System.nanoTime;
 
+/**
+ * Game setup and World management.
+ *
+ * Responsibilities:
+ * - Builds and initialises the MapBlocks (the level)
+ * - Loads image assets: (player, enemies, UI, tiles).
+ * - Spawns and respawns runtime player & enemies.
+ * - Tracks run states such as {@link #isWon} and {@link #startTime}.
+ *
+ * Connected to:
+ * - {@link canvas} which renders screen and updates the static field stored entities.
+ * - {@link MapBlocks} which stores level collision boundaries.
+ * - {@link Player}, {@link Enemy} which are created here.
+ *
+ * v1 note:
+ * - Multiple responsibilities like resource loading + gameplay setup.
+ * - In v2, asset loading and entity spawning could be separated.
+ */
 public class Game {
     public boolean isWon = false;
     public static double startTime;
     protected boolean isRunning = true;
 
+    /**
+     * Assigns the sprite images to the entities (player & enemies)
+     *
+     * v1 note:
+     * - doesn't use classpath resources
+     */
     public void loadImages(){
 
         try {
@@ -124,7 +148,14 @@ public class Game {
         }
     }
 
-
+    /**
+     * Initialises Player object and enemy (ArrayList of) objects then adds them to the canvas.
+     *
+     * notes:
+     * - resets start timer and win state
+     * - assigns newly created {@link Player} and {@link Enemy}s to {@link canvas}
+     * - resets bullets
+     */
     public void spawnEntities() {
         if (CyborgPlatform.game.isWon) Player.deathCounter = 0;
         CyborgPlatform.game.isWon = false;
@@ -147,7 +178,12 @@ public class Game {
         canvas.activeBullets = new ArrayList<>();
     }
 
-
+    /**
+     * Drives render loop by calling {@link canvas#repaint()} at ~60 FPS.
+     *
+     * v1 note:
+     * - In v2, replace nanoTime() functionality with a Swing {@code Timer} or dedicated game loop thread.
+     */
     public void startTimer(canvas canvas) {
         double t = nanoTime();
         while (isRunning) {

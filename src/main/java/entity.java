@@ -1,5 +1,17 @@
 import java.awt.*;
 
+/**
+ * Base class for v1 game entities ({@link Player} and {@link Enemy}).
+ *
+ * Each entity contains:
+ * - Position (x, y), velocity/acceleration, grounded state.
+ * - Basic gravity integration.
+ * - Collision checks against blocks stored in {@link MapBlocks}.
+ * - Shared field animation & gameplay used by subclasses (health, ammo, animation state).
+ *
+ * v1 note:
+ * - responsible for physics, collision, and game stats; v2 could split these into components/systems.
+ */
 public class entity {
     protected boolean isDamaged;
     protected double damagedTime;
@@ -30,7 +42,11 @@ public class entity {
         this.state = new entitystate(true, "idle");
     }
 
-
+    /**
+     * Checks whether the current entity's bounding region intersects any solid block in {@link MapBlocks#map}.
+     * (is the entity colliding with anything using {@code hitBox})
+     * @return true if the entity overlaps any block; false otherwise.
+     */
     public boolean intersect() {
         int x2 = x + hitBox;
         int y2 = y + image.getHeight(null);
@@ -51,6 +67,13 @@ public class entity {
         return isInside;
     }
 
+    /**
+     * Applies a jump to the entity.
+     *
+     * How:
+     * - Smaller value for first jump and a stronger value for second.
+     * - Stores the jump position (jumpX/jumpY) for visual effects (e.g., cloud sprite).
+     */
 
     public void jump() {
         if (jumpCounter == 1) velocity = -6;
@@ -59,14 +82,22 @@ public class entity {
         jumpY = y;
     }
 
-
+    /**
+     * Creates a lightweight copy of this entity at a new position to test potential next position without moving the real entity.
+     */
     public entity copy(int newX, int newY) {
         entity copy = new entity(image, newX, newY, health, ammo, hitBox);
         copy.image = image;
         return copy;
     }
 
-
+    /**
+     * Handles gravity and resolves vertical collisions against map blocks.
+     *
+     * How:
+     * - If the next vertical position does not collide, move down/up by {@code velocity} and increase velocity by {@code acceleration}.
+     * - If colliding with map blocks, adjusts y/velocity and sets isGrounded accordingly.
+     */
     public void gravity() {
         entity entityCopy = copy(x, (int) (y + velocity));
         if (!entityCopy.intersect()) {
@@ -81,6 +112,11 @@ public class entity {
     }
 }
 
+/**
+ * Simple state container used for animation decisions (direction + named state string).
+ * How:
+ * - uses string-based states such as "idle", "running", "hurt", etc.
+ */
 class entitystate {
     protected boolean isFacingForward;
     protected String state;
