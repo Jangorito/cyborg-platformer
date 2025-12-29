@@ -3,7 +3,7 @@
 ### 20/10/2025
  - Version 1 nearly ready. Code seems to be broken. 
 
-## v1 (Task 1 – Maintenance baseline)
+## Task 1 – Maintenance baseline
 
 ### 2025-12-25
 - Set up project in IntelliJ (imported Maven, configured SDK)
@@ -13,3 +13,10 @@
     - Fixed asset reference typo `clod.png` → `cloud.png`
     - `MapBlocks`: corrected map file name `Map.txt` → `Maps.txt`
 - Verified the game runs successfully & baseline is restored
+
+## Task 2 – Understanding the legacy code & V2 planning
+
+### 2025-12-[26->29]
+- added Javadocs and inline comments to the project
+- designed a Class Diagram based on V1's current class structure
+- 
