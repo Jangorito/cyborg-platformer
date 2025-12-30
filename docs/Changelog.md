@@ -19,4 +19,6 @@
 ### 2025-12-[26->29]
 - added Javadocs and inline comments to the project
 - designed a Class Diagram based on V1's current class structure
-- 
+
+### 2025-12-30
+- finalised SoftwareDesign.md
