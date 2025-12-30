@@ -58,7 +58,7 @@ design addresses these issues by introducing conventional ownership boundaries b
 world state.
 
 ## V2 Proposed Class Diagram
-![V2 Proposed Class Diagram](SoftwareDesignImages/V2 UML Diagram.png)
+![V2 Proposed Class Diagram](SoftwareDesignImages/V2%20UML%20Diagram.png)
 
 ## V2 Planned Refactoring
 
