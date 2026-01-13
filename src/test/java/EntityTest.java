@@ -86,7 +86,7 @@ class EntityTest {
         assertEquals(e.health, c.health);           // health == health  : should be TRUE
         assertEquals(e.ammo, c.ammo);               // ammo == ammo      : should be TRUE
         assertEquals(e.hitBox, c.hitBox);           // hitBox == hitBox  : should be TRUE
-:
+
         // same image reference is fine in V1
         assertSame(e.image, c.image);               // image == image    : should be TRUE
     }
