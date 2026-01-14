@@ -30,3 +30,5 @@
 - Created v2 branch, ran tests: 100% pass rate & 29% coverage
 - Created V2 package skeleton
 - moved V1 code & tests into legacy package
+- created and populated `CyberPlatformer` package
+- created tests for Bullet and PlayerShooting
