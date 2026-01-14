@@ -1,3 +1,5 @@
+package CyborgPlatformer.legacy;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +35,7 @@ public class MapBlocks {
     }
 
     /**
-     * Builds the level layout by adding MapBlocks from Maps.txt to the static map list.
+     * Builds the level layout by adding CyborgPlatformer.legacy.MapBlocks from Maps.txt to the static map list.
      * - Coordinates are a pixel-based 48x47 grid in v1.
      * - '0' = empty space
      * - {@link #mapWidth} is derived from the number of columns.

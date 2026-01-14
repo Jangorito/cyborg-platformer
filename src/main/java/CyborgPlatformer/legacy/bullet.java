@@ -1,3 +1,5 @@
+package CyborgPlatformer.legacy;
+
 import java.awt.*;
 
 /**
@@ -18,7 +20,7 @@ bullet extends entity {
     }
 
     /**
-     * Advances bullet position and handles its collisions.
+     * Advances CyborgPlatformer.legacy.bullet position and handles its collisions.
      * - Removes itself on collision or after travelling ~600 pixels.
      * - If it overlaps an enemy, applies damage via {@link Enemy#damage()}.
      */
@@ -33,7 +35,7 @@ bullet extends entity {
     }
 
     /**
-     * Creates a bullet copy at a new position for predictive collision checks.
+     * Creates a CyborgPlatformer.legacy.bullet copy at a new position for predictive collision checks.
      * Only used for intersection testing.
      */
     public bullet copy(int newX, int newY) {
@@ -46,7 +48,7 @@ bullet extends entity {
     }
 
     /**
-     * @return Euclidean distance from the bullet's start point to its current position.
+     * @return Euclidean distance from the CyborgPlatformer.legacy.bullet's start point to its current position.
      */
     public double travelledDistance() {
         int dx = startPoint.x - x;
@@ -60,7 +62,7 @@ bullet extends entity {
      * How:
      * - If a collision is detected, {@link Enemy#damage()} is called.
      *
-     * @return true if the bullet overlaps at least one enemy.
+     * @return true if the CyborgPlatformer.legacy.bullet overlaps at least one enemy.
      */
     public boolean collidesEnemy() {
         boolean isInside = false;

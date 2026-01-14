@@ -13,10 +13,10 @@ class EntityTest {
 
     @BeforeEach
     void setUp() {
-        // intersect/gravity so each test depends on a clean MapBlocks.map
+        // intersect/gravity so each test depends on a clean CyborgPlatformer.legacy.MapBlocks.map
         MapBlocks.map.clear();
 
-        // Dummy entity image w/ real dimensions for intersect calculations
+        // Dummy CyborgPlatformer.legacy.entity image w/ real dimensions for intersect calculations
         Image img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
 
         e = new entity(img, 0, 0, 100, 10, 32);
@@ -44,10 +44,10 @@ class EntityTest {
     }
 
     @Test
-    @DisplayName("intersect() returns true when entity overlaps a block")
+    @DisplayName("intersect() returns true when CyborgPlatformer.legacy.entity overlaps a block")
     void intersectTrueWhenOverlappingBlock() {
         Image blockImg = new BufferedImage(48, 48, BufferedImage.TYPE_INT_ARGB);
-        MapBlocks.map.add(new MapBlocks(blockImg, 0, 0)); // overlaps entity at (0,0)
+        MapBlocks.map.add(new MapBlocks(blockImg, 0, 0)); // overlaps CyborgPlatformer.legacy.entity at (0,0)
 
         assertTrue(e.intersect());                      // intersect()  : should be TRUE
     }
@@ -74,15 +74,15 @@ class EntityTest {
     }
 
     @Test
-    @DisplayName("copy(newX,newY) returns a new entity with same stats but new position")
+    @DisplayName("copy(newX,newY) returns a new CyborgPlatformer.legacy.entity with same stats but new position")
     void copyCreatesNewEntityWithNewPosition() {
-        entity c = e.copy(100, 200);     // copy entity following v1 design pattern
+        entity c = e.copy(100, 200);     // copy CyborgPlatformer.legacy.entity following v1 design pattern
 
-        assertNotSame(e, c);                         // entity == copy   : should be FALSE
+        assertNotSame(e, c);                         // CyborgPlatformer.legacy.entity == copy   : should be FALSE
         assertEquals(100, c.x);             // x                : should be 100
         assertEquals(200, c.y);             // y                : should be 200
 
-        // entity's stats should carry over
+        // CyborgPlatformer.legacy.entity's stats should carry over
         assertEquals(e.health, c.health);           // health == health  : should be TRUE
         assertEquals(e.ammo, c.ammo);               // ammo == ammo      : should be TRUE
         assertEquals(e.hitBox, c.hitBox);           // hitBox == hitBox  : should be TRUE
@@ -92,9 +92,9 @@ class EntityTest {
     }
 
     @Test
-    @DisplayName("gravity() moves entity down and increases velocity when no collision")
+    @DisplayName("gravity() moves CyborgPlatformer.legacy.entity down and increases velocity when no collision")
     void gravityMovesWhenNoCollision() {
-        e.velocity = 2.0;   // set entity velocity
+        e.velocity = 2.0;   // set CyborgPlatformer.legacy.entity velocity
         e.gravity();        // call gravity method
 
         assertEquals(2, e.y);                 // y += velocity                   : should be TRUE

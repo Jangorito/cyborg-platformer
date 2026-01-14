@@ -1,7 +1,9 @@
+package CyborgPlatformer.legacy;
+
 import java.awt.*;
 
 /**
- * Basic Zombie entity.
+ * Basic Zombie CyborgPlatformer.legacy.entity.
  *
  * Responsibilities:
  * - chase: zombie moves towards player when within range; increases speed when close.
@@ -10,7 +12,7 @@ import java.awt.*;
  * - Updates & plays state-based animations (idle/walk/run/hurt).
  *
  * v1 note:
- * - Behaviour is embedded inside the entity. v2 could move AI decisions to a dedicated system.
+ * - Behaviour is embedded inside the CyborgPlatformer.legacy.entity. v2 could move AI decisions to a dedicated system.
  */
 public class Enemy extends entity {
     public Enemy(int x, int y, int health) {

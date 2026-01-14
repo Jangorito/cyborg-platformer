@@ -1,3 +1,5 @@
+package CyborgPlatformer.legacy;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +14,7 @@ class PlayerTest {
 
     @BeforeEach
     void setUp() {
-        // each test depends on a clean MapBlocks.map
+        // each test depends on a clean CyborgPlatformer.legacy.MapBlocks.map
         MapBlocks.map.clear();
 
 
@@ -20,7 +22,7 @@ class PlayerTest {
         canvas.activeBullets = new ArrayList<>();       // create list for activeBullets
         canvas.enemies = new ArrayList<>();             // create list for enemies
 
-        // Emulate Game.loadImages() functionality with Dummy images for Player animation arrays
+        // Emulate CyborgPlatformer.legacy.Game.loadImages() functionality with Dummy images for CyborgPlatformer.legacy.Player animation arrays
         Image dummy = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         Player.idleSprites = new Image[]{dummy};
         Player.runningSprites = new Image[]{dummy, dummy, dummy, dummy, dummy, dummy}; // runningSprites[5] used in aerial
@@ -32,16 +34,16 @@ class PlayerTest {
     }
 
     @Test
-    @DisplayName("Player constructor sets position, health, ammo and hitbox")
+    @DisplayName("CyborgPlatformer.legacy.Player constructor sets position, health, ammo and hitbox")
     void constructorSetsCoreFields() {
-        // create Player instance
+        // create CyborgPlatformer.legacy.Player instance
         Player p = new Player(10, 20, 3);
 
         assertEquals(10, p.x);          // x value          : should be 10
         assertEquals(20, p.y);          // y value          : should be 20
         assertEquals(3, p.health);      // health           : should be 3
 
-        // Since player passes ammo=10, hitBox=30 into entity constructor:
+        // Since player passes ammo=10, hitBox=30 into CyborgPlatformer.legacy.entity constructor:
         assertEquals(10, p.ammo);       // ammo             : should be 10
         assertEquals(30, p.hitBox);     // hitBox           : should be 30
 
@@ -142,7 +144,7 @@ class PlayerTest {
     }
 
     @Test
-    @DisplayName("shoot() consumes ammo and adds a bullet when not on cooldown (facing right)")
+    @DisplayName("shoot() consumes ammo and adds a CyborgPlatformer.legacy.bullet when not on cooldown (facing right)")
     void shootAddsBulletFacingRight() {
         Player p = new Player(100, 200, 3);
 
@@ -164,7 +166,7 @@ class PlayerTest {
         assertTrue(p.justShot);                           // justShot       :   should be True
 
         bullet b = canvas.activeBullets.
-                get(canvas.activeBullets.size() - 1);     // get bullet to query
+                get(canvas.activeBullets.size() - 1);     // get CyborgPlatformer.legacy.bullet to query
         assertEquals(10, b.speed);               // speed          :   should be facing right => +10
         assertNotNull(b.startPoint);                      // startPoint     :   shouldn't be null
 
@@ -177,7 +179,7 @@ class PlayerTest {
     }
 
     @Test
-    @DisplayName("shoot() consumes ammo and adds a bullet when not on cooldown (facing left)")
+    @DisplayName("shoot() consumes ammo and adds a CyborgPlatformer.legacy.bullet when not on cooldown (facing left)")
     void shootAddsBulletFacingLeft() {
         Player p = new Player(100, 200, 3);
 

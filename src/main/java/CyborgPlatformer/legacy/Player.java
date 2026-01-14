@@ -1,8 +1,10 @@
+package CyborgPlatformer.legacy;
+
 import java.awt.*;
 import java.time.Duration;
 
 /**
- * Player-controlled entity.
+ * CyborgPlatformer.legacy.Player-controlled CyborgPlatformer.legacy.entity.
  *
  * Responsibilities:
  * - Reads input state from {@link canvas#keysPressed}.
@@ -11,7 +13,7 @@ import java.time.Duration;
  * - Draws HUD elements (health, ammo, controls text).
  *
  * v1 note:
- * - Player both simulates gameplay and draws UI; responsibilities should be separated for v2.
+ * - CyborgPlatformer.legacy.Player both simulates gameplay and draws UI; responsibilities should be separated for v2.
  */
 public class Player extends entity {
     protected Point checkPoint = new Point(20, 300);
@@ -156,7 +158,7 @@ public class Player extends entity {
     }
 
     /**
-     * Fires a bullet if the player is not on cooldown and has ammo.
+     * Fires a CyborgPlatformer.legacy.bullet if the player is not on cooldown and has ammo.
      *
      * v1 behaviour:
      * - Consumes 1 ammo per shot.

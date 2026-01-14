@@ -1,4 +1,4 @@
-# Cyborg Platformer Game
+# Cyborg Platformer CyborgPlatformer.legacy.Game
 
 This is a zombie shooter platformer demo game created as a college project in my first year. Built entirely from scratch using **Java Swing** - no external libraries, game engines, or external assistance involved. All physics, mechanics, and features were hand-coded based on intuition when I was starting to code, so please don’t judge too harshly!
 
@@ -11,7 +11,7 @@ In the game, you navigate a level, avoiding obstacles and zombies and tracking y
 
 All sprites and images are from [CraftPix](https://craftpix.net/freebies/). Big thanks to them for providing these awesome assets for free!
 
-To play, ensure all required image files are organized in the `src` directory as per the setup instructions, and launch the game by running `CyborgPlatform.java`.
+To play, ensure all required image files are organized in the `src` directory as per the setup instructions, and launch the game by running `CyborgPlatformer.legacy.CyborgPlatform.java`.
 
 # COMP2013 Context
 
@@ -28,19 +28,19 @@ Development is carried out on `dev` and per-task branches.
 1. Open the repository folder in IntelliJ. 
 2. When prompted, import the project as a **Maven project**. 
 3. Ensure Project SDK is set to **Java 17**. 
-4. Locate the main class: `CyborgPlatform` (in src folder).
-5. Right-click the class and select **Run 'CyborgPlatform'**.
+4. Locate the main class: `CyborgPlatformer.legacy.CyborgPlatform` (in src folder).
+5. Right-click the class and select **Run 'CyborgPlatformer.legacy.CyborgPlatform'**.
 
 ### Command Line (Maven)
 From the repository root directory:
 
 ```bash
 mvn clean compile
-mvn exec:java -Dexec.mainClass=CyborgPlatform
+mvn exec:java -Dexec.mainClass=CyborgPlatformer.legacy.CyborgPlatform
 ```
 
 > Note: If the Maven exec plugin is not configured, the project can be run directly
-> from IntelliJ by running the `CyborgPlatform` main class.
+> from IntelliJ by running the `CyborgPlatformer.legacy.CyborgPlatform` main class.
 
 ### Controls and objective
 

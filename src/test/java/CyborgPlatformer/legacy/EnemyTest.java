@@ -1,3 +1,5 @@
+package CyborgPlatformer.legacy;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +20,7 @@ class EnemyTest {
         canvas.enemies = new ArrayList<>();
         canvas.activeBullets = new ArrayList<>();
 
-        // Dummy images required for Enemy & hitbox maths
+        // Dummy images required for CyborgPlatformer.legacy.Enemy & hitbox maths
         Image enemyDummy = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         Enemy.idleSprites = new Image[]{ enemyDummy };   // constructor uses idleSprites[0]
         Enemy.walkingSprites = new Image[]{ enemyDummy };
@@ -40,7 +42,7 @@ class EnemyTest {
     }
 
     @Test
-    @DisplayName("Enemy constructor sets position and uses V1 default health (2) regardless of parameter")
+    @DisplayName("CyborgPlatformer.legacy.Enemy constructor sets position and uses V1 default health (2) regardless of parameter")
     void constructorSetsFields() {
         Enemy z = new Enemy(100, 200, 999);     // create enemy instance
 
@@ -92,14 +94,14 @@ class EnemyTest {
 
         canvas.enemies.add(z);
 
-        bullet b = new bullet(0, 0);        // create bullet object at enemy's position
+        bullet b = new bullet(0, 0);        // create CyborgPlatformer.legacy.bullet object at enemy's position
         b.startPoint = new Point(b.x, b.y);       // set x & y
 
         boolean collided = b.collidesEnemy();     // create collided boolean to test before mutation
 
         assertTrue(collided, "Bullet should overlap enemy at same position");
-        assertEquals(before - 1, z.health, "Enemy health should decrease by 1 on hit");
-        assertTrue(z.isDamaged, "Enemy should be marked as damaged after bullet hit");
+        assertEquals(before - 1, z.health, "CyborgPlatformer.legacy.Enemy health should decrease by 1 on hit");
+        assertTrue(z.isDamaged, "CyborgPlatformer.legacy.Enemy should be marked as damaged after CyborgPlatformer.legacy.bullet hit");
     }
 
     @Test
@@ -113,12 +115,12 @@ class EnemyTest {
         b.startPoint = new Point(b.x, b.y);
         b.speed = 10;
 
-        canvas.activeBullets.add(b);    // add bullet to activeBullets list
+        canvas.activeBullets.add(b);    // add CyborgPlatformer.legacy.bullet to activeBullets list
 
         b.update();                     // call update
 
         assertFalse(canvas.activeBullets.contains(b),
-                "Bullet should remove itself from canvas.activeBullets after hitting enemy");
+                "Bullet should remove itself from CyborgPlatformer.legacy.canvas.activeBullets after hitting enemy");
     }
 
     @Test
@@ -132,7 +134,7 @@ class EnemyTest {
         z.health = 0;                           // triggers kill() inside doBehavior()
         z.doBehavior();                         // call doBehaviour()
 
-        assertFalse(canvas.enemies.contains(z), "Enemy should be removed from canvas.enemies on kill()");
+        assertFalse(canvas.enemies.contains(z), "CyborgPlatformer.legacy.Enemy should be removed from CyborgPlatformer.legacy.canvas.enemies on kill()");
         assertEquals(ammoBefore + 2, canvas.player.ammo, "kill() should award +2 ammo to player");
     }
 }

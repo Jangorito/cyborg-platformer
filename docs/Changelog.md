@@ -9,9 +9,9 @@
 - Set up project in IntelliJ (imported Maven, configured SDK)
 - Created `dev` branch and `task1-v1` working branch
 - Fixed compilation/runtime issues to restore a runnable baseline:
-    - `CyborgPlatform`/`Game`: corrected outdated method call `loadImgs()` → `loadImages()`
+    - `CyborgPlatformer.legacy.CyborgPlatform`/`CyborgPlatformer.legacy.Game`: corrected outdated method call `loadImgs()` → `loadImages()`
     - Fixed asset reference typo `clod.png` → `cloud.png`
-    - `MapBlocks`: corrected map file name `Map.txt` → `Maps.txt`
+    - `CyborgPlatformer.legacy.MapBlocks`: corrected map file name `Map.txt` → `Maps.txt`
 - Verified the game runs successfully & baseline is restored
 
 ## Task 2 – Understanding the legacy code & V2 planning
@@ -22,8 +22,9 @@
 
 ### 2025-12-30
 - finalised SoftwareDesign.md
-- Added some V1 regression tests for entity.java's core mechanics & reconfigured pom.xml file
+- Added some V1 regression tests for CyborgPlatformer.legacy.entity.java's core mechanics & reconfigured pom.xml file
 
 ### 2026-01-13
-- Finalised regression tests including: `PlayerTest.java`, `BulletTest.java`, `BulletTest.java`, `EntityTest.java`. 
+- Finalised regression tests including: `CyborgPlatformer.legacy.PlayerTest.java`, `CyborgPlatformer.legacy.BulletTest.java`, `CyborgPlatformer.legacy.BulletTest.java`, `CyborgPlatformer.legacy.EntityTest.java`. 
 - Populated `Testing.md` with this information
+- Created v2 branch, ran tests: 100% pass rate & 29% coverage

@@ -1,3 +1,5 @@
+package CyborgPlatformer.legacy;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -21,7 +23,7 @@ public class canvas extends JComponent implements KeyListener, ActionListener, M
     protected static Player player;
     protected static ArrayList<Enemy> enemies;
     protected static ArrayList<bullet> activeBullets = new ArrayList<>();
-    // keysPressed is an input state array read by Player.update()
+    // keysPressed is an input state array read by CyborgPlatformer.legacy.Player.update()
     protected static boolean[] keysPressed = new boolean[4];
     protected static boolean isLastDirectionForwards = true;
     protected static int cameraOffset;
@@ -104,7 +106,7 @@ public class canvas extends JComponent implements KeyListener, ActionListener, M
     }
 
     /**
-     * End screen graphic displayed when {@code CyborgPlatform.game.isWon} is true.
+     * End screen graphic displayed when {@code CyborgPlatformer.legacy.CyborgPlatform.game.isWon} is true.
      */
     public void end(Graphics g) {
 

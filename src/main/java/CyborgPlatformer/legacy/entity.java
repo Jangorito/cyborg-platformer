@@ -1,9 +1,11 @@
+package CyborgPlatformer.legacy;
+
 import java.awt.*;
 
 /**
  * Base class for v1 game entities ({@link Player} and {@link Enemy}).
  *
- * Each entity contains:
+ * Each CyborgPlatformer.legacy.entity contains:
  * - Position (x, y), velocity/acceleration, grounded state.
  * - Basic gravity integration.
  * - Collision checks against blocks stored in {@link MapBlocks}.
@@ -43,9 +45,9 @@ public class entity {
     }
 
     /**
-     * Checks whether the current entity's bounding region intersects any solid block in {@link MapBlocks#map}.
-     * (is the entity colliding with anything using {@code hitBox})
-     * @return true if the entity overlaps any block; false otherwise.
+     * Checks whether the current CyborgPlatformer.legacy.entity's bounding region intersects any solid block in {@link MapBlocks#map}.
+     * (is the CyborgPlatformer.legacy.entity colliding with anything using {@code hitBox})
+     * @return true if the CyborgPlatformer.legacy.entity overlaps any block; false otherwise.
      */
     public boolean intersect() {
         int x2 = x + hitBox;
@@ -68,7 +70,7 @@ public class entity {
     }
 
     /**
-     * Applies a jump to the entity.
+     * Applies a jump to the CyborgPlatformer.legacy.entity.
      *
      * How:
      * - Smaller value for first jump and a stronger value for second.
@@ -83,7 +85,7 @@ public class entity {
     }
 
     /**
-     * Creates a lightweight copy of this entity at a new position to test potential next position without moving the real entity.
+     * Creates a lightweight copy of this CyborgPlatformer.legacy.entity at a new position to test potential next position without moving the real CyborgPlatformer.legacy.entity.
      */
     public entity copy(int newX, int newY) {
         entity copy = new entity(image, newX, newY, health, ammo, hitBox);
