@@ -3,14 +3,11 @@ package CyborgPlatformer.model.entities;
 /**
  * Base model for V2 simulated world entities.
  *
- * Responsibilities:
- * - Stores core physical states: position and velocity.
- * - {@link #update(double)} updates x/y using vx/vy.
- *
  * Notes:
- * - Does not contain images, sprites or UI references.
- * - Does not perform collision detection.
- * - Does not handle player input.
+ * - Rendering-free.
+ * - Movement integration is split:
+ *   - PhysicsSystem moves Y (and can also resolve X collisions via World).
+ *   - Default update moves X only (used for simple entities).
  */
 
 public abstract class Entity {
@@ -22,7 +19,6 @@ public abstract class Entity {
     protected double width = 0;
     protected double height = 0;
     protected boolean grounded = false;
-    protected double ay = 0.5; // legacy acceleration default
 
     public double getWidth() { return width; }
     public double getHeight() { return height; }
@@ -30,13 +26,15 @@ public abstract class Entity {
     public double getY() { return y; }
     public boolean isGrounded() { return grounded; }
     public double getVY() { return vy; }
-    public double getAY() { return ay; }   // or getAccelerationY()
+    public double getVX() { return vx; }
+
     public void setVY(double vy) { this.vy = vy; }
+    public void setVX(double vx) { this.vx = vx; }
     public void setGrounded(boolean grounded) { this.grounded = grounded; }
 
+    /** Default update: horizontal integration only (Y handled by PhysicsSystem). */
     public void update(double dt) {
         x += vx * dt;
-        y += vy * dt;
     }
 
     public void setSize(double width, double height) {
@@ -44,9 +42,16 @@ public abstract class Entity {
         this.height = height;
     }
 
+    public void setPosition(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void moveX(double dx) {
+        this.x += dx;
+    }
 
     public void moveY(double dy) {
         this.y += dy;
     }
-
 }

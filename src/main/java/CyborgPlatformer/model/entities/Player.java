@@ -29,11 +29,14 @@ public class Player extends Entity {
     private static final int SPAWN_X_OFFSET_RIGHT = 47;
     private static final int SPAWN_X_OFFSET_LEFT = -25;
 
-    // Bullet speed based on v1 (10 px per tick (if dt=1.0))
-    private static final double BULLET_SPEED_PER_TICK = 10;
+    // Seconds-based speed (px/s)
+    private static final double BULLET_SPEED_PX_PER_SEC = 600.0;
 
-    public void moveLeft()  { vx = -100; }
-    public void moveRight() { vx = 100; }
+    // Movement speed (px/s) — tune later
+    private static final double MOVE_SPEED_PX_PER_SEC = 200.0;
+
+    public void moveLeft()  { vx = -MOVE_SPEED_PX_PER_SEC; }
+    public void moveRight() { vx =  MOVE_SPEED_PX_PER_SEC; }
     public void stop()      { vx = 0; }
 
     public int getHealth() { return health; }
@@ -65,14 +68,20 @@ public class Player extends Entity {
         double spawnX = x + (facingRight ? SPAWN_X_OFFSET_RIGHT : SPAWN_X_OFFSET_LEFT);
         double spawnY = y + SPAWN_Y_OFFSET;
 
-        double vx = facingRight ? BULLET_SPEED_PER_TICK : -BULLET_SPEED_PER_TICK;
+        double bulletVx = facingRight ? BULLET_SPEED_PX_PER_SEC : -BULLET_SPEED_PX_PER_SEC;
 
         // Bullet hitbox: legacy used image bounds; for now keep a small stable box.
-        Bullet bullet = new Bullet(world, spawnX, spawnY, vx, 12, 6);
+        Bullet bullet = new Bullet(world, spawnX, spawnY, bulletVx, 12, 6);
 
         world.spawnBullet(bullet);
         return true;
     }
+
+    public void damage(int amount) {
+        health -= amount;
+        if (health < 0) health = 0;
+    }
+
 
     public int getJumpCounter() {
         return jumpCounter;
