@@ -35,11 +35,11 @@ public final class Enemy extends Entity implements Damageable {
     private static final double WALK_SPEED = 140.0; // px/s
     private static final double RUN_SPEED  = 260.0; // px/s
 
-    private static final double CONTACT_COOLDOWN_S = 0.6;
-    private static final int CONTACT_DAMAGE = 5;
+    private static final double CONTACT_COOLDOWN_S = 0.9;
+    private static final int CONTACT_DAMAGE = 50;
 
     private static final double JUMP_COOLDOWN_S = 0.35;
-    private static final double JUMP_VY = -650.0;
+    private static final double JUMP_VY = -300.0;
 
     private static final double OUT_OF_BOUNDS_Y = 2000.0;
 
@@ -136,10 +136,18 @@ public final class Enemy extends Entity implements Damageable {
             }
         }
 
-        // contact damage
+        // contact damage + player knockback
         if (contactCooldown <= 0 && overlaps(player)) {
             player.damage(CONTACT_DAMAGE);
             contactCooldown = CONTACT_COOLDOWN_S;
+
+            // knock player AWAY from enemy
+            double dir = (player.getX() < x) ? -1.0 : 1.0;
+
+            player.knockback(
+                    dir * 320.0,   // horizontal push
+                    -180.0                  // vertical pop
+            );
         }
     }
 

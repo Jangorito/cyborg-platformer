@@ -82,6 +82,13 @@ public class Player extends Entity {
         if (health < 0) health = 0;
     }
 
+    public void knockback(double vxImpulse, double vyImpulse) {
+        this.vx = vxImpulse;
+        this.vy = vyImpulse;
+        this.grounded = false;
+    }
+
+
 
     public int getJumpCounter() {
         return jumpCounter;
