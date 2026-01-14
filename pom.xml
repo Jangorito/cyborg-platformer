@@ -18,6 +18,8 @@
         <surefire.version>3.2.5</surefire.version>
         <compiler.version>3.11.0</compiler.version>
         <pmd.version>3.21.2</pmd.version>
+        <javafx.version>21.0.4</javafx.version>
+
     </properties>
 
     <dependencies>
@@ -36,6 +38,19 @@
             <version>1.10.2</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- JavaFX (debug visualiser + later full UI) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -100,6 +115,17 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- JavaFX runner: mvn javafx:run -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>CyborgPlatformer.fx.FxLauncher</mainClass>
+                </configuration>
+            </plugin>
+
 
         </plugins>
     </build>
