@@ -1,6 +1,7 @@
 package CyborgPlatformer.controller;
 
 import CyborgPlatformer.input.InputState;
+import CyborgPlatformer.model.entities.Enemy;
 import CyborgPlatformer.model.entities.Player;
 import CyborgPlatformer.model.world.World;
 import CyborgPlatformer.systems.PhysicsSystem;
@@ -27,15 +28,28 @@ public class GameController {
 
     private boolean facingRight = true;
 
-    public GameController(World world, Player player) {
+    // Edge-trigger state
+    private boolean lastJump = false;
+    private boolean lastShoot = false;
+    private boolean lastReset = false;
+
+    // Kill plane (auto reset if you fall below this)
+    private static final double FALL_RESET_Y = 3000.0;
+
+    public GameController(World world, Player player, double spawnX, double spawnY) {
         this.world = world;
         this.player = player;
         this.physics = new PhysicsSystem(world.getLevel());
         this.spawnX = spawnX;
         this.spawnY = spawnY;
 
-        // Adds player to world list so it updates with everything else.
         this.world.addEntity(player);
+
+        // Demo enemies
+        world.addEntity(new Enemy(player.getX() + 500, player.getY(), 20, 20, 2));
+        world.addEntity(new Enemy(player.getX() + 1200, player.getY(), 20, 20, 2));
+        world.addEntity(new Enemy(player.getX() + 2000, player.getY(), 20, 20, 3));
+
     }
 
     public World getWorld() { return world; }
@@ -50,6 +64,12 @@ public class GameController {
     public void step(double dt, InputState input) {
         applyInput(input);
         physics.applyGravity(player, dt);
+
+        for (Enemy e : world.getEnemies()) {
+            e.think(world, player, dt);
+            physics.applyGravity(e, dt);
+        }
+
         world.update(dt);
 
         // Auto reset if player falls too far
