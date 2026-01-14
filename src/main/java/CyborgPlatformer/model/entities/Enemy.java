@@ -4,7 +4,7 @@ package CyborgPlatformer.model.entities;
  * Enemy model for Bullet collision + damage.
  * Still need: (AI, health, etc.).
  */
-public class Enemy extends Entity {
+public class Enemy extends Entity implements Damageable{
 
     private int health = 3;
 
