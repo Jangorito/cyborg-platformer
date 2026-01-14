@@ -3,7 +3,7 @@
 ## Overview
 Task 3 introduces automated testing using JUnit 5 to provide regression safety for the Version 1 (legacy) codebase and to establish a foundation for Version 2 refactoring.
 
-## Version 1 Test plan table
+## Version 1: Test plan table
 | ID | Test Class | Version | Type | What it verifies | Notes |
 |---|---|---|---|---|---|
 | T1 | CyborgPlatformer.legacy.EntityTest | V1 | Unit / Regression | Constructor initialises core fields correctly | deterministic |
@@ -32,7 +32,7 @@ Task 3 introduces automated testing using JUnit 5 to provide regression safety f
 | T24 | CyborgPlatformer.legacy.EnemyTest | V1 | Unit / Regression | `damage()` reduces health and applies damaged/knockback behaviour | avoids UI |
 | T25 | CyborgPlatformer.legacy.EnemyTest | V1 | Interaction | Bullet overlap triggers `CyborgPlatformer.legacy.Enemy.damage()` and CyborgPlatformer.legacy.bullet removal | deterministic cross-class interaction |
 
-## Version 1 Test Results
+## Version 1: Test Results
 Version 1 tests were executed using `mvn verify` and completed successfully.
 
 - Total tests executed: 25
@@ -45,7 +45,7 @@ UI rendering, animation, and real-time game loop behaviour were intentionally ex
 
 JaCoCo code coverage was generated as part of the Maven verification phase. Overall coverage:**_29%_**. This proves  limited testability of rendering-heavy legacy code. Coverage is concentrated on core logic classes (`Entity`, `CyborgPlatformer.legacy.Player`, `Bullet`, `CyborgPlatformer.legacy.Enemy`) which form the regression baseline for refactoring.
 
-### Planned Tests (Version 2)
+### Version 2: Planned Tests
 | ID | Test Class | Version | Type | What it will verify | Design rationale |
 |---|---|---|---|---|---|
 | V2-T1 | GameControllerTest | V2 | Unit | CyborgPlatformer.legacy.Game state transitions (menu → playing → win/lose) | Introduced to centralise flow previously implicit in `CyborgPlatformer.legacy.canvas` |
@@ -58,6 +58,11 @@ JaCoCo code coverage was generated as part of the Maven verification phase. Over
 | V2-T8 | CameraTest | V2 | Unit | Camera offset and transformations applied correctly | Separates camera logic from rendering |
 | V2-T9 | BulletSystemTest | V2 | Unit | Projectile lifecycle managed by World, not entities | Removes global `CyborgPlatformer.legacy.canvas.activeBullets` access |
 | V2-T10 | EnemyAITest | V2 | Unit | CyborgPlatformer.legacy.Enemy behaviour decisions independent of rendering context | Enables deterministic AI testing |
+
+## Version 2: Carried Out Tests 
+| ID | Test Class | Version | Type | What it verifies | Notes |
+|----|-----------|---------|------|-----------------|-------|
+| V2-T1 | FixedTimestepLoopTest | V2 | Unit / Contract | World.update(dt) is called deterministically once per tick | Parameterised test verifies tick count for multiple step values |
 
 # CI/CD Setup
 Todo late november. So far, just managed to setup an automatic junit test pipeline.
