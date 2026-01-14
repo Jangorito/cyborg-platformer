@@ -29,7 +29,8 @@ Making game runnable:
 
 - Make `InputState` mutable for real keyboard later
 
-- problems with the enemy right now:
+
+problems with the enemy right now:
 - they jump too high to attack me
 - they don't do enough damage, two hits I should be done
 - if they run into me, they're basically stuck to me which makes me think 
