@@ -14,7 +14,6 @@ import CyborgPlatformer.systems.PhysicsSystem;
  * - Advances simulation by calling World.update(dt).
  *
  * Notes:
- * - Currently no TODO: JavaFX.
  * - Rendering reads World state separately.
  */
 public class GameController {
@@ -23,12 +22,17 @@ public class GameController {
     private final Player player;
     private final PhysicsSystem physics;
 
+    private final double spawnX;
+    private final double spawnY;
+
     private boolean facingRight = true;
 
     public GameController(World world, Player player) {
         this.world = world;
         this.player = player;
         this.physics = new PhysicsSystem(world.getLevel());
+        this.spawnX = spawnX;
+        this.spawnY = spawnY;
 
         // Adds player to world list so it updates with everything else.
         this.world.addEntity(player);
@@ -36,7 +40,6 @@ public class GameController {
 
     public World getWorld() { return world; }
     public Player getPlayer() { return player; }
-    public boolean isFacingRight() { return facingRight; }
 
     /**
      * Advance one simulation tick.
@@ -48,10 +51,24 @@ public class GameController {
         applyInput(input);
         physics.applyGravity(player, dt);
         world.update(dt);
+
+        // Auto reset if player falls too far
+        if (player.getY() > FALL_RESET_Y) {
+            resetPlayer();
+        }
     }
 
     private void applyInput(InputState input) {
-        // User input -> player velocity
+        boolean jumpPressed = input.jump() && !lastJump;
+        lastJump = input.jump();
+
+        boolean shootPressed = input.shoot() && !lastShoot;
+        lastShoot = input.shoot();
+
+        boolean resetPressed = input.reset() && !lastReset;
+        lastReset = input.reset();
+
+        // Movement
         if (input.left() && !input.right()) {
             player.moveLeft();
             facingRight = false;
@@ -62,16 +79,31 @@ public class GameController {
             player.stop();
         }
 
-        // Shooting input -> spawn bullet through Player + World
-        if (input.shoot()) {
+        // Shoot
+        if (shootPressed) {
             player.shoot(world, facingRight);
         }
 
-        // TODO: Jump
-        if (input.jump() && player.isGrounded()) {
-            physics.jump(player, player.getJumpCounter());
-            player.incrementJumpCounter();
+        // Jump (double jump)
+        if (jumpPressed) {
+            if (player.isGrounded() || player.getJumpCounter() < 2) {
+                physics.jump(player, player.getJumpCounter());
+                player.incrementJumpCounter();
+                player.setGrounded(false);
+            }
         }
 
+        // Manual reset
+        if (resetPressed) {
+            resetPlayer();
+        }
+    }
+
+    private void resetPlayer() {
+        player.setPosition(spawnX, spawnY);
+        player.setVX(0);
+        player.setVY(0);
+        player.setGrounded(false);
+        player.resetJumpCounter();
     }
 }
