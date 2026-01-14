@@ -60,10 +60,22 @@ public class World implements Updatable {
     @Override
     public void update(double dt) {
         for (Entity e : entities) {
+            double prevX = e.getX();
+            double prevY = e.getY();
+
             e.update(dt);
+
+            // Horizontal collision resolution for non-bullets
+            // (Bullets already do their own predictive collision checks)
+            if (!(e instanceof Bullet) && level != null) {
+                if (level.isSolidRect(e.getX(), e.getY(), e.getWidth(), e.getHeight())) {
+                    // Revert X; keep Y (PhysicsSystem owns Y)
+                    e.setPosition(prevX, prevY);
+                    e.setVX(0);
+                }
+            }
         }
 
-        // Remove dead bullets (TODO: other entities with lifecycle)
         cleanupDeadEntities();
         rebuildEnemyIndex();
     }
@@ -77,6 +89,12 @@ public class World implements Updatable {
                 it.remove();
                 continue;
             }
+
+            if (e instanceof CyborgPlatformer.model.entities.Enemy enemy && !enemy.isAlive()) {
+                it.remove();
+                continue;
+            }
+
 
             // TODO: if Entity has isAlive()
         }
