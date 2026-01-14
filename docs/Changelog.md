@@ -28,3 +28,5 @@
 - Finalised regression tests including: `CyborgPlatformer.legacy.PlayerTest.java`, `CyborgPlatformer.legacy.BulletTest.java`, `CyborgPlatformer.legacy.BulletTest.java`, `CyborgPlatformer.legacy.EntityTest.java`. 
 - Populated `Testing.md` with this information
 - Created v2 branch, ran tests: 100% pass rate & 29% coverage
+- Created V2 package skeleton
+- moved V1 code & tests into legacy package
