@@ -39,6 +39,11 @@ public abstract class Entity {
         y += vy * dt;
     }
 
+    public void setSize(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
+
 
     public void moveY(double dy) {
         this.y += dy;

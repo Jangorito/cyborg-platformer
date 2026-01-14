@@ -3,3 +3,6 @@ Add notes to:
 - BulletBehaviourTest.java
 - GameControllerTest
 - PhysicsSystem
+- PhysicsSystemGravityTest.java
+- PhysicsSystemJumpTest
+- BulletBehaviourTest
