@@ -1,4 +1,7 @@
 package CyborgPlatformer.game;
 
-public class GameLoop {
+public interface GameLoop {
+    void start();
+    void stop();
+    boolean isRunning();
 }
