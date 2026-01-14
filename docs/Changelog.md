@@ -22,3 +22,8 @@
 
 ### 2025-12-30
 - finalised SoftwareDesign.md
+- Added some V1 regression tests for entity.java's core mechanics & reconfigured pom.xml file
+
+### 2026-01-13
+- Finalised regression tests including: `PlayerTest.java`, `BulletTest.java`, `BulletTest.java`, `EntityTest.java`. 
+- Populated `Testing.md` with this information
