@@ -17,6 +17,7 @@ public class Player extends Entity {
 
     private int health = 100;
     private int ammo = 10;
+    private int jumpCounter = 0;
 
     // Shooting logic
     private boolean justShot = false;
@@ -71,6 +72,18 @@ public class Player extends Entity {
 
         world.spawnBullet(bullet);
         return true;
+    }
+
+    public int getJumpCounter() {
+        return jumpCounter;
+    }
+
+    public void resetJumpCounter() {
+        jumpCounter = 0;
+    }
+
+    public void incrementJumpCounter() {
+        jumpCounter++;
     }
 
     @Override

@@ -38,10 +38,10 @@ public class World implements Updatable {
     public List<Entity> getEntities() {
         return entities;
     }
-
     public List<Enemy> getEnemies() {
         return enemies;
     }
+    public Level getLevel() {return level; }
 
     public void addEntity(Entity e) {
         entities.add(e);

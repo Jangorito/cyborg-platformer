@@ -3,6 +3,7 @@ package CyborgPlatformer.controller;
 import CyborgPlatformer.input.InputState;
 import CyborgPlatformer.model.entities.Player;
 import CyborgPlatformer.model.world.World;
+import CyborgPlatformer.systems.PhysicsSystem;
 
 /**
  * Coordinates game flow and translates input -> actions.
@@ -20,12 +21,14 @@ public class GameController {
 
     private final World world;
     private final Player player;
+    private final PhysicsSystem physics;
 
     private boolean facingRight = true;
 
     public GameController(World world, Player player) {
         this.world = world;
         this.player = player;
+        this.physics = new PhysicsSystem(world.getLevel());
 
         // Adds player to world list so it updates with everything else.
         this.world.addEntity(player);
@@ -43,6 +46,7 @@ public class GameController {
      */
     public void step(double dt, InputState input) {
         applyInput(input);
+        physics.applyGravity(player, dt);
         world.update(dt);
     }
 
@@ -64,5 +68,10 @@ public class GameController {
         }
 
         // TODO: Jump
+        if (input.jump() && player.isGrounded()) {
+            physics.jump(player, player.getJumpCounter());
+            player.incrementJumpCounter();
+        }
+
     }
 }
