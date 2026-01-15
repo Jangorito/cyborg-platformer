@@ -4,81 +4,103 @@ import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 
 import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * Loads and owns all JavaFX assets (images, fonts).
  *
- * Responsibilities:
- * - Load once from classpath resources.
- * - Provide typed accessors so the rest of the code never hardcodes paths.
+ * Folder layout (per repo):
+ * - /Background
+ * - /Font
+ * - /Sprites
+ * - /Tiles
  *
  * Notes:
- * - Rendering code should ONLY depend on these getters, not resource paths.
- * - Array ordering matches V1 expectations exactly.
+ * - Frame numbering is 1-based in your resources (e.g., Idle_1.png).
+ * - Paths are case-sensitive when packaged -> match folder/file casing exactly.
  */
 public final class AssetManager {
 
     // ===================== Player =====================
-    private final Image[] playerIdle;   // 4
-    private final Image[] playerRun;    // 6
-    private final Image[] playerHurt;   // 2
-    private final Image   playerShoot;  // 1
+    private final Image[] playerIdle;   // 4  (Cyborg_idle_1..4)
+    private final Image[] playerRun;    // 6  (Cyborg_run_1..6)
+    private final Image[] playerHurt;   // 2  (Cyborg_hurt_1..2)
+    private final Image   playerShoot;  // 1  (shootingSprite.png)
 
     // ===================== Enemy ======================
-    private final Image[] enemyIdle;    // 8
-    private final Image[] enemyWalk;    // 8
-    private final Image[] enemyRun;     // 7
-    private final Image   enemyHurt;    // 1 (V1 style)
+    private final Image[] enemyIdle;    // 8  (Idle_1..8)
+    private final Image[] enemyWalk;    // 8  (Walk_1..8)
+    private final Image[] enemyRun;     // 7  (Run_1..7)
+    private final Image   enemyHurt;    // 1  (Hurt.png)
 
     // ===================== World ======================
-    private final Image[] tiles;        // 19
-    private final Image[] backgrounds;  // 4
-    private final Image   bullet;
+    private final Image[] tiles;        // 19 (V1 mapping 0..18)
+    private final Image[] backgrounds;  // 4  (1..4)
+    private final Image   bullet;       // bullet.png
 
     // ====================== UI ========================
     private final Image uiHeart;
     private final Image uiBox;
     private final Image uiAmmo;
-    private final Font  uiFont;
 
-    // ==================================================
+    private final Font  uiFont;
 
     public AssetManager() {
 
         // ---- Player ----
-        playerIdle  = loadNumbered("/assets/sprites/player/idle/player_idle_", 4);
-        playerRun   = loadNumbered("/assets/sprites/player/run/player_run_", 6);
-        playerHurt  = loadNumbered("/assets/sprites/player/hurt/player_hurt_", 2);
-        playerShoot = loadImage("/assets/sprites/player/shoot/player_shoot.png");
+        playerIdle  = loadNumbered1Based("/Sprites/Player/idle/Cyborg_idle_", 4);
+        playerRun   = loadNumbered1Based("/Sprites/Player/run/Cyborg_run_", 6);
+        playerHurt  = loadNumbered1Based("/Sprites/Player/hurt/Cyborg_hurt_", 2);
+        playerShoot = loadImage("/Sprites/Player/shoot/shootingSprite.png");
+
+        // bullet is in Player/shoot in your tree
+        bullet = loadImage("/Sprites/Player/shoot/bullet.png");
+
+        // UI icons appear under /Sprites/Player in your screenshot
+        uiAmmo  = loadImage("/Sprites/ammo.png");
+        uiBox   = loadImage("/Sprites/box.png");
+        uiHeart = loadImage("/Sprites/heart.png");
 
         // ---- Enemy ----
-        enemyIdle = loadNumbered("/assets/sprites/enemy/idle/enemy_idle_", 8);
-        enemyWalk = loadNumbered("/assets/sprites/enemy/walk/enemy_walk_", 8);
-        enemyRun  = loadNumbered("/assets/sprites/enemy/run/enemy_run_", 7);
-        enemyHurt = loadImage("/assets/sprites/enemy/hurt/enemy_hurt.png");
+        enemyIdle = loadNumbered1Based("/Sprites/Enemy/Idle/Idle_", 8);
+        enemyRun  = loadNumbered1Based("/Sprites/Enemy/Running/Run_", 7);
+        enemyWalk = loadNumbered1Based("/Sprites/Enemy/Walking/Walk_", 8);
+        enemyHurt = loadImage("/Sprites/Enemy/Hurt.png");
 
-        // ---- Bullet ----
-        bullet = loadImage("/assets/sprites/bullet/bullet.png");
+        // ---- Tiles (V1 expects 19 tiles: indices 0..18) ----
+        // These filenames match your screenshot exactly.
+        tiles = new Image[] {
+                loadImage("/Tiles/1_FrameTopLeftCorner.png"),       // 0
+                loadImage("/Tiles/2_FrameTopRightCorner.png"),      // 1
+                loadImage("/Tiles/3_FrameBottomLeftCorner.png"),    // 2
+                loadImage("/Tiles/4_FrameBottomRightCorner.png"),   // 3
+                loadImage("/Tiles/5_FrameTopMid.png"),              // 4
+                loadImage("/Tiles/6_FrameLeftMid.png"),             // 5
+                loadImage("/Tiles/7_FrameRightMid.png"),            // 6
+                loadImage("/Tiles/8_FrameBottomMod.png"),           // 7
+                loadImage("/Tiles/9_FrameMid.png"),                 // 8
+                loadImage("/Tiles/A_Box.png"),                      // 9
+                loadImage("/Tiles/B_HalfSlab.png"),                 // 10
+                loadImage("/Tiles/C_IndustrialTabLeft.png"),        // 11
+                loadImage("/Tiles/D_IndustrialSlabMid.png"),        // 12
+                loadImage("/Tiles/E_IndustrialSlabRight.png"),      // 13
+                loadImage("/Tiles/F_LightPole.png"),                // 14
+                loadImage("/Tiles/G_LightTop.png"),                 // 15
+                loadImage("/Tiles/H_TreadLeft.png"),                // 16
+                loadImage("/Tiles/I_TreadMid.png"),                 // 17
+                loadImage("/Tiles/J_TreadRight.png")                // 18
+        };
 
-        // ---- UI ----
-        uiHeart = loadImage("/assets/ui/heart.png");
-        uiBox   = loadImage("/assets/ui/box.png");
-        uiAmmo  = loadImage("/assets/ui/ammo.png");
-
-        // ---- Tiles (0–18) ----
-        tiles = new Image[19];
-        for (int i = 0; i < tiles.length; i++) {
-            tiles[i] = loadImage("/assets/tiles/tile_" + i + ".png");
-        }
-
-        // ---- Background layers (0–3) ----
-        backgrounds = new Image[4];
-        for (int i = 0; i < backgrounds.length; i++) {
-            backgrounds[i] = loadImage("/assets/background/layer" + i + ".png");
-        }
+        // ---- Background layers (V1 uses 4 layers; your folder has 1..6) ----
+        backgrounds = new Image[] {
+                loadImage("/Background/1_Background.png"),
+                loadImage("/Background/2_Background.png"),
+                loadImage("/Background/3_Background.png"),
+                loadImage("/Background/4_Background.png")
+        };
 
         // ---- Font ----
-        uiFont = loadFont("/assets/fonts/ui.ttf", 18);
+        uiFont = loadFont("/Font/font.ttf", 18);
     }
 
     // =================== Accessors ====================
@@ -106,20 +128,23 @@ public final class AssetManager {
     // =================== Load helpers =================
 
     private static Image loadImage(String path) {
+        Objects.requireNonNull(path);
+
         try (InputStream in = AssetManager.class.getResourceAsStream(path)) {
             if (in == null) {
                 throw new IllegalStateException("Missing resource: " + path);
             }
-            return new Image(in);
+            return new Image(in); // simplest; fine for Phase 1/2
         } catch (Exception e) {
             throw new IllegalStateException("Failed to load image: " + path, e);
         }
     }
 
-    private static Image[] loadNumbered(String prefix, int count) {
+    /** Loads prefix + (1..count) + ".png" */
+    private static Image[] loadNumbered1Based(String prefix, int count) {
         Image[] out = new Image[count];
-        for (int i = 0; i < count; i++) {
-            out[i] = loadImage(prefix + i + ".png");
+        for (int i = 1; i <= count; i++) {
+            out[i - 1] = loadImage(prefix + i + ".png");
         }
         return out;
     }

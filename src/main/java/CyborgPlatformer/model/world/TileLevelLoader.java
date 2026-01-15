@@ -12,15 +12,11 @@ import java.util.Scanner;
  *
  * Responsibilities:
  * - Reads a tile map (e.g., Maps.txt) and builds a {@link TileLevel} containing solid collision blocks.
- * - '0' = empty & other character = solid tile.
- *
- * How:
- * - Interprets the file as a grid of characters.
- * - Each non-'0' character becomes a {@link SolidBlock} at (col * TILE_SIZE, row * TILE_SIZE).
- * - Uses a fixed tile size consistent with legacy {@code MapBlocks.getMap()}.
+ * - Preserves the raw tile grid (Phase 3) for rendering.
+ * - '0' = empty & other character = solid tile (collision rule matches V1).
  *
  * Notes:
- * - Does not load images or decide which sprite corresponds to each tile character.
+ * - Does not load images or decide which sprite corresponds to which tile character.
  * - Does not render tiles or background.
  * - Does not manage World/game state directly (caller sets {@code world.setLevel(...)}).
  *
@@ -43,7 +39,7 @@ public final class TileLevelLoader {
      * Load a {@link TileLevel} from a classpath resource stream.
      *
      * @param mapStream input stream for the map file (e.g. /Maps.txt)
-     * @return TileLevel containing solid collision blocks
+     * @return TileLevel containing solid collision blocks + raw tile grid
      * @throws IllegalArgumentException if mapStream is null
      */
     public static TileLevel load(InputStream mapStream) {
@@ -53,13 +49,16 @@ public final class TileLevelLoader {
 
         List<SolidBlock> solids = new ArrayList<>();
 
+        // preserve raw lines for tile rendering
+        List<String> lines = new ArrayList<>();
+
         try (Scanner scanner = new Scanner(mapStream)) {
             int row = 0;
 
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
+                lines.add(line);
 
-                // Legacy used split("") which treats each char as a tile.
                 for (int col = 0; col < line.length(); col++) {
                     char tile = line.charAt(col);
 
@@ -76,6 +75,12 @@ public final class TileLevelLoader {
 
                 row++;
             }
+        }
+
+        // Build raw tile grid (char[][]) from lines
+        char[][] tiles = new char[lines.size()][];
+        for (int r = 0; r < lines.size(); r++) {
+            tiles[r] = lines.get(r).toCharArray();
         }
 
         List<EnemySpawn> enemySpawns = List.of(
@@ -108,8 +113,7 @@ public final class TileLevelLoader {
             }
         }
 
-        return new TileLevel(solids, enemySpawns);
-
+        return new TileLevel(solids, enemySpawns, tiles);
     }
 
     private static boolean rectHitsAnySolid(List<SolidBlock> solids, double x, double y, double w, double h) {
@@ -129,5 +133,4 @@ public final class TileLevelLoader {
         }
         return false;
     }
-
 }

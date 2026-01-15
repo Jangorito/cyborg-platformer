@@ -18,14 +18,17 @@ import java.util.Objects;
  * Debug renderer for V2.
  *
  * Responsibilities:
- * - Draw solids and entity bounds (Phase 1).
- * - Draw debug HUD text (Phase 1).
+ * - Draw solids and entity bounds.
+ * - Draw tile images using V1 legend mapping.
+ * - Draw debug HUD text.
  *
  * Notes:
  * - No mutation of simulation state.
- * - Later phases replace debug rects with tiles/sprites while keeping call site stable.
+ * - Later phases replace debug rects with sprites/backgrounds/HUD while keeping call site stable.
  */
 public final class Renderer {
+
+    private static final int TILE_SIZE = 48;
 
     private final Camera camera;
     private final AssetManager assets;
@@ -33,6 +36,18 @@ public final class Renderer {
     public Renderer(Camera camera, AssetManager assets) {
         this.camera = Objects.requireNonNull(camera);
         this.assets = Objects.requireNonNull(assets);
+    }
+
+    /**
+     * V1 legend mapping:
+     *  '1'..'9' -> 0..8
+     *  'A'..'J' -> 9..18
+     *  '0' -> empty (skip)
+     */
+    private int tileIndexFromChar(char c) {
+        if (c >= '1' && c <= '9') return c - '1';
+        if (c >= 'A' && c <= 'J') return 9 + (c - 'A');
+        return -1;
     }
 
     public void render(GraphicsContext g,
@@ -46,23 +61,46 @@ public final class Renderer {
 
         g.clearRect(0, 0, w, h);
 
-        // Phase 1: center camera on player (matches FxLauncher)
         camera.centerOn(player);
 
-        // draw solids
+        if (showTiles && world.getLevel() instanceof TileLevel tl) {
+            char[][] grid = tl.getTiles();
+            for (int row = 0; row < grid.length; row++) {
+                char[] line = grid[row];
+                for (int col = 0; col < line.length; col++) {
+                    char tile = line[col];
+                    if (tile == '0') continue;
+
+                    int idx = tileIndexFromChar(tile);
+                    if (idx < 0 || idx >= assets.tiles().length) continue;
+
+                    double worldX = col * TILE_SIZE;
+                    double worldY = row * TILE_SIZE;
+
+                    double sx = camera.worldToScreenX(worldX);
+                    double sy = camera.worldToScreenY(worldY);
+
+                    // cheap view cull
+                    if (sx + TILE_SIZE < -100 || sx > w + 100 || sy + TILE_SIZE < -100 || sy > h + 100) continue;
+
+                    g.drawImage(assets.tiles()[idx], sx, sy, TILE_SIZE, TILE_SIZE);
+                }
+            }
+        }
+
+        // Optional: keep drawing solids as overlay/debug (comment out if you want)
+        /*
         if (showTiles && world.getLevel() instanceof TileLevel tl) {
             for (var b : tl.getSolids()) {
                 double sx = camera.worldToScreenX(b.x());
                 double sy = camera.worldToScreenY(b.y());
-
-                // cheap view cull
                 if (sx + b.width() < -100 || sx > w + 100 || sy + b.height() < -100 || sy > h + 100) continue;
-
                 g.strokeRect(sx, sy, b.width(), b.height());
             }
         }
+        */
 
-        // draw entities
+        // draw entities (still debug rects for now)
         for (Entity e : world.getEntities()) {
             double ex = camera.worldToScreenX(e.getX());
             double ey = camera.worldToScreenY(e.getY());
