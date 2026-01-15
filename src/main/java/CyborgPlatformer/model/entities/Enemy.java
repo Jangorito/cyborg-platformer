@@ -38,17 +38,17 @@ public final class Enemy extends Entity implements Damageable {
     private static final double WALK_SPEED = 140.0; // px/s
     private static final double RUN_SPEED  = 260.0; // px/s
 
-    private static final double CONTACT_COOLDOWN_S = 0.9;
+    private static final double CONTACT_COOLDOWN_S = 1.5;
     private static final int CONTACT_DAMAGE = 50;
 
     private static final double JUMP_COOLDOWN_S = 0.45;
     private static final double JUMP_VY = -300.0;
 
-    // Stronger knockback (BOTH sides)
-    private static final double PLAYER_KB_VX = 520.0;
-    private static final double PLAYER_KB_VY = -240.0;
+    // knockback (BOTH sides)
+    private static final double PLAYER_KB_VX = 320.0;
+    private static final double PLAYER_KB_VY = -420.0;
 
-    private static final double ENEMY_KB_VX = 360.0;
+    private static final double ENEMY_KB_VX = 50;
     private static final double ENEMY_KB_VY = -180.0;
     private static final double OUT_OF_BOUNDS_Y = 2000.0;
 
@@ -164,13 +164,22 @@ public final class Enemy extends Entity implements Damageable {
             // Direction: push away from each other
             double dirToPlayer = (player.getX() >= x) ? 1.0 : -1.0;
 
-            // player gets pushed away from enemy
+            // knockback
             player.knockback(dirToPlayer * PLAYER_KB_VX, PLAYER_KB_VY);
-
-            // enemy gets pushed away from player (opposite)
             this.vx = -dirToPlayer * ENEMY_KB_VX;
             this.vy = ENEMY_KB_VY;
             this.grounded = false;
+
+            // --- POSITIONAL SEPARATION (CRITICAL) ---
+            double separation = 2.0; // tweakable
+            player.setPosition(
+                    player.getX() + dirToPlayer * separation,
+                    player.getY()
+            );
+            this.setPosition(
+                    this.getX() - dirToPlayer * separation,
+                    this.getY()
+            );
         }
     }
 

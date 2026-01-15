@@ -141,6 +141,8 @@ public final class FxLauncher extends Application {
         g.fillText("Enemies: " + world.getEnemies().size(), hudX, hudY); hudY += line;
         g.fillText("MTF?: " + controller.hasMovedThisFrame(), hudX, hudY); hudY += line;
         g.fillText("enemiesAwake: "+ controller.isEnemiesAwake(), hudX, hudY); hudY += line;
+        g.fillText("Invuln: " + player.isInKnockback(), 16, hudY);
+
 
         Enemy nearest = null;
         double best = Double.POSITIVE_INFINITY;

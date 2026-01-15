@@ -254,7 +254,6 @@ public class Player extends entity {
      * - Increments deathCounter (attempts).
      * - Respawns entities by calling {@link Game#spawnEntities()}.
      */
-
     public void kill() {
         deathCounter++;
         CyborgPlatform.game.spawnEntities();

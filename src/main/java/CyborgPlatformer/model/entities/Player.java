@@ -18,6 +18,9 @@ public class Player extends Entity {
     private int health = 100;
     private int ammo = 10;
     private int jumpCounter = 0;
+    private double invulnTimer = 0.0;
+    private static final double INVULN_SECONDS = 0.35;
+
 
     // Shooting logic
     private boolean justShot = false;
@@ -78,14 +81,22 @@ public class Player extends Entity {
     }
 
     public void damage(int amount) {
+        if (invulnTimer > 0) return;
+
         health -= amount;
         if (health < 0) health = 0;
+
+        invulnTimer = INVULN_SECONDS;
     }
 
     public void knockback(double vxImpulse, double vyImpulse) {
         this.vx = vxImpulse;
         this.vy = vyImpulse;
         this.grounded = false;
+    }
+
+    public boolean isInKnockback() {
+        return invulnTimer > 0;
     }
 
 
@@ -106,5 +117,10 @@ public class Player extends Entity {
     public void update(double dt) {
         super.update(dt);
         updateShootCooldown();
+
+        if (invulnTimer > 0) {
+            invulnTimer -= dt;
+            if (invulnTimer < 0) invulnTimer = 0;
+        }
     }
 }
