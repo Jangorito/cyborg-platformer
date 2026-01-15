@@ -8,7 +8,10 @@ import CyborgPlatformer.model.entities.Entity;
 import CyborgPlatformer.model.entities.Player;
 import CyborgPlatformer.model.world.TileLevel;
 import CyborgPlatformer.model.world.World;
+import CyborgPlatformer.view.animation.EnemySpriteAnimator;
 import CyborgPlatformer.view.animation.PlayerSpriteAnimator;
+import CyborgPlatformer.view.model.EnemyRenderState;
+import CyborgPlatformer.view.model.EnemyRenderStateFactory;
 import CyborgPlatformer.view.model.PlayerRenderState;
 import CyborgPlatformer.view.model.PlayerRenderStateFactory;
 import javafx.scene.canvas.GraphicsContext;
@@ -24,16 +27,25 @@ public final class Renderer {
     private static final double PLAYER_VISUAL_WIDTH  = 30;
     private static final double PLAYER_VISUAL_HEIGHT = 52;
 
+//    private static final double ENEMY_VISUAL_WIDTH = 26;
+//    private static final double ENEMY_VISUAL_HEIGHT = 64;
+
+
     private final Camera camera;
     private final AssetManager assets;
 
     private final PlayerRenderStateFactory playerStateFactory = new PlayerRenderStateFactory();
     private final PlayerSpriteAnimator playerAnimator;
 
+    private final EnemySpriteAnimator enemyAnimator;
+
+
     public Renderer(Camera camera, AssetManager assets) {
         this.camera = Objects.requireNonNull(camera);
         this.assets = Objects.requireNonNull(assets);
         this.playerAnimator = new PlayerSpriteAnimator(assets);
+        this.enemyAnimator = new EnemySpriteAnimator(assets);
+
     }
 
     private int tileIndexFromChar(char c) {
@@ -102,18 +114,45 @@ public final class Renderer {
         // =========================
         //       Player sprite
         // =========================
-        long nowMs = System.currentTimeMillis();
+        long now = System.nanoTime();
 
         PlayerRenderState ps = playerStateFactory.build(player, controller);
-        Image pImg = playerAnimator.resolve(ps, nowMs);
+        Image pImg = playerAnimator.resolve(ps, now);
         drawPlayerSprite(g, pImg, ps);
 
         // =========================
-        // Other entities (debug rects for now)
+        // Other entities
+        // - Enemy: sprite (Phase 6)
+        // - Bullet/others: debug rects for now
         // =========================
         for (Entity e : world.getEntities()) {
             if (e instanceof Player) continue; // don't draw debug rect over player sprite
 
+            // Enemy sprite rendering
+            if (e instanceof Enemy enemy) {
+                EnemyRenderState rs = EnemyRenderStateFactory.from(enemy);
+                Image sprite = enemyAnimator.resolve(rs, now);
+
+                if (sprite != null) {
+                    double sx = camera.worldToScreenX(enemy.getX());
+                    double sy = camera.worldToScreenY(enemy.getY());
+
+                    double enemyW = sprite.getWidth();
+                    double enemyH = sprite.getHeight();
+
+                    // center horizontally on hitbox
+                    double drawX = sx + (enemy.getWidth() / 2.0) - (enemyW / 2.0);
+
+                    // foot-anchor vertically
+                    double drawY = sy + enemy.getHeight() - enemyH;
+
+                    drawFlipped(g, sprite, drawX, drawY, enemyW, enemyH, rs.facingRight());
+                }
+
+                continue;
+            }
+
+            // Fallback debug rects
             double ex = camera.worldToScreenX(e.getX());
             double ey = camera.worldToScreenY(e.getY());
 
@@ -182,7 +221,34 @@ public final class Renderer {
             g.scale(-1, 1);
             g.translate(-(drawX + drawW / 2.0), 0);
         }
-
         g.drawImage(img, drawX, drawY, drawW, drawH);
         g.restore();
-    }}
+    }
+
+    private void drawFlipped(
+            GraphicsContext g,
+            Image img,
+            double x,
+            double y,
+            double w,
+            double h,
+            boolean facingRight
+    ) {
+        if (facingRight) {
+            g.drawImage(img, x, y, w, h);
+        } else {
+            g.save();
+
+            // Flip around vertical center of the sprite
+            g.translate(x + w, y);
+            g.scale(-1, 1);
+
+            g.drawImage(img, 0, 0, w, h);
+
+            g.restore();
+        }
+    }
+
+
+}
+
