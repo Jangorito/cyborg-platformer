@@ -21,19 +21,24 @@ import javafx.scene.text.Font;
 
 public final class FxLauncher extends Application {
 
-    private boolean left, right, jump, shoot;
-    private boolean reset;
+    private GameController controller;
+    private World world;
+    private Player player;
+    private Canvas canvas;
+
+    private boolean left, right, jump, shoot, reset;
     private boolean showTiles = true;
 
 
     @Override
     public void start(Stage stage) {
         CyborgPlatformerApp app = new CyborgPlatformerApp();
-        GameController controller = app.getController();
-        World world = app.getWorld();
-        Player player = app.getPlayer();
 
-        Canvas canvas = new Canvas(960, 540);
+        this.controller = app.getController();
+        this.world = app.getWorld();
+        this.player = app.getPlayer();
+
+        this.canvas = new Canvas(960, 540);
         GraphicsContext g = canvas.getGraphicsContext2D();
 
         Scene scene = new Scene(new StackPane(canvas));
@@ -60,10 +65,9 @@ public final class FxLauncher extends Application {
                 dt = Math.min(dt, 1.0 / 30.0);
 
                 InputState input = new InputState(left, right, jump, shoot, reset);
-
                 controller.step(dt, input);
 
-                render(g, world, player, canvas.getWidth(), canvas.getHeight());
+                render(g, canvas.getWidth(), canvas.getHeight());
             }
         }.start();
     }
@@ -91,7 +95,8 @@ public final class FxLauncher extends Application {
         });
     }
 
-    private void render(GraphicsContext g, World world, Player player, double w, double h) {
+    private void render(GraphicsContext g, double w, double h)
+    {
         g.clearRect(0, 0, w, h);
 
         // basic camera: keep player near center
@@ -126,20 +131,29 @@ public final class FxLauncher extends Application {
         // HUD (screen-space, not world-space)
         g.setFill(Color.BLACK);
         g.setFont(Font.font(18));
-        g.fillText("HP: " + player.getHealth(), 16, 24);
-        g.fillText("Ammo: " + player.getAmmo(), 16, 46);
-        g.fillText("Enemies: " + world.getEnemies().size(), 16, 68);
+
+        double hudX = 16;
+        double hudY = 24;
+        double line = 22;
+
+        g.fillText("HP: " + player.getHealth(), hudX, hudY); hudY += line;
+        g.fillText("Ammo: " + player.getAmmo(), hudX, hudY); hudY += line;
+        g.fillText("Enemies: " + world.getEnemies().size(), hudX, hudY); hudY += line;
+        g.fillText("MTF?: " + controller.hasMovedThisFrame(), hudX, hudY); hudY += line;
+        g.fillText("enemiesAwake: "+ controller.isEnemiesAwake(), hudX, hudY); hudY += line;
 
         Enemy nearest = null;
         double best = Double.POSITIVE_INFINITY;
-        for (var e : world.getEnemies()) {
+        for (Enemy e : world.getEnemies()) {
             double dx = e.getX() - player.getX();
             double dy = e.getY() - player.getY();
-            double d = dx*dx + dy*dy;
+            double d = dx * dx + dy * dy;
             if (d < best) { best = d; nearest = e; }
         }
+
         if (nearest != null) {
-            g.fillText("Nearest Enemy HP: " + nearest.getHealth(), 16, 90);
+            g.fillText("Nearest Enemy HP: " + nearest.getHealth(), hudX, hudY); hudY += line;
+            g.fillText("Nearest Enemy X: " + (int) nearest.getX(), hudX, hudY); hudY += line;
         }
 
     }

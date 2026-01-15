@@ -27,11 +27,16 @@ public class GameController {
     private final double spawnY;
 
     private boolean facingRight = true;
+    private boolean movedThisFrame = false;
+
 
     // Edge-trigger state
     private boolean lastJump = false;
     private boolean lastShoot = false;
     private boolean lastReset = false;
+
+    // enemies sleep until player moves
+    private boolean enemiesAwake = false;
 
     // Kill plane (auto reset if you fall below this)
     private static final double FALL_RESET_Y = 3000.0;
@@ -46,9 +51,10 @@ public class GameController {
         this.world.addEntity(player);
 
         // Demo enemies
+        world.addEntity(new Enemy(player.getX() + 100, player.getY(), 20, 20, 2));
         world.addEntity(new Enemy(player.getX() + 500, player.getY(), 20, 20, 2));
-        world.addEntity(new Enemy(player.getX() + 1200, player.getY(), 20, 20, 2));
-        world.addEntity(new Enemy(player.getX() + 2000, player.getY(), 20, 20, 3));
+//        world.addEntity(new Enemy(player.getX() + 1200, player.getY(), 20, 20, 2));
+//        world.addEntity(new Enemy(player.getX() + 2000, player.getY(), 20, 20, 3));
 
     }
 
@@ -89,14 +95,23 @@ public class GameController {
         lastReset = input.reset();
 
         // Movement
+
         if (input.left() && !input.right()) {
             player.moveLeft();
             facingRight = false;
+            movedThisFrame = true;
         } else if (input.right() && !input.left()) {
             player.moveRight();
             facingRight = true;
+            movedThisFrame = true;
         } else {
             player.stop();
+        }
+
+        // wake enemies the first time player moves
+        if (!enemiesAwake && movedThisFrame) {
+            enemiesAwake = true;
+            for (Enemy e : world.getEnemies()) e.awaken();
         }
 
         // Shoot
@@ -125,5 +140,17 @@ public class GameController {
         player.setVY(0);
         player.setGrounded(false);
         player.resetJumpCounter();
+
+        enemiesAwake = false;
+
+        // TODO: can improve later
+    }
+
+    public boolean hasMovedThisFrame() {
+        return movedThisFrame;
+    }
+
+    public boolean isEnemiesAwake() {
+        return enemiesAwake;
     }
 }

@@ -23,6 +23,9 @@ public final class Enemy extends Entity implements Damageable {
     private boolean facingRight = true;
     private boolean damaged = false;
 
+    // "sleep until player moves"
+    private boolean awakened = false;
+
     private double damagedTimer = 0.0;
     private double contactCooldown = 0.0;
     private int jumpCounter = 0;
@@ -38,9 +41,15 @@ public final class Enemy extends Entity implements Damageable {
     private static final double CONTACT_COOLDOWN_S = 0.9;
     private static final int CONTACT_DAMAGE = 50;
 
-    private static final double JUMP_COOLDOWN_S = 0.35;
+    private static final double JUMP_COOLDOWN_S = 0.45;
     private static final double JUMP_VY = -300.0;
 
+    // Stronger knockback (BOTH sides)
+    private static final double PLAYER_KB_VX = 520.0;
+    private static final double PLAYER_KB_VY = -240.0;
+
+    private static final double ENEMY_KB_VX = 360.0;
+    private static final double ENEMY_KB_VY = -180.0;
     private static final double OUT_OF_BOUNDS_Y = 2000.0;
 
     public Enemy(double x, double y, double width, double height, int health) {
@@ -55,11 +64,14 @@ public final class Enemy extends Entity implements Damageable {
     public boolean isFacingRight() { return facingRight; }
     public boolean isDamaged() { return damaged; }
 
+    /** Called by controller once player has moved at least once. */
+    public void awaken() { this.awakened = true; }
+
     @Override
     public void damage(int amount) {
         if (!alive) return;
 
-        // brief invuln window like V1
+
         if (!damaged) {
             health -= amount;
             if (health <= 0) {
@@ -78,6 +90,14 @@ public final class Enemy extends Entity implements Damageable {
      */
     public void think(World world, Player player, double dt) {
         if (!alive) return;
+
+        // sleep until player moves
+        if (!awakened) {
+            vx = 0;
+            running = false;
+            return;
+        }
+
 
         // timers
         if (damaged) {
@@ -136,18 +156,21 @@ public final class Enemy extends Entity implements Damageable {
             }
         }
 
-        // contact damage + player knockback
+        // contact damage + knockback both
         if (contactCooldown <= 0 && overlaps(player)) {
             player.damage(CONTACT_DAMAGE);
             contactCooldown = CONTACT_COOLDOWN_S;
 
-            // knock player AWAY from enemy
-            double dir = (player.getX() < x) ? -1.0 : 1.0;
+            // Direction: push away from each other
+            double dirToPlayer = (player.getX() >= x) ? 1.0 : -1.0;
 
-            player.knockback(
-                    dir * 320.0,   // horizontal push
-                    -180.0                  // vertical pop
-            );
+            // player gets pushed away from enemy
+            player.knockback(dirToPlayer * PLAYER_KB_VX, PLAYER_KB_VY);
+
+            // enemy gets pushed away from player (opposite)
+            this.vx = -dirToPlayer * ENEMY_KB_VX;
+            this.vy = ENEMY_KB_VY;
+            this.grounded = false;
         }
     }
 
