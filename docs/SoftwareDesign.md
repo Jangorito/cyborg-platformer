@@ -89,7 +89,7 @@ Overall, V2 improves modularity, testability, and extensibility by enforcing a s
 hidden dependencies present in V1.
 
 # Version 2
-We need to move to JavaFX at some point
+![V2 Actual Class Diagram](SoftwareDesignImages/V2%20Final%20UML.drawio.png)
 
 # Version 3
 Let's add new features one day.
