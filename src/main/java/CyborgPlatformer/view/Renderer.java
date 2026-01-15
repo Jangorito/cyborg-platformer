@@ -175,11 +175,6 @@ public final class Renderer {
             double ex = camera.worldToScreenX(e.getX());
             double ey = camera.worldToScreenY(e.getY());
 
-//            if (e instanceof Bullet b) {
-//                g.strokeRect(ex, ey, b.getWidth(), b.getHeight());
-//            } else {
-//                g.strokeRect(ex, ey, e.getWidth(), e.getHeight());
-//            }
         }
 
         // animator clean up
@@ -190,49 +185,7 @@ public final class Renderer {
             drawDebugHitboxes(g, world);
         }
 
-
         drawHud(g, controller);
-
-        /// Old Debug HUD
-//        // HUD (screen-space)
-//        g.setFill(Color.BLACK);
-//        g.setFont(Font.font(18));
-//
-//        double hudX = 16;
-//        double hudY = 24;
-//        double line = 22;
-//
-//        g.fillText("Lives: " + controller.getLives(), hudX, hudY); hudY += line;
-//        g.fillText("HP: " + player.getHealth(), hudX, hudY); hudY += line;
-//        g.fillText("Ammo: " + player.getAmmo(), hudX, hudY); hudY += line;
-//        g.fillText("Position: " + (int)player.getX() + ", " + (int)player.getY(), hudX, hudY); hudY += line;
-//        g.fillText("GameOver: " + controller.isGameOver(), hudX, hudY); hudY += line;
-//        g.fillText("+_____________________+", hudX, hudY); hudY += line;
-//        g.fillText("BG0 w/h: " + (int)bgs[0].getWidth() + " / " + (int)bgs[0].getHeight(), hudX, hudY); hudY += line;
-//        g.fillText("BG1 w/h: " + (int)bgs[1].getWidth() + " / " + (int)bgs[1].getHeight(), hudX, hudY); hudY += line;
-//        g.fillText("+_____________________+", hudX, hudY); hudY += line;
-//        g.fillText("Bullet Size: " + assets.bullet().getWidth() + ", " + assets.bullet().getHeight(), hudX, hudY); hudY += line;
-//        g.fillText("+_____________________+", hudX, hudY); hudY += line;
-//        g.fillText("Assets OK (tiles): " + assets.tiles().length, hudX, hudY); hudY += line;
-//        g.fillText("KillEM?: " + killFlag, hudX, hudY); hudY += line;
-//        g.fillText("Enemies: " + world.getEnemies().size(), hudX, hudY); hudY += line;
-//        g.fillText("MTF?: " + controller.hasMovedAfterSpawn(), hudX, hudY); hudY += line;
-//        g.fillText("enemiesAwake: " + controller.isEnemiesAwake(), hudX, hudY); hudY += line;
-//        g.fillText("Invuln: " + player.isInKnockback(), hudX, hudY); hudY += line;
-//
-//        Enemy nearest = null;
-//        double best = Double.POSITIVE_INFINITY;
-//        for (Enemy e : world.getEnemies()) {
-//            double dx = e.getX() - player.getX();
-//            double dy = e.getY() - player.getY();
-//            double d = dx * dx + dy * dy;
-//            if (d < best) { best = d; nearest = e; }
-//        }
-//
-//        if (nearest != null) {
-//            g.fillText("Nearest Enemy HP: " + nearest.getHealth(), hudX, hudY); hudY += line;
-//            g.fillText("Nearest Enemy X: " + (int) nearest.getX(), hudX, hudY); hudY += line;
-//        }
     }
 
 
@@ -243,7 +196,7 @@ public final class Renderer {
         double imgW = img.getWidth();
         double imgH = img.getHeight();
 
-        // Foot-anchored Y (stable across frames)
+        // Foot-anchored Y
         double drawY = sy + ps.h() - imgH;
 
         // Stable anchor X based on "normal" player width, not the current frame width
@@ -259,7 +212,7 @@ public final class Renderer {
         drawX = px(drawX);
         drawY = px(drawY);
 
-        // Use your existing flip helper
+        // Use flip helper
         drawFlipped(g, img, drawX, drawY, imgW, imgH, ps.facingRight());
     }
 
@@ -300,11 +253,11 @@ public final class Renderer {
                 double drawY = px(camera.worldToScreenY(b.getY()));
                 drawFlipped(g, bulletImg, drawX, drawY, imgW, imgH, b.getVx() >= 0);
 
-                // hitbox overlay (same origin as b.x/b.y)
+                // hitbox overlay
                 g.setStroke(Color.LIMEGREEN);
                 g.strokeRect(drawX, drawY, b.getWidth(), b.getHeight());
 
-                // sprite bounds overlay (should match image dims)
+                // sprite bounds overlay
                 g.setStroke(Color.YELLOW);
                 g.strokeRect(drawX, drawY, imgW, imgH);
 
@@ -319,8 +272,6 @@ public final class Renderer {
         final Player p = controller.getPlayer();
         if (p == null) return;
 
-        // Screen-space HUD
-        // Set once for all HUD text.
         gc.setFill(Color.BLACK);
 
         Font font = assets.uiFont();
@@ -334,16 +285,14 @@ public final class Renderer {
         // Lives row (hearts)
         // -------------------------
         Image heart = assets.uiHeart();
-        int lives = controller.getLives();
 
-        double x = x0;
         double y = y0;
 
         if (heart != null) {
             for (int i = 0; i < controller.getPlayerHealth(); i++) {
                 gc.drawImage(
                         heart,
-                        x + i * (HEART_SIZE + HEART_GAP),
+                        x0 + i * (HEART_SIZE + HEART_GAP),
                         y,
                         HEART_SIZE,
                         HEART_SIZE
@@ -390,17 +339,13 @@ public final class Renderer {
 
             // Center the message at the top of the viewport (screen space)
             double cx = camera.viewportWidth() / 2.0;
-            double bannerY = 56; // tuned to sit under the top edge, above hearts comfortably
+            double bannerY = 56;
 
-            // Text width estimate: JavaFX doesn't give easy width without FontMetrics.
-            // Simple parity-friendly approach: use fixed offset that looks right in practice.
-            // (If you want perfect centering, we can use Toolkit font loader later.)
             gc.fillText(msg, cx - 60, bannerY);
         }
     }
 
     private void drawDebugHitboxes(GraphicsContext gc, World world) {
-        // Thicker lines so it's obvious
         gc.setLineWidth(2.0);
 
         // --- Enemies (collision rects) ---
@@ -424,13 +369,7 @@ public final class Renderer {
                 gc.strokeRect(sx, sy, b.getWidth(), b.getHeight());
             }
         }
-
-        // (Optional) Player
-        // gc.setStroke(javafx.scene.paint.Color.CYAN);
-        // Player p = world.getPlayer();
-        // gc.strokeRect(camera.worldToScreenX(p.getX()), camera.worldToScreenY(p.getY()), p.getWidth(), p.getHeight());
     }
-
 
     private static double px(double v) { return Math.floor(v); }
 }

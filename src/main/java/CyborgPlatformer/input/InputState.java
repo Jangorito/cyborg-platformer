@@ -7,7 +7,7 @@ package CyborgPlatformer.input;
  * - Stores player intent (left/right/jump/shoot).
  *
  * Notes:
- * - Produced by an InputHandler (TODO: JavaFX later).
+ * - Produced by an InputHandler
  * - Read by GameController.
  */
 public final class InputState {

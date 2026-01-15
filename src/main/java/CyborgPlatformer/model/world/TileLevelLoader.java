@@ -32,7 +32,7 @@ public final class TileLevelLoader {
     public static final int TILE_SIZE = 48;
 
     private TileLevelLoader() {
-        // Utility class: no instances.
+        // Utility class.
     }
 
     /**

@@ -32,7 +32,7 @@ public final class CyborgPlatformerApp {
     private final double spawnX;
     private final double spawnY;
 
-    private boolean debug = true;
+    private boolean debug = false;
     public CyborgPlatformerApp() {
         this.world = new World();
 
@@ -45,6 +45,7 @@ public final class CyborgPlatformerApp {
         final double ENEMY_W = 50;
         final double ENEMY_H = 64;
 
+        // setting enemy spawns
         int idx = 0;
         for (EnemySpawn s : level.getEnemySpawns()) {
             double x = s.x();
@@ -65,26 +66,29 @@ public final class CyborgPlatformerApp {
             idx++;
         }
 
+        // creating Player
         this.player = new Player();
         player.setSize(20, 20);
 
+        // ensuring spawn validity
         double[] spawn = pickSpawnOnFloor(level, player.getWidth(), player.getHeight());
         this.spawnX = spawn[0];
         this.spawnY = spawn[1];
 
         if (debug) {spawn[0] = 1000;}
 
+        // Player spawn
         player.setPosition(spawn[0], spawn[1]);
-        System.out.printf("Spawn x=%.1f y=%.1f%n", player.getX(), player.getY());
         this.controller = new GameController(world, player, spawnX, spawnY);
     }
 
+    // helper method to ensure entity spawn validity
     private static double[] pickSpawnOnFloor(TileLevel level, double playerW, double playerH) {
         var solids = level.getSolids();
         if (solids.isEmpty()) return new double[]{96, 96};
 
         // Search a left-side window so we start near the beginning of the level.
-        double maxX = TileLevelLoader.TILE_SIZE * 60; // adjust if needed (60 tiles = 2880px)
+        double maxX = TileLevelLoader.TILE_SIZE * 60;
 
         double bestX = 96, bestY = 96;
         boolean found = false;
@@ -100,7 +104,7 @@ public final class CyborgPlatformerApp {
             boolean blockedAtSpawn = level.isSolidRect(spawnX, spawnY, playerW, playerH);
             if (blockedAtSpawn) continue;
 
-            // Also require that immediately below spawn is solid (so it’s actually “floor”)
+            // immediately below spawn must be solid
             boolean hasFloor = level.isSolidRect(spawnX, spawnY + 1, playerW, playerH);
             if (!hasFloor) continue;
 
@@ -111,7 +115,7 @@ public final class CyborgPlatformerApp {
                 continue;
             }
 
-            // Prefer the LOWEST floor (largest b.y). If tie, prefer smaller x.
+            // Prefer the LOWEST floor (largest b.y).
             if (b.y() > (bestY + playerH) || (b.y() == (bestY + playerH) && b.x() < (bestX - 10))) {
                 bestX = spawnX;
                 bestY = spawnY;
@@ -125,7 +129,7 @@ public final class CyborgPlatformerApp {
         // If it fits already, keep legacy value exactly
         if (!level.isSolidRect(x, y, w, h)) return y;
 
-        // Nudge up by one tile at a time (bounded so we don't do anything wild)
+        // Nudge up by one tile at a time
         final int MAX_STEPS = 6; // up to 6 tiles upward
         for (int step = 1; step <= MAX_STEPS; step++) {
             double candY = y - step * TileLevelLoader.TILE_SIZE;

@@ -4,11 +4,11 @@ import CyborgPlatformer.model.world.World;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Minimal functional enemy for V2 demo.
+ * functional enemy.
  *
  * Behaviour:
  * - Activates near player and chases (walk/run).
- * - Jumps when player is above (limited).
+ * - Jumps when player is above.
  * - Takes bullet damage; dies at 0 HP.
  * - Deals contact damage with cooldown.
  *
@@ -186,8 +186,8 @@ public final class Enemy extends Entity implements Damageable {
             this.vy = ENEMY_KB_VY;
             this.grounded = false;
 
-            // --- POSITIONAL SEPARATION (CRITICAL) ---
-            double separation = 2.0; // tweakable
+            // separation
+            double separation = 2.0;
             player.setPosition(
                     player.getX() + dirToPlayer * separation,
                     player.getY()

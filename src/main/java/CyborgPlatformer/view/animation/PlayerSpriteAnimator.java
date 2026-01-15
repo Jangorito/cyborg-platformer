@@ -7,19 +7,11 @@ import javafx.scene.image.Image;
 import java.util.Objects;
 
 /**
- * V1 parity animation resolver for player (view-only).
+ * V1 parity animation resolver for player.
  *
  * V1 updateState priority:
  *   shooting > hurt > aerial > running > idle
  *
- * V1 timings:
- *   idle: 250ms per frame
- *   run:  180ms per frame
- *
- * V1 frames:
- *   aerial: running[5] when vy < 0 (we keep it for whole airborne for determinism)
- *   hurt:   hurt[1]
- *   shoot:  shootingSprite
  *
  * Facing handled by Renderer (flip).
  */
@@ -54,7 +46,7 @@ public final class PlayerSpriteAnimator {
             return hurt[HURT_FRAME_INDEX];
         }
         if (!s.grounded()) {
-            // V1: only sets aerial frame while rising (vy < 0). We keep it stable across airborne.
+            // only sets aerial frame while rising (vy < 0).
             return run[AERIAL_FRAME_INDEX];
         }
         if (s.moving()) {

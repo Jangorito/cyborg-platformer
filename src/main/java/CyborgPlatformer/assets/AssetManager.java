@@ -7,9 +7,9 @@ import java.io.InputStream;
 import java.util.Objects;
 
 /**
- * Loads and owns all JavaFX assets (images, fonts).
+ * Loads and owns all JavaFX assets .
  *
- * Folder layout (per repo):
+ * Folder layout:
  * - /Background
  * - /Font
  * - /Sprites
@@ -22,21 +22,21 @@ import java.util.Objects;
 public final class AssetManager {
 
     // ===================== Player =====================
-    private final Image[] playerIdle;   // 4  (Cyborg_idle_1..4)
-    private final Image[] playerRun;    // 6  (Cyborg_run_1..6)
-    private final Image[] playerHurt;   // 2  (Cyborg_hurt_1..2)
-    private final Image   playerShoot;  // 1  (shootingSprite.png)
+    private final Image[] playerIdle;   // 4
+    private final Image[] playerRun;    // 6
+    private final Image[] playerHurt;   // 2
+    private final Image   playerShoot;  // 1
 
     // ===================== Enemy ======================
-    private final Image[] enemyIdle;    // 8  (Idle_1..8)
-    private final Image[] enemyWalk;    // 8  (Walk_1..8)
-    private final Image[] enemyRun;     // 7  (Run_1..7)
-    private final Image   enemyHurt;    // 1  (Hurt.png)
+    private final Image[] enemyIdle;    // 8
+    private final Image[] enemyWalk;    // 8
+    private final Image[] enemyRun;     // 7
+    private final Image   enemyHurt;    // 1
 
     // ===================== World ======================
-    private final Image[] tiles;        // 19 (V1 mapping 0..18)
-    private final Image[] backgrounds;  // 4  (1..4)
-    private final Image   bullet;       // bullet.png
+    private final Image[] tiles;        //
+    private final Image[] backgrounds;  //
+    private final Image   bullet;       //
 
     // ====================== UI ========================
     private final Image uiHeart;
@@ -53,10 +53,8 @@ public final class AssetManager {
         playerHurt  = loadNumbered1Based("/Sprites/Player/hurt/Cyborg_hurt_", 2);
         playerShoot = loadImage("/Sprites/Player/shoot/shootingSprite.png");
 
-        // bullet is in Player/shoot in your tree
         bullet = loadImage("/Sprites/Player/shoot/bullet.png");
 
-        // UI icons appear under /Sprites/Player in your screenshot
         uiAmmo  = loadImage("/Sprites/ammo.png");
         uiBox   = loadImage("/Sprites/box.png");
         uiHeart = loadImage("/Sprites/heart.png");
@@ -67,8 +65,7 @@ public final class AssetManager {
         enemyWalk = loadNumbered1Based("/Sprites/Enemy/Walking/Walk_", 8);
         enemyHurt = loadImage("/Sprites/Enemy/Hurt.png");
 
-        // ---- Tiles (V1 expects 19 tiles: indices 0..18) ----
-        // These filenames match your screenshot exactly.
+        // ---- Tiles ----
         tiles = new Image[] {
                 loadImage("/Tiles/1_FrameTopLeftCorner.png"),       // 0
                 loadImage("/Tiles/2_FrameTopRightCorner.png"),      // 1
@@ -91,7 +88,7 @@ public final class AssetManager {
                 loadImage("/Tiles/J_TreadRight.png")                // 18
         };
 
-        // ---- Background layers (V1 uses 4 layers; your folder has 1..6) ----
+        // ---- Background layers  ----
         backgrounds = new Image[] {
                 loadImage("/Background/1_Background.png"),
                 loadImage("/Background/2_Background.png"),
@@ -134,7 +131,7 @@ public final class AssetManager {
             if (in == null) {
                 throw new IllegalStateException("Missing resource: " + path);
             }
-            return new Image(in); // simplest; fine for Phase 1/2
+            return new Image(in);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to load image: " + path, e);
         }

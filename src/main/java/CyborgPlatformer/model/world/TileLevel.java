@@ -9,7 +9,7 @@ import java.util.List;
  *
  * Responsibilities:
  * - Stores solid collision geometry for the level as rectangles.
- * - Stores the raw tile grid for rendering (Phase 3).
+ * - Stores the raw tile grid for rendering.
  * - Answers collision queries via {@link #isSolidRect(double, double, double, double)}.
  *
  * Notes:
@@ -26,7 +26,7 @@ public class TileLevel implements Level {
     private final List<SolidBlock> solids;
     private final List<EnemySpawn> enemySpawns;
 
-    // Phase 3: keep raw tile characters for renderer (no visuals here).
+    // raw tile characters for renderer.
     private final char[][] tiles;
 
     public TileLevel(List<SolidBlock> solids, List<EnemySpawn> enemySpawns, char[][] tiles) {
@@ -47,7 +47,7 @@ public class TileLevel implements Level {
      * Raw tile grid from the map file.
      * '0' = empty, other chars follow V1 legend (1-9, A-J).
      *
-     * Renderer reads this; simulation should not mutate it.
+     * Renderer reads this.
      */
     public char[][] getTiles() {
         return tiles;

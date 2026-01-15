@@ -2,13 +2,6 @@ package CyborgPlatformer.view;
 
 /**
  * Camera converts world coordinates -> screen coordinates.
- *
- * Phase 1/2:
- * - Simple center-on-player camera (what FxLauncher currently does).
- *
- * Later (V1 parity):
- * - Clamp X using mapWidth and viewport.
- * - Support parallax offsets.
  */
 public final class Camera {
 
@@ -32,7 +25,7 @@ public final class Camera {
     }
 
     /**
-     * Follow player horizontally (V1 parity).
+     * Follow player horizontally
      * Camera is clamped to [0, levelWidth - viewportWidth].
      */
     public void followX(double playerX) {
@@ -45,24 +38,11 @@ public final class Camera {
         else if (camX > maxX) camX = maxX;
     }
 
-
     public double viewportWidth() { return viewportWidth; }
-    public double viewportHeight() { return viewportHeight; }
-    public double levelWidth() { return levelWidth; }
 
     public double camX() { return camX; }
-    public double camY() { return camY; }
 
     public double worldToScreenX(double worldX) { return worldX - camX; }
     public double worldToScreenY(double worldY) { return worldY - camY; }
 
-    /**
-     * Returns a parallax-adjusted camera offset (useful for backgrounds).
-     * factor = 1.0  -> same speed as camera
-     * factor = 2.0  -> half speed
-     * factor = 4.0  -> quarter speed, etc.
-     */
-    public double parallaxCamX(double factor) {
-        return camX / factor;
-    }
 }

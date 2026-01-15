@@ -52,7 +52,7 @@ public class GameController {
     private boolean enemiesAwake = false;
 
     // Kill plane (auto reset if you fall below this)
-    private static final double FALL_RESET_Y = 3000.0;
+    private static final double FALL_RESET_Y = 1000.0;
 
     public GameController(World world, Player player, double spawnX, double spawnY) {
         this.world = world;
@@ -77,7 +77,7 @@ public class GameController {
      */
     public void step(double dt, InputState input) {
         elapsedSeconds += dt;
-        dt = Math.min(dt, 0.033); // ~33ms, 30 FPS worst-case
+        dt = Math.min(dt, 0.033);
 
 
         if (gameOver) {
@@ -129,6 +129,7 @@ public class GameController {
         moveIntent = tryingToMove && !player.isInKnockback();
 
 
+        // debug god command
         if (cheatPressed) {
             player.setPosition(7300, 600);
             player.setVX(0);
@@ -188,7 +189,7 @@ public class GameController {
     private void handleDeath() {
         attempts++;
 
-        /// wrap this around level functionality when extending
+        /// TODO: wrap this around level functionality when extending
 //        if (lives == 0) {
 //            respawnPlayer();
 //            gameOver = true;
@@ -223,9 +224,6 @@ public class GameController {
         player.resetJumpCounter();
         player.resetForRespawn();
         win = false;
-
-
-        // TODO: can improve later
     }
 
     public boolean isGameWon() {
@@ -235,8 +233,6 @@ public class GameController {
         }
         return win;
     }
-
-    public boolean isWin() { return win; }
 
     public boolean isFacingRight() { return facingRight; }
     public boolean moveIntent() { return moveIntent; }
@@ -249,11 +245,4 @@ public class GameController {
         this.player.oneMoreBullet();
     }
 
-    public boolean hasMovedAfterSpawn() {
-        return movedAfterReset;
-    }
-
-    public boolean isEnemiesAwake() {
-        return enemiesAwake;
-    }
 }

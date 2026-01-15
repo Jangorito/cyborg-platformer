@@ -7,7 +7,7 @@ package CyborgPlatformer.model.world;
  * - Stores position and dimensions of a rectangle.
  *
  * Notes:
- * - Pure data holder (no behaviour).
+ * - Pure data holder.
  * - Used by {@link TileLevel} for collision detection.
  *
  * V2 note:

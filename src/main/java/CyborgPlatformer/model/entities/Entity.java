@@ -1,7 +1,7 @@
 package CyborgPlatformer.model.entities;
 
 /**
- * Base model for V2 simulated world entities.
+ * Base model simulated world entities.
  *
  * Notes:
  * - Rendering-free.

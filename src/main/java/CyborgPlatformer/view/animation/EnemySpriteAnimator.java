@@ -4,6 +4,19 @@ import CyborgPlatformer.assets.AssetManager;
 import CyborgPlatformer.view.model.EnemyRenderState;
 import javafx.scene.image.Image;
 
+/**
+ * View-only animator for enemy sprites.
+ *
+ * Responsibilities:
+ * - Resolve the correct enemy animation frame from render state
+ * - Advance animation timing with V1-parity frame durations
+ * - Reset animations cleanly when switching modes
+ *
+ * Not:
+ * - Game logic or AI
+ * - Physics or collision handling
+ * - Simulation state mutation
+ */
 public final class EnemySpriteAnimator {
 
     private static final long IDLE_MS = 250;
@@ -44,7 +57,7 @@ public final class EnemySpriteAnimator {
             nextMode = Mode.IDLE;
         }
 
-        // Reset animation when switching modes (prevents popping)
+        // Reset animation when switching modes
         if (nextMode != mode) {
             mode = nextMode;
             frame = 0;

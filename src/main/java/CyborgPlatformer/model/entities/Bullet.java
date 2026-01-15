@@ -20,10 +20,10 @@ public final class Bullet extends Entity {
 
     private final World world;
 
-    // V1: bullets remove after travellingDistance() >= 600
+    // bullets remove after travellingDistance() >= 600
     private static final double MAX_RANGE_PX = 600.0;
 
-    // V1: "damage()" effect
+    // "damage()" effect
     private static final int DAMAGE = 1;
 
     private final double startX;

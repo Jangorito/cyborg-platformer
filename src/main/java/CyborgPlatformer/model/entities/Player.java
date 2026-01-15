@@ -72,7 +72,6 @@ public class Player extends Entity {
 
         final double bulletVx = facingRight ? BULLET_SPEED_PX_PER_SEC : -BULLET_SPEED_PX_PER_SEC;
 
-        // Match bullet art + your current measured size
         final double bulletW = 8.0;
         final double bulletH = 5.0;
 
@@ -113,15 +112,6 @@ public class Player extends Entity {
     public int getJumpCounter() {
         return jumpCounter;
     }
-
-    public double muzzleX(boolean facingRight) {
-        return x + (facingRight ? 47.0 : -25.0);
-    }
-
-    public double muzzleY() {
-        return y + 10.0; // BUT: tune this for V2 hitbox origin
-    }
-
 
     @Override
     public double getVY() {

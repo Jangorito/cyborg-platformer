@@ -30,7 +30,7 @@ public class World implements Updatable {
     public GameController controller;
 
 
-    // Level/collision backing store (stub for now)
+    // Level/collision backing store
     private Level level;
 
     // allows for levels expansion

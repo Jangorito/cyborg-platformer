@@ -17,7 +17,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-
+// Old Launcher
 public final class FxLauncher extends Application {
 
     private GameController controller;
