@@ -242,7 +242,7 @@ public class GameController {
     public boolean isGameOver() { return gameOver; }
     public int getAttempts() { return attempts; }
     public int getTimeSeconds() { return (int)Math.floor(elapsedSeconds); }
-
+    public int getPlayerHealth() { return this.player.getHealth(); }
 
     public boolean hasMovedAfterSpawn() {
         return movedAfterReset;

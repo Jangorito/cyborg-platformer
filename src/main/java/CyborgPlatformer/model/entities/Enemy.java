@@ -44,7 +44,7 @@ public final class Enemy extends Entity implements Damageable {
     private static final double RUN_SPEED  = 260.0; // px/s
 
     private static final double CONTACT_COOLDOWN_S = 1.5;
-    private static final int CONTACT_DAMAGE = 50;
+    private static final int CONTACT_DAMAGE = 1;
 
     private static final double JUMP_COOLDOWN_S = 0.45;
     private static final double JUMP_VY = -300.0;

@@ -332,7 +332,7 @@ public final class Renderer {
         double y = y0;
 
         if (heart != null) {
-            for (int i = 0; i < lives; i++) {
+            for (int i = 0; i < controller.getPlayerHealth(); i++) {
                 gc.drawImage(
                         heart,
                         x + i * (HEART_SIZE + HEART_GAP),

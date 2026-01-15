@@ -15,7 +15,7 @@ import CyborgPlatformer.model.world.World;
  */
 public class Player extends Entity {
 
-    private static final int MAX_HEALTH = 100;
+    private static final int MAX_HEALTH = 3;
     private int health = MAX_HEALTH;
     private int ammo = 10;
     private int jumpCounter = 0;
@@ -132,7 +132,6 @@ public class Player extends Entity {
     public boolean isShootingVisualActive() {
         return justShot;
     }
-
 
     public void resetJumpCounter() {
         jumpCounter = 0;
