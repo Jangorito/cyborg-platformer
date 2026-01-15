@@ -24,6 +24,9 @@ public class GameController {
     private final PhysicsSystem physics;
 
     private boolean gameOver = false;
+    private boolean moveIntent = false;
+
+
     private static final int MAX_LIVES = 3;
     private int lives = MAX_LIVES;
 
@@ -118,6 +121,10 @@ public class GameController {
 
         boolean cheatPressed = input.cheat() && !lastCheat;
         lastCheat = input.cheat();
+
+        boolean tryingToMove = (input.left() && !input.right()) || (input.right() && !input.left());
+        moveIntent = tryingToMove && !player.isInKnockback();
+
 
         if (cheatPressed) {
             player.setPosition(7300, 600);
@@ -216,6 +223,8 @@ public class GameController {
         // TODO: can improve later
     }
 
+    public boolean isFacingRight() { return facingRight; }
+    public boolean moveIntent() { return moveIntent; }
     public int getLives() { return this.lives; }
     public boolean isGameOver() { return gameOver; }
 

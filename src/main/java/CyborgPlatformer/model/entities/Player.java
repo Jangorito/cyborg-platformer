@@ -112,11 +112,20 @@ public class Player extends Entity {
     }
 
 
-    public boolean isAlive() { return alive; }
-
     public int getJumpCounter() {
         return jumpCounter;
     }
+
+    @Override
+    public double getVY() {
+        return super.getVY();
+    }
+
+    public boolean isAlive() { return alive; }
+    public boolean isShootingVisualActive() {
+        return justShot;
+    }
+
 
     public void resetJumpCounter() {
         jumpCounter = 0;
