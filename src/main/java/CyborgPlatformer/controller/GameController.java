@@ -243,6 +243,7 @@ public class GameController {
     public int getAttempts() { return attempts; }
     public int getTimeSeconds() { return (int)Math.floor(elapsedSeconds); }
     public int getPlayerHealth() { return this.player.getHealth(); }
+    public void incrementAmmo() {this.player.oneMoreBullet();}
 
     public boolean hasMovedAfterSpawn() {
         return movedAfterReset;

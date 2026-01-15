@@ -94,6 +94,7 @@ public final class Bullet extends Entity {
         if (hit != null) {
             hit.damage(DAMAGE);
             alive = false;
+            world.onEnemyHitByBullet();
             return;
         }
 

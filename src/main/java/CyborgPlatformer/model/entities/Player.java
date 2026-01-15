@@ -140,6 +140,7 @@ public class Player extends Entity {
     public void incrementJumpCounter() {
         jumpCounter++;
     }
+    public void oneMoreBullet() {ammo++;}
 
     @Override
     public void update(double dt) {

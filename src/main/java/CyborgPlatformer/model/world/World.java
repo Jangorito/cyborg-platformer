@@ -1,5 +1,6 @@
 package CyborgPlatformer.model.world;
 
+import CyborgPlatformer.controller.GameController;
 import CyborgPlatformer.game.Updatable;
 import CyborgPlatformer.model.entities.Bullet;
 import CyborgPlatformer.model.entities.Enemy;
@@ -26,6 +27,8 @@ public class World implements Updatable {
 
     private final List<Entity> entities = new ArrayList<>();
     private final List<Enemy> enemies = new ArrayList<>();
+    private GameController controller;
+
 
     // Level/collision backing store (stub for now)
     private Level level;
@@ -133,7 +136,6 @@ public class World implements Updatable {
         return null;
     }
 
-    // TODO: explain lines
     private boolean rectsOverlap(
             double ax, double ay, double aw, double ah,
             double bx, double by, double bw, double bh
@@ -144,13 +146,16 @@ public class World implements Updatable {
                 ay + ah > by;
     }
 
-    // test helper TODO
     public <T extends Entity> List<T> getEntitiesOfType(Class<T> type) {
         List<T> out = new ArrayList<>();
         for (Entity e : entities) {
             if (type.isInstance(e)) out.add(type.cast(e));
         }
         return out;
+    }
+
+    public void onEnemyHitByBullet() {
+        controller.incrementAmmo();
     }
 
 }
