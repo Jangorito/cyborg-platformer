@@ -24,11 +24,15 @@ public class GameController {
     private final PhysicsSystem physics;
 
     private boolean gameOver = false;
+    private boolean win = false;
+
     private boolean moveIntent = false;
 
 
     private static final int MAX_LIVES = 3;
     private int lives = MAX_LIVES;
+    private int attempts = 1;
+    private double elapsedSeconds = 0;
 
     private final double spawnX;
     private final double spawnY;
@@ -72,6 +76,8 @@ public class GameController {
      * @param input current input snapshot
      */
     public void step(double dt, InputState input) {
+        elapsedSeconds += dt;
+
         if (gameOver) {
             System.out.println("Game Won");
             return;
@@ -101,11 +107,6 @@ public class GameController {
 
     }
 
-    private void isGameWon(){
-        if (player.getX() > 7400){
-            gameOver = true;
-        }
-    }
     private void applyInput(InputState input) {
         boolean jumpPressed = input.jump() && !lastJump;
         lastJump = input.jump();
@@ -183,15 +184,16 @@ public class GameController {
     }
 
     private void handleDeath() {
-        lives--;
+        attempts++;
 
-        if (lives == 0) {
-            respawnPlayer();
-            gameOver = true;
-            // Freeze the player so the game stops feeling alive
-            player.stop();
-            return;
-        }
+        /// wrap this around level functionality when extending
+//        if (lives == 0) {
+//            respawnPlayer();
+//            gameOver = true;
+//            // Freeze the player so the game stops feeling alive
+//            player.stop();
+//            return;
+//        }
 
         respawnPlayer();
     }
@@ -218,15 +220,29 @@ public class GameController {
         player.setGrounded(false);
         player.resetJumpCounter();
         player.resetForRespawn();
+        win = false;
 
 
         // TODO: can improve later
     }
 
+    public boolean isGameWon() {
+        if (player.getX() > 7400) {
+            win = true;
+            gameOver = true;
+        }
+        return win;
+    }
+
+    public boolean isWin() { return win; }
+
     public boolean isFacingRight() { return facingRight; }
     public boolean moveIntent() { return moveIntent; }
     public int getLives() { return this.lives; }
     public boolean isGameOver() { return gameOver; }
+    public int getAttempts() { return attempts; }
+    public int getTimeSeconds() { return (int)Math.floor(elapsedSeconds); }
+
 
     public boolean hasMovedAfterSpawn() {
         return movedAfterReset;

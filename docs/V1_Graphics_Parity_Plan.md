@@ -5,7 +5,6 @@
 - Phase 3 — Tile Legend Mapping and Level Rendering 
 - Phase 4 — Camera Logic and Background Parallax 
 - Phase 5 — Player Sprite Rendering and Animation Parity 
-- Phase 6 — Enemy Sprite Rendering and Animation Parity
-## Phase 7 — Bullet and Visual Effects Rendering
-
-## Phase 8 — HUD Rendering Parity
+- Phase 6 — Enemy Sprite Rendering and Animation Parity 
+- Phase 7 — Bullet and Visual Effects Rendering 
+- Phase 8 — HUD Rendering Parity

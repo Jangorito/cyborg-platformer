@@ -30,6 +30,19 @@ public final class Renderer {
     private static final int TILE_SIZE = 48;
     private static final double BASE_PLAYER_W = 30;
 
+    // HUD layout (screen space)
+    private static final double HUD_PAD_X = 20;
+    private static final double HUD_PAD_Y = 20;
+
+    private static final double HEART_SIZE = 32;
+    private static final double HEART_GAP  = 8;
+
+    private static final double ICON_SIZE  = 24;
+    private static final double TEXT_GAP   = 8;
+
+    private static final double LINE_GAP   = 12;
+
+
     private final Camera camera;
     private final AssetManager assets;
 
@@ -117,18 +130,6 @@ public final class Renderer {
         Image pImg = playerAnimator.resolve(ps, now);
         drawPlayerSprite(g, pImg, ps);
 
-        /// tuning
-//        double muzzleWorldX = player.getX() + (controller.isFacingRight() ? 52 : -2);
-//        double muzzleWorldY = player.getY() - 19;
-
-//        double mx = px(camera.worldToScreenX(muzzleWorldX));
-//        double my = px(camera.worldToScreenY(muzzleWorldY));
-//
-//        g.setStroke(Color.RED);
-//        g.strokeLine(mx - 4, my, mx + 4, my);
-//        g.strokeLine(mx, my - 4, mx, my + 4);
-
-
         // =========================
         //           Enemy
         // =========================
@@ -182,50 +183,49 @@ public final class Renderer {
         enemyAnimatorsById.keySet().removeIf(id -> !aliveEnemyIds.contains(id));
         renderBullets(g, world);
 
+        drawHud(g, controller);
 
-        // HUD (screen-space)
-        g.setFill(Color.BLACK);
-        g.setFont(Font.font(18));
-
-        double hudX = 16;
-        double hudY = 24;
-        double line = 22;
-
-        g.fillText("Lives: " + controller.getLives(), hudX, hudY); hudY += line;
-        g.fillText("HP: " + player.getHealth(), hudX, hudY); hudY += line;
-        g.fillText("Ammo: " + player.getAmmo(), hudX, hudY); hudY += line;
-        g.fillText("Position: " + (int)player.getX() + ", " + (int)player.getY(), hudX, hudY); hudY += line;
-        g.fillText("GameOver: " + controller.isGameOver(), hudX, hudY); hudY += line;
-        g.fillText("+_____________________+", hudX, hudY); hudY += line;
-        g.fillText("BG0 w/h: " + (int)bgs[0].getWidth() + " / " + (int)bgs[0].getHeight(), hudX, hudY); hudY += line;
-        g.fillText("BG1 w/h: " + (int)bgs[1].getWidth() + " / " + (int)bgs[1].getHeight(), hudX, hudY); hudY += line;
-        g.fillText("+_____________________+", hudX, hudY); hudY += line;
-        g.fillText("Bullet Size: " + assets.bullet().getWidth() + ", " + assets.bullet().getHeight(), hudX, hudY); hudY += line;
-        g.fillText("+_____________________+", hudX, hudY); hudY += line;
-        g.fillText("Assets OK (tiles): " + assets.tiles().length, hudX, hudY); hudY += line;
-        g.fillText("KillEM?: " + killFlag, hudX, hudY); hudY += line;
-        g.fillText("Enemies: " + world.getEnemies().size(), hudX, hudY); hudY += line;
-        g.fillText("MTF?: " + controller.hasMovedAfterSpawn(), hudX, hudY); hudY += line;
-        g.fillText("enemiesAwake: " + controller.isEnemiesAwake(), hudX, hudY); hudY += line;
-        g.fillText("Invuln: " + player.isInKnockback(), hudX, hudY); hudY += line;
-
-        Enemy nearest = null;
-        double best = Double.POSITIVE_INFINITY;
-        for (Enemy e : world.getEnemies()) {
-            double dx = e.getX() - player.getX();
-            double dy = e.getY() - player.getY();
-            double d = dx * dx + dy * dy;
-            if (d < best) { best = d; nearest = e; }
-        }
-
-        if (nearest != null) {
-            g.fillText("Nearest Enemy HP: " + nearest.getHealth(), hudX, hudY); hudY += line;
-            g.fillText("Nearest Enemy X: " + (int) nearest.getX(), hudX, hudY); hudY += line;
-        }
+        /// Old Debug HUD
+//        // HUD (screen-space)
+//        g.setFill(Color.BLACK);
+//        g.setFont(Font.font(18));
+//
+//        double hudX = 16;
+//        double hudY = 24;
+//        double line = 22;
+//
+//        g.fillText("Lives: " + controller.getLives(), hudX, hudY); hudY += line;
+//        g.fillText("HP: " + player.getHealth(), hudX, hudY); hudY += line;
+//        g.fillText("Ammo: " + player.getAmmo(), hudX, hudY); hudY += line;
+//        g.fillText("Position: " + (int)player.getX() + ", " + (int)player.getY(), hudX, hudY); hudY += line;
+//        g.fillText("GameOver: " + controller.isGameOver(), hudX, hudY); hudY += line;
+//        g.fillText("+_____________________+", hudX, hudY); hudY += line;
+//        g.fillText("BG0 w/h: " + (int)bgs[0].getWidth() + " / " + (int)bgs[0].getHeight(), hudX, hudY); hudY += line;
+//        g.fillText("BG1 w/h: " + (int)bgs[1].getWidth() + " / " + (int)bgs[1].getHeight(), hudX, hudY); hudY += line;
+//        g.fillText("+_____________________+", hudX, hudY); hudY += line;
+//        g.fillText("Bullet Size: " + assets.bullet().getWidth() + ", " + assets.bullet().getHeight(), hudX, hudY); hudY += line;
+//        g.fillText("+_____________________+", hudX, hudY); hudY += line;
+//        g.fillText("Assets OK (tiles): " + assets.tiles().length, hudX, hudY); hudY += line;
+//        g.fillText("KillEM?: " + killFlag, hudX, hudY); hudY += line;
+//        g.fillText("Enemies: " + world.getEnemies().size(), hudX, hudY); hudY += line;
+//        g.fillText("MTF?: " + controller.hasMovedAfterSpawn(), hudX, hudY); hudY += line;
+//        g.fillText("enemiesAwake: " + controller.isEnemiesAwake(), hudX, hudY); hudY += line;
+//        g.fillText("Invuln: " + player.isInKnockback(), hudX, hudY); hudY += line;
+//
+//        Enemy nearest = null;
+//        double best = Double.POSITIVE_INFINITY;
+//        for (Enemy e : world.getEnemies()) {
+//            double dx = e.getX() - player.getX();
+//            double dy = e.getY() - player.getY();
+//            double d = dx * dx + dy * dy;
+//            if (d < best) { best = d; nearest = e; }
+//        }
+//
+//        if (nearest != null) {
+//            g.fillText("Nearest Enemy HP: " + nearest.getHealth(), hudX, hudY); hudY += line;
+//            g.fillText("Nearest Enemy X: " + (int) nearest.getX(), hudX, hudY); hudY += line;
+//        }
     }
-
-
-
 
 
     private void drawPlayerSprite(GraphicsContext g, Image img, PlayerRenderState ps) {
@@ -254,8 +254,6 @@ public final class Renderer {
         // Use your existing flip helper
         drawFlipped(g, img, drawX, drawY, imgW, imgH, ps.facingRight());
     }
-
-
 
     private void drawFlipped(
             GraphicsContext g,
@@ -306,6 +304,92 @@ public final class Renderer {
         }
     }
 
+    private void drawHud(GraphicsContext gc, GameController controller) {
+        Objects.requireNonNull(gc);
+        Objects.requireNonNull(controller);
+
+        final Player p = controller.getPlayer();
+        if (p == null) return;
+
+        // Screen-space HUD
+        // Set once for all HUD text.
+        gc.setFill(Color.BLACK);
+
+        Font font = assets.uiFont();
+        if (font != null) gc.setFont(font);
+        else gc.setFont(Font.font(18));
+
+        final double x0 = HUD_PAD_X;
+        final double y0 = HUD_PAD_Y;
+
+        // -------------------------
+        // Lives row (hearts)
+        // -------------------------
+        Image heart = assets.uiHeart();
+        int lives = controller.getLives();
+
+        double x = x0;
+        double y = y0;
+
+        if (heart != null) {
+            for (int i = 0; i < lives; i++) {
+                gc.drawImage(
+                        heart,
+                        x + i * (HEART_SIZE + HEART_GAP),
+                        y,
+                        HEART_SIZE,
+                        HEART_SIZE
+                );
+            }
+        }
+
+        // -------------------------
+        // Ammo row (icon + number)
+        // -------------------------
+        y += HEART_SIZE + LINE_GAP;
+
+        Image ammoIcon;
+        try {
+            ammoIcon = assets.bullet();
+        } catch (Throwable ignored) {
+            ammoIcon = assets.bullet();     // fallback
+        }
+
+        if (ammoIcon != null) {
+            gc.drawImage(ammoIcon, x0, y, ICON_SIZE, ICON_SIZE);
+        }
+
+        // baseline so the number looks aligned next to icon.
+        final double textBaseline = y + ICON_SIZE - 6;
+        gc.fillText(String.valueOf(p.getAmmo()), x0 + ICON_SIZE + TEXT_GAP, textBaseline);
+
+
+         y += ICON_SIZE + LINE_GAP;
+         gc.fillText("Time: " + controller.getTimeSeconds(), x0, y + 16);
+         y += 20;
+         gc.fillText("Attempts: " + controller.getAttempts(), x0, y + 16);
+
+        // -------------------------
+        // Game Over / Win banner (top-center)
+        // -------------------------
+        if (controller.isGameOver()) {
+            final String msg;
+            try {
+                msg = controller.isGameWon() ? "YOU WIN" : "GAME OVER";
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            // Center the message at the top of the viewport (screen space)
+            double cx = camera.viewportWidth() / 2.0;
+            double bannerY = 56; // tuned to sit under the top edge, above hearts comfortably
+
+            // Text width estimate: JavaFX doesn't give easy width without FontMetrics.
+            // Simple parity-friendly approach: use fixed offset that looks right in practice.
+            // (If you want perfect centering, we can use Toolkit font loader later.)
+            gc.fillText(msg, cx - 60, bannerY);
+        }
+    }
 
     private static double px(double v) { return Math.floor(v); }
 }
