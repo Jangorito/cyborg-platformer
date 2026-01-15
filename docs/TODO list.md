@@ -42,10 +42,10 @@ problems with the enemy right now:
 
 "Originally Intended":
 - not rendering graphics in high fidelity
-- not sure if enemies will jump towards new platform to kill
   - would be nice to have this toggable to increase enemy difficulty later
 - camera starts with the player centered but looks ugly, start camera should allow the player to move before panning s.t. the level looks good and doesn't have useless white space to the left of the player
 
+- not sure if enemies will jump towards new platform to kill
 - Game isn't won upon reaching end point
 - no lives count
 - 0 HP doesn't kill player
