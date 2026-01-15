@@ -1,10 +1,8 @@
 # V1 Graphics Parity Plan (V2 Refactor)
 
-## Phase 0 — Define the V1 Graphics Contract
-
-## Phase 1 — Asset Parity and Resource Loading
-
-## Phase 2 — Tile Legend Mapping and Level Rendering
+- Phase 0 — Define the V1 Graphics Contract 
+- Phase 1 — Asset Parity and Resource Loading 
+- Phase 2 — Tile Legend Mapping and Level Rendering
 
 ## Phase 3 — Camera Logic and Background Parallax
 
