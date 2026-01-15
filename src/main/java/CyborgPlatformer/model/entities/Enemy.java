@@ -22,6 +22,7 @@ public final class Enemy extends Entity implements Damageable {
     private boolean running = false;
     private boolean facingRight = true;
     private boolean damaged = false;
+    private boolean canDamage = true;
 
     // "sleep until player moves"
     private boolean awakened = false;
@@ -64,12 +65,21 @@ public final class Enemy extends Entity implements Damageable {
     public boolean isFacingRight() { return facingRight; }
     public boolean isDamaged() { return damaged; }
 
+
+    public void setCanDamage() { this.canDamage = false; }
+
     /** Called by controller once player has moved at least once. */
     public void awaken() { this.awakened = true; }
+    public void sleep() {
+        awakened = false;
+        vx = 0;
+        running = false;
+    }
 
     @Override
     public void damage(int amount) {
         if (!alive) return;
+        if (!canDamage) return;
 
 
         if (!damaged) {
@@ -90,6 +100,8 @@ public final class Enemy extends Entity implements Damageable {
      */
     public void think(World world, Player player, double dt) {
         if (!alive) return;
+        if (!canDamage) return;
+
 
         // sleep until player moves
         if (!awakened) {

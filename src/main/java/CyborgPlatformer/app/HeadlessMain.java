@@ -29,7 +29,7 @@ public final class HeadlessMain {
             // shoot in pulses
             boolean shoot = (t > 3.0 && t < 6.0) && (tick % 15 == 0);
 
-            InputState input = new InputState(left, right, jump, shoot, false);
+            InputState input = new InputState(left, right, jump, shoot, false, false, false);
 
             controller.step(dt, input);
 

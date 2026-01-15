@@ -15,12 +15,14 @@ import CyborgPlatformer.model.world.World;
  */
 public class Player extends Entity {
 
-    private int health = 100;
+    private static final int MAX_HEALTH = 100;
+    private int health = MAX_HEALTH;
     private int ammo = 10;
     private int jumpCounter = 0;
     private double invulnTimer = 0.0;
     private static final double INVULN_SECONDS = 0.35;
 
+    private boolean alive = true;
 
     // Shooting logic
     private boolean justShot = false;
@@ -84,7 +86,10 @@ public class Player extends Entity {
         if (invulnTimer > 0) return;
 
         health -= amount;
-        if (health < 0) health = 0;
+        if (health <= 0) {
+            health = 0;
+            alive = false;
+        }
 
         invulnTimer = INVULN_SECONDS;
     }
@@ -99,7 +104,15 @@ public class Player extends Entity {
         return invulnTimer > 0;
     }
 
+    public void resetForRespawn() {
+        this.alive = true;
+        this.health = MAX_HEALTH;   // whatever you use
+        this.invulnTimer = INVULN_SECONDS;     // optional
+        this.justShot = false;      // if you track shooting cooldown
+    }
 
+
+    public boolean isAlive() { return alive; }
 
     public int getJumpCounter() {
         return jumpCounter;

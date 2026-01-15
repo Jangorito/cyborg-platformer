@@ -26,7 +26,7 @@ public final class FxLauncher extends Application {
     private Player player;
     private Canvas canvas;
 
-    private boolean left, right, jump, shoot, reset;
+    private boolean left, right, jump, shoot, reset, kill, cheat;
     private boolean showTiles = true;
 
 
@@ -64,7 +64,7 @@ public final class FxLauncher extends Application {
                 // avoid huge dt when tabbing/window dragging
                 dt = Math.min(dt, 1.0 / 30.0);
 
-                InputState input = new InputState(left, right, jump, shoot, reset);
+                InputState input = new InputState(left, right, jump, shoot, reset, kill, cheat);
                 controller.step(dt, input);
 
                 render(g, canvas.getWidth(), canvas.getHeight());
@@ -81,6 +81,8 @@ public final class FxLauncher extends Application {
                 case J, K, CONTROL -> shoot = true;
                 case R -> reset = true;
                 case T -> showTiles = !showTiles;
+                case L -> kill = !kill;
+                case Q -> cheat = true;
 
             }
         });
@@ -136,12 +138,19 @@ public final class FxLauncher extends Application {
         double hudY = 24;
         double line = 22;
 
+        g.fillText("Lives: " + controller.getLives(), hudX, hudY); hudY += line;
         g.fillText("HP: " + player.getHealth(), hudX, hudY); hudY += line;
         g.fillText("Ammo: " + player.getAmmo(), hudX, hudY); hudY += line;
+        g.fillText("Position: " + player.getX() + ", " + player.getY(), hudX, hudY); hudY += line;
+        g.fillText("Lives: " + controller.isGameOver(), hudX, hudY); hudY += line;
+
+        g.fillText("+_____________________+", hudX, hudY); hudY += line;
+
+        g.fillText("KillEM?: " + kill, hudX, hudY); hudY += line;
         g.fillText("Enemies: " + world.getEnemies().size(), hudX, hudY); hudY += line;
-        g.fillText("MTF?: " + controller.hasMovedThisFrame(), hudX, hudY); hudY += line;
+        g.fillText("MTF?: " + controller.hasMovedAfterSpawn(), hudX, hudY); hudY += line;
         g.fillText("enemiesAwake: "+ controller.isEnemiesAwake(), hudX, hudY); hudY += line;
-        g.fillText("Invuln: " + player.isInKnockback(), 16, hudY);
+        g.fillText("Invuln: " + player.isInKnockback(), hudX, hudY); hudY += line;
 
 
         Enemy nearest = null;

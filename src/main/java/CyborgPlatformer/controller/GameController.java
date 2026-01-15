@@ -23,17 +23,23 @@ public class GameController {
     private final Player player;
     private final PhysicsSystem physics;
 
+    private boolean gameOver = false;
+    private static final int MAX_LIVES = 3;
+    private int lives = MAX_LIVES;
+
     private final double spawnX;
     private final double spawnY;
 
     private boolean facingRight = true;
-    private boolean movedThisFrame = false;
+    private boolean movedAfterReset = false;
 
 
     // Edge-trigger state
     private boolean lastJump = false;
     private boolean lastShoot = false;
     private boolean lastReset = false;
+    private boolean lastKill = false;
+    private boolean lastCheat = false;
 
     // enemies sleep until player moves
     private boolean enemiesAwake = false;
@@ -63,6 +69,12 @@ public class GameController {
      * @param input current input snapshot
      */
     public void step(double dt, InputState input) {
+        if (gameOver) {
+            System.out.println("Game Won");
+            return;
+        }
+
+
         applyInput(input);
         physics.applyGravity(player, dt);
 
@@ -72,13 +84,25 @@ public class GameController {
         }
 
         world.update(dt);
+        isGameWon();
 
         // Auto reset if player falls too far
         if (player.getY() > FALL_RESET_Y) {
-            resetPlayer();
+            handleDeath();
+            return;
         }
+
+        if (!player.isAlive()) {
+            handleDeath();
+        }
+
     }
 
+    private void isGameWon(){
+        if (player.getX() > 7400){
+            gameOver = true;
+        }
+    }
     private void applyInput(InputState input) {
         boolean jumpPressed = input.jump() && !lastJump;
         lastJump = input.jump();
@@ -89,23 +113,38 @@ public class GameController {
         boolean resetPressed = input.reset() && !lastReset;
         lastReset = input.reset();
 
+        boolean killPressed = input.kill() && !lastKill;
+        lastKill = input.kill();
+
+        boolean cheatPressed = input.cheat() && !lastCheat;
+        lastCheat = input.cheat();
+
+        if (cheatPressed) {
+            player.setPosition(7300, 600);
+            player.setVX(0);
+            player.setVY(0);
+            player.setGrounded(false);
+            player.resetJumpCounter();
+        }
+
         // Movement
         if (!player.isInKnockback()) {
             if (input.left() && !input.right()) {
                 player.moveLeft();
                 facingRight = false;
-                movedThisFrame = true;
+                movedAfterReset = true;
             } else if (input.right() && !input.left()) {
                 player.moveRight();
                 facingRight = true;
-                movedThisFrame = true;
+                movedAfterReset = true;
             } else {
                 player.stop();
             }
         }
 
+
         // wake enemies the first time player moves
-        if (!enemiesAwake && movedThisFrame) {
+        if (!enemiesAwake && movedAfterReset) {
             enemiesAwake = true;
             for (Enemy e : world.getEnemies()) e.awaken();
         }
@@ -128,6 +167,41 @@ public class GameController {
         if (resetPressed) {
             resetPlayer();
         }
+
+        if (killPressed) {
+            for (Enemy e : world.getEnemies()){
+                e.setCanDamage();
+            }
+        }
+    }
+
+    private void handleDeath() {
+        lives--;
+
+        if (lives == 0) {
+            respawnPlayer();
+            gameOver = true;
+            // Freeze the player so the game stops feeling alive
+            player.stop();
+            return;
+        }
+
+        respawnPlayer();
+    }
+
+    private void respawnPlayer() {
+        resetPlayer();
+        enemiesAwake = false;
+        movedAfterReset = false;
+        lastJump = false;
+        lastShoot = false;
+        lastReset = false;
+
+
+
+        for (Enemy e : world.getEnemies()) {
+            e.sleep();
+        }
     }
 
     private void resetPlayer() {
@@ -136,14 +210,17 @@ public class GameController {
         player.setVY(0);
         player.setGrounded(false);
         player.resetJumpCounter();
+        player.resetForRespawn();
 
-        enemiesAwake = false;
 
         // TODO: can improve later
     }
 
-    public boolean hasMovedThisFrame() {
-        return movedThisFrame;
+    public int getLives() { return this.lives; }
+    public boolean isGameOver() { return gameOver; }
+
+    public boolean hasMovedAfterSpawn() {
+        return movedAfterReset;
     }
 
     public boolean isEnemiesAwake() {
