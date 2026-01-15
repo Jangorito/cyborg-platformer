@@ -24,14 +24,21 @@ import java.util.List;
 public class TileLevel implements Level {
 
     private final List<SolidBlock> solids;
+    private final List<EnemySpawn> enemySpawns;
 
-    public TileLevel(List<SolidBlock> solids) {
+    public TileLevel(List<SolidBlock> solids, List<EnemySpawn> enemySpawns) {
         this.solids = new ArrayList<>(solids);
+        this.enemySpawns = new ArrayList<>(enemySpawns);
     }
 
     public List<SolidBlock> getSolids() {
         return Collections.unmodifiableList(solids);
     }
+
+    public List<EnemySpawn> getEnemySpawns() {
+        return Collections.unmodifiableList(enemySpawns);
+    }
+
 
     @Override
     public boolean isSolidRect(double x, double y, double w, double h) {

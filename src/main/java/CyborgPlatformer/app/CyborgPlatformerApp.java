@@ -1,7 +1,9 @@
 package CyborgPlatformer.app;
 
 import CyborgPlatformer.controller.GameController;
+import CyborgPlatformer.model.entities.Enemy;
 import CyborgPlatformer.model.entities.Player;
+import CyborgPlatformer.model.world.EnemySpawn;
 import CyborgPlatformer.model.world.TileLevel;
 import CyborgPlatformer.model.world.TileLevelLoader;
 import CyborgPlatformer.model.world.World;
@@ -12,7 +14,7 @@ import java.io.InputStream;
  * Application bootstrap for CyborgPlatformer V2.
  *
  * Responsibilities:
- * - Constructs core model objects (World, Player).
+ * - Constructs core model objects (World, Player, Enemy).
  * - Loads level collision data from resources.
  * - Wires model + systems into a GameController.
  *
@@ -34,8 +36,33 @@ public final class CyborgPlatformerApp {
         this.world = new World();
 
         InputStream mapStream = CyborgPlatformerApp.class.getResourceAsStream("/Maps.txt");
+
         TileLevel level = TileLevelLoader.load(mapStream);
         world.setLevel(level);
+
+        // Enemy hitbox used for validation
+        final double ENEMY_W = 20;
+        final double ENEMY_H = 20;
+
+        int idx = 0;
+        for (EnemySpawn s : level.getEnemySpawns()) {
+            double x = s.x();
+            double y = s.y();
+
+            if (idx == 3) {
+                y = 224;
+            }
+            double adjustedY = adjustSpawnY(level, x, y, ENEMY_W, ENEMY_H);
+
+            if (adjustedY != y) {
+                System.out.println("Adjusted enemy spawn idx=" + idx
+                        + " from y=" + y + " to y=" + adjustedY
+                        + " (x=" + x + ", hp=" + s.hp() + ")");
+            }
+
+            world.addEntity(new Enemy(x, adjustedY, ENEMY_W, ENEMY_H, s.hp()));
+            idx++;
+        }
 
         this.player = new Player();
         player.setSize(20, 20);
@@ -89,6 +116,25 @@ public final class CyborgPlatformerApp {
 
         return new double[]{bestX, bestY};
     }
+
+    private static double adjustSpawnY(TileLevel level, double x, double y, double w, double h) {
+        // If it fits already, keep legacy value exactly
+        if (!level.isSolidRect(x, y, w, h)) return y;
+
+        // Nudge up by one tile at a time (bounded so we don't do anything wild)
+        final int MAX_STEPS = 6; // up to 6 tiles upward
+        for (int step = 1; step <= MAX_STEPS; step++) {
+            double candY = y - step * TileLevelLoader.TILE_SIZE;
+            if (!level.isSolidRect(x, candY, w, h)) {
+                return candY;
+            }
+        }
+
+        // If we can't find a free spot quickly, keep original and let logs show it
+        System.out.println("WARNING: Could not find valid spawn for x=" + x + " y=" + y);
+        return y;
+    }
+
 
     public GameController getController() {
         return controller;

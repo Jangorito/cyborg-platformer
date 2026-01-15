@@ -36,3 +36,16 @@ problems with the enemy right now:
 - if they run into me, they're basically stuck to me which makes me think 
   - they're too fast
   - there prolly needs to be a knockback effect on contact 
+
+"Originally Intended":
+- 0 HP doesn't kill player
+- no lives count
+- Game isn't won upon reaching end point
+- not rendering graphics in high fidelity
+- not sure if enemies will jump towards new platform to kill
+  - would be nice to have this toggable to increase enemy difficulty later
+- camera starts with the player centered but looks ugly, start camera should allow the player to move before panning s.t. the level looks good and doesn't have useless white space to the left of the player
+
+- enemies not in same spots
+- falling doesn't reset Player position
+- shooting doesn't kill enemies

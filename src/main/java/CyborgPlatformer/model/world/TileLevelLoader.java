@@ -78,6 +78,56 @@ public final class TileLevelLoader {
             }
         }
 
-        return new TileLevel(solids);
+        List<EnemySpawn> enemySpawns = List.of(
+                new EnemySpawn(1475, 230, 2),
+                new EnemySpawn(2570, 196, 2),
+                new EnemySpawn(2750, 320, 2),
+                new EnemySpawn(3060, 470, 2),
+                new EnemySpawn(4219, 100, 2),
+                new EnemySpawn(4900, 530, 2),
+                new EnemySpawn(4970, 530, 2),
+                new EnemySpawn(5040, 539, 2),
+                new EnemySpawn(6397, 196, 2),
+                new EnemySpawn(6540, 520, 2),
+                new EnemySpawn(6600, 520, 2),
+                new EnemySpawn(6660, 520, 2),
+                new EnemySpawn(6720, 520, 2)
+        );
+
+        // --- DEBUG: detect enemies that spawn inside solids ---
+        final double ENEMY_W = 20;
+        final double ENEMY_H = 20;
+
+        for (int i = 0; i < enemySpawns.size(); i++) {
+            EnemySpawn s = enemySpawns.get(i);
+
+            boolean inSolid = rectHitsAnySolid(solids, s.x(), s.y(), ENEMY_W, ENEMY_H);
+            if (inSolid) {
+                System.out.println("ENEMY SPAWN IN SOLID: idx=" + i
+                        + " x=" + s.x() + " y=" + s.y() + " hp=" + s.hp());
+            }
+        }
+
+        return new TileLevel(solids, enemySpawns);
+
     }
+
+    private static boolean rectHitsAnySolid(List<SolidBlock> solids, double x, double y, double w, double h) {
+        double x2 = x + w;
+        double y2 = y + h;
+
+        for (SolidBlock b : solids) {
+            double bx = b.x();
+            double by = b.y();
+            double bx2 = bx + b.width();
+            double by2 = by + b.height();
+
+            boolean widthIsPositive = Math.min(x2, bx2) > Math.max(x, bx);
+            boolean heightIsPositive = Math.min(y2, by2) > Math.max(y, by);
+
+            if (widthIsPositive && heightIsPositive) return true;
+        }
+        return false;
+    }
+
 }

@@ -50,11 +50,6 @@ public class GameController {
 
         this.world.addEntity(player);
 
-        // Demo enemies
-        world.addEntity(new Enemy(player.getX() + 200, player.getY(), 20, 20, 2));
-        world.addEntity(new Enemy(player.getX() + 500, player.getY(), 20, 20, 2));
-//        world.addEntity(new Enemy(player.getX() + 1200, player.getY(), 20, 20, 2));
-//        world.addEntity(new Enemy(player.getX() + 2000, player.getY(), 20, 20, 3));
 
     }
 
