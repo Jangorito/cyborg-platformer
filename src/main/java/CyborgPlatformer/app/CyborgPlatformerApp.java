@@ -32,6 +32,7 @@ public final class CyborgPlatformerApp {
     private final double spawnX;
     private final double spawnY;
 
+    private boolean debug = true;
     public CyborgPlatformerApp() {
         this.world = new World();
 
@@ -41,8 +42,8 @@ public final class CyborgPlatformerApp {
         world.setLevel(level);
 
         // Enemy hitbox used for validation
-        final double ENEMY_W = 20;
-        final double ENEMY_H = 20;
+        final double ENEMY_W = 50;
+        final double ENEMY_H = 64;
 
         int idx = 0;
         for (EnemySpawn s : level.getEnemySpawns()) {
@@ -70,6 +71,9 @@ public final class CyborgPlatformerApp {
         double[] spawn = pickSpawnOnFloor(level, player.getWidth(), player.getHeight());
         this.spawnX = spawn[0];
         this.spawnY = spawn[1];
+
+        if (debug) {spawn[0] = 1000;}
+
         player.setPosition(spawn[0], spawn[1]);
         System.out.printf("Spawn x=%.1f y=%.1f%n", player.getX(), player.getY());
         this.controller = new GameController(world, player, spawnX, spawnY);
@@ -140,7 +144,10 @@ public final class CyborgPlatformerApp {
         return controller;
     }
 
+
+
     public World getWorld() {
+        world.setController(controller);
         return world;
     }
 

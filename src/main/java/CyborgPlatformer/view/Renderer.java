@@ -30,6 +30,9 @@ public final class Renderer {
     private static final int TILE_SIZE = 48;
     private static final double BASE_PLAYER_W = 30;
 
+    private static final boolean DEBUG_HITBOXES = false;
+
+
     // HUD layout (screen space)
     private static final double HUD_PAD_X = 20;
     private static final double HUD_PAD_Y = 20;
@@ -182,6 +185,11 @@ public final class Renderer {
         // animator clean up
         enemyAnimatorsById.keySet().removeIf(id -> !aliveEnemyIds.contains(id));
         renderBullets(g, world);
+
+        if (DEBUG_HITBOXES) {
+            drawDebugHitboxes(g, world);
+        }
+
 
         drawHud(g, controller);
 
@@ -390,6 +398,39 @@ public final class Renderer {
             gc.fillText(msg, cx - 60, bannerY);
         }
     }
+
+    private void drawDebugHitboxes(GraphicsContext gc, World world) {
+        // Thicker lines so it's obvious
+        gc.setLineWidth(2.0);
+
+        // --- Enemies (collision rects) ---
+        gc.setStroke(javafx.scene.paint.Color.LIMEGREEN);
+        for (Enemy e : world.getEnemies()) {
+            if (!e.isAlive()) continue;
+
+            double sx = camera.worldToScreenX(e.getX());
+            double sy = camera.worldToScreenY(e.getY());
+            gc.strokeRect(sx, sy, e.getWidth(), e.getHeight());
+        }
+
+        // --- Bullets (collision rects) ---
+        gc.setStroke(javafx.scene.paint.Color.YELLOW);
+        for (Entity e : world.getEntities()) {
+            if (e instanceof Bullet b) {
+                if (!b.isAlive()) continue;
+
+                double sx = camera.worldToScreenX(b.getX());
+                double sy = camera.worldToScreenY(b.getY());
+                gc.strokeRect(sx, sy, b.getWidth(), b.getHeight());
+            }
+        }
+
+        // (Optional) Player
+        // gc.setStroke(javafx.scene.paint.Color.CYAN);
+        // Player p = world.getPlayer();
+        // gc.strokeRect(camera.worldToScreenX(p.getX()), camera.worldToScreenY(p.getY()), p.getWidth(), p.getHeight());
+    }
+
 
     private static double px(double v) { return Math.floor(v); }
 }

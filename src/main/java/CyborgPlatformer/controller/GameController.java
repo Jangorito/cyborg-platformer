@@ -77,6 +77,8 @@ public class GameController {
      */
     public void step(double dt, InputState input) {
         elapsedSeconds += dt;
+        dt = Math.min(dt, 0.033); // ~33ms, 30 FPS worst-case
+
 
         if (gameOver) {
             System.out.println("Game Won");
@@ -243,7 +245,9 @@ public class GameController {
     public int getAttempts() { return attempts; }
     public int getTimeSeconds() { return (int)Math.floor(elapsedSeconds); }
     public int getPlayerHealth() { return this.player.getHealth(); }
-    public void incrementAmmo() {this.player.oneMoreBullet();}
+    public void incrementAmmo() {
+        this.player.oneMoreBullet();
+    }
 
     public boolean hasMovedAfterSpawn() {
         return movedAfterReset;

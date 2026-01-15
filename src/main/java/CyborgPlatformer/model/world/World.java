@@ -27,7 +27,7 @@ public class World implements Updatable {
 
     private final List<Entity> entities = new ArrayList<>();
     private final List<Enemy> enemies = new ArrayList<>();
-    private GameController controller;
+    public GameController controller;
 
 
     // Level/collision backing store (stub for now)
@@ -155,7 +155,11 @@ public class World implements Updatable {
     }
 
     public void onEnemyHitByBullet() {
-        controller.incrementAmmo();
+        this.controller.incrementAmmo();
+    }
+
+    public void setController(GameController control){
+        this.controller = control;
     }
 
 }
