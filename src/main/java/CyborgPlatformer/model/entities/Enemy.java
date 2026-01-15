@@ -40,8 +40,8 @@ public final class Enemy extends Entity implements Damageable {
     private static final double ACTIVATION_RADIUS = 400.0;
     private static final double RUN_RADIUS = 200.0;
 
-    private static final double WALK_SPEED = 140.0; // px/s
-    private static final double RUN_SPEED  = 260.0; // px/s
+    private static final double WALK_SPEED = 110.0; // px/s
+    private static final double RUN_SPEED  = 160.0; // px/s
 
     private static final double CONTACT_COOLDOWN_S = 1.5;
     private static final int CONTACT_DAMAGE = 1;
