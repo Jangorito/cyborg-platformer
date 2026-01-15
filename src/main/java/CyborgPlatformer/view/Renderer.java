@@ -1,5 +1,6 @@
 package CyborgPlatformer.view;
 
+import CyborgPlatformer.assets.AssetManager;
 import CyborgPlatformer.controller.GameController;
 import CyborgPlatformer.model.entities.Bullet;
 import CyborgPlatformer.model.entities.Enemy;
@@ -27,9 +28,11 @@ import java.util.Objects;
 public final class Renderer {
 
     private final Camera camera;
+    private final AssetManager assets;
 
-    public Renderer(Camera camera) {
+    public Renderer(Camera camera, AssetManager assets) {
         this.camera = Objects.requireNonNull(camera);
+        this.assets = Objects.requireNonNull(assets);
     }
 
     public void render(GraphicsContext g,
@@ -86,7 +89,7 @@ public final class Renderer {
         g.fillText("GameOver: " + controller.isGameOver(), hudX, hudY); hudY += line;
 
         g.fillText("+_____________________+", hudX, hudY); hudY += line;
-
+        g.fillText("Assets OK (tiles): " + assets.tiles().length, hudX, hudY); hudY += line;
         g.fillText("KillEM?: " + killFlag, hudX, hudY); hudY += line;
         g.fillText("Enemies: " + world.getEnemies().size(), hudX, hudY); hudY += line;
         g.fillText("MTF?: " + controller.hasMovedAfterSpawn(), hudX, hudY); hudY += line;

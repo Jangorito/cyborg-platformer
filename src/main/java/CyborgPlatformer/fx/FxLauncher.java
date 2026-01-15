@@ -7,6 +7,7 @@ import CyborgPlatformer.model.entities.Player;
 import CyborgPlatformer.model.world.World;
 import CyborgPlatformer.view.Camera;
 import CyborgPlatformer.view.Renderer;
+import CyborgPlatformer.assets.AssetManager;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -15,9 +16,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+
 public final class FxLauncher extends Application {
 
     private GameController controller;
+    private AssetManager assets;
     private World world;
     private Player player;
 
@@ -44,8 +47,9 @@ public final class FxLauncher extends Application {
         this.canvas = new Canvas(960, 540);
         GraphicsContext g = canvas.getGraphicsContext2D();
 
+        this.assets = new AssetManager();
         this.camera = new Camera(canvas.getWidth(), canvas.getHeight());
-        this.renderer = new Renderer(camera);
+        this.renderer = new Renderer(camera, assets);
 
         Scene scene = new Scene(new StackPane(canvas));
         hookInput(scene);
