@@ -4,6 +4,7 @@ import CyborgPlatformer.app.CyborgPlatformerApp;
 import CyborgPlatformer.controller.GameController;
 import CyborgPlatformer.input.InputState;
 import CyborgPlatformer.model.entities.Player;
+import CyborgPlatformer.model.world.TileLevel;
 import CyborgPlatformer.model.world.World;
 import CyborgPlatformer.view.Camera;
 import CyborgPlatformer.view.Renderer;
@@ -44,11 +45,12 @@ public final class FxLauncher extends Application {
         this.world = app.getWorld();
         this.player = app.getPlayer();
 
-        this.canvas = new Canvas(960, 540);
+        this.canvas = new Canvas(1280, 720);
         GraphicsContext g = canvas.getGraphicsContext2D();
 
         this.assets = new AssetManager();
-        this.camera = new Camera(canvas.getWidth(), canvas.getHeight());
+        double levelWidthPx = computeLevelWidthPx(world);
+        this.camera = new Camera(canvas.getWidth(), canvas.getHeight(), levelWidthPx);
         this.renderer = new Renderer(camera, assets);
 
         Scene scene = new Scene(new StackPane(canvas));
@@ -124,6 +126,18 @@ public final class FxLauncher extends Application {
             }
         });
     }
+
+    private static double computeLevelWidthPx(World world) {
+        if (world.getLevel() instanceof TileLevel tl) {
+            char[][] grid = tl.getTiles();
+            if (grid.length > 0) {
+                return grid[0].length * 48.0; // TILE_SIZE
+            }
+        }
+        // Fallback: if level width can't be inferred, keep camera locked
+        return 0.0;
+    }
+
 
     public static void main(String[] args) {
         launch(args);

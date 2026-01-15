@@ -9,6 +9,7 @@ import CyborgPlatformer.model.entities.Player;
 import CyborgPlatformer.model.world.TileLevel;
 import CyborgPlatformer.model.world.World;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -50,6 +51,20 @@ public final class Renderer {
         return -1;
     }
 
+    private void drawParallaxLayer(GraphicsContext gc, Image bg, double parallaxCamX) {
+        double bgW = bg.getWidth();
+        if (bgW <= 0) return;
+
+        // Screen-space offset: move left as camera moves right, at reduced speed
+        double startX = -(parallaxCamX % bgW);
+
+        // Cover the whole viewport (plus one tile for seamless wrap)
+        for (double x = startX; x < camera.viewportWidth() + bgW; x += bgW) {
+            gc.drawImage(bg, x, 0);
+        }
+    }
+
+
     public void render(GraphicsContext g,
                        double w,
                        double h,
@@ -61,7 +76,34 @@ public final class Renderer {
 
         g.clearRect(0, 0, w, h);
 
-        camera.centerOn(player);
+        camera.followX(player.getX());
+
+        double levelWidthPx = w; // fallback
+        if (world.getLevel() instanceof TileLevel tl) {
+            char[][] grid = tl.getTiles();
+            if (grid.length > 0) {
+                levelWidthPx = grid[0].length * TILE_SIZE;
+            }
+        }
+
+        double camX = camera.camX();
+
+//        Image[] bgs = assets.backgrounds();
+//        drawParallaxLayer(g, bgs[3], camX / 16.0);
+//        drawParallaxLayer(g, bgs[2], camX / 4.0);
+//        drawParallaxLayer(g, bgs[1], camX / 2.0);
+//        drawParallaxLayer(g, bgs[0], camX);
+
+        Image[] bgs = assets.backgrounds();
+
+        // Use visually meaningful layers
+        drawParallaxLayer(g, bgs[1], camX / 16.0); // clouds
+        drawParallaxLayer(g, bgs[2], camX / 8.0);  // far industry
+        drawParallaxLayer(g, bgs[3], camX / 4.0);  // mid industry
+        // optional foreground layer later: bgs[4]
+
+
+
 
         if (showTiles && world.getLevel() instanceof TileLevel tl) {
             char[][] grid = tl.getTiles();
@@ -87,6 +129,7 @@ public final class Renderer {
                 }
             }
         }
+
 
         // Optional: keep drawing solids as overlay/debug (comment out if you want)
         /*
@@ -126,6 +169,9 @@ public final class Renderer {
         g.fillText("Position: " + (int)player.getX() + ", " + (int)player.getY(), hudX, hudY); hudY += line;
         g.fillText("GameOver: " + controller.isGameOver(), hudX, hudY); hudY += line;
 
+        g.fillText("+_____________________+", hudX, hudY); hudY += line;
+        g.fillText("BG0 w/h: " + (int)bgs[0].getWidth() + " / " + (int)bgs[0].getHeight(), hudX, hudY); hudY += line;
+        g.fillText("BG1 w/h: " + (int)bgs[1].getWidth() + " / " + (int)bgs[1].getHeight(), hudX, hudY); hudY += line;
         g.fillText("+_____________________+", hudX, hudY); hudY += line;
         g.fillText("Assets OK (tiles): " + assets.tiles().length, hudX, hudY); hudY += line;
         g.fillText("KillEM?: " + killFlag, hudX, hudY); hudY += line;
