@@ -18,6 +18,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import java.util.Objects;
 
@@ -37,15 +41,13 @@ public final class Renderer {
     private final PlayerRenderStateFactory playerStateFactory = new PlayerRenderStateFactory();
     private final PlayerSpriteAnimator playerAnimator;
 
-    private final EnemySpriteAnimator enemyAnimator;
+    private final Map<Integer, EnemySpriteAnimator> enemyAnimatorsById = new HashMap<>();
 
 
     public Renderer(Camera camera, AssetManager assets) {
         this.camera = Objects.requireNonNull(camera);
         this.assets = Objects.requireNonNull(assets);
         this.playerAnimator = new PlayerSpriteAnimator(assets);
-        this.enemyAnimator = new EnemySpriteAnimator(assets);
-
     }
 
     private int tileIndexFromChar(char c) {
@@ -125,13 +127,21 @@ public final class Renderer {
         // - Enemy: sprite (Phase 6)
         // - Bullet/others: debug rects for now
         // =========================
-        for (Entity e : world.getEntities()) {
-            if (e instanceof Player) continue; // don't draw debug rect over player sprite
+        // track alive enemy IDs this frame so we can cleanup animators
+        Set<Integer> aliveEnemyIds = new HashSet<>();
 
-            // Enemy sprite rendering
+        for (Entity e : world.getEntities()) {
+            if (e instanceof Player) continue;
+
             if (e instanceof Enemy enemy) {
+                int id = enemy.getId();
+                aliveEnemyIds.add(id);
+
+                EnemySpriteAnimator anim =
+                        enemyAnimatorsById.computeIfAbsent(id, k -> new EnemySpriteAnimator(assets));
+
                 EnemyRenderState rs = EnemyRenderStateFactory.from(enemy);
-                Image sprite = enemyAnimator.resolve(rs, now);
+                Image sprite = anim.resolve(rs, now);
 
                 if (sprite != null) {
                     double sx = camera.worldToScreenX(enemy.getX());
@@ -140,10 +150,7 @@ public final class Renderer {
                     double enemyW = sprite.getWidth();
                     double enemyH = sprite.getHeight();
 
-                    // center horizontally on hitbox
                     double drawX = sx + (enemy.getWidth() / 2.0) - (enemyW / 2.0);
-
-                    // foot-anchor vertically
                     double drawY = sy + enemy.getHeight() - enemyH;
 
                     drawFlipped(g, sprite, drawX, drawY, enemyW, enemyH, rs.facingRight());
@@ -162,6 +169,10 @@ public final class Renderer {
                 g.strokeRect(ex, ey, e.getWidth(), e.getHeight());
             }
         }
+
+        // animator clean up
+        enemyAnimatorsById.keySet().removeIf(id -> !aliveEnemyIds.contains(id));
+
 
         // HUD (screen-space)
         g.setFill(Color.BLACK);

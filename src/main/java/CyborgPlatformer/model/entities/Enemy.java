@@ -1,6 +1,7 @@
 package CyborgPlatformer.model.entities;
 
 import CyborgPlatformer.model.world.World;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Minimal functional enemy for V2 demo.
@@ -14,6 +15,9 @@ import CyborgPlatformer.model.world.World;
  * No sprites/animations (renderer decides visuals).
  */
 public final class Enemy extends Entity implements Damageable {
+
+    private static final AtomicInteger NEXT_ID = new AtomicInteger(1);
+    private final int id = NEXT_ID.getAndIncrement();
 
     private int health;
     private boolean alive = true;
@@ -201,4 +205,10 @@ public final class Enemy extends Entity implements Damageable {
                 && y < other.getY() + other.getHeight()
                 && y + height > other.getY();
     }
+
+    public int getId() {
+        return id;
+    }
+
+
 }
