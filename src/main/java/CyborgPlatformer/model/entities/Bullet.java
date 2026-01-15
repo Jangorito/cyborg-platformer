@@ -106,4 +106,7 @@ public final class Bullet extends Entity {
             alive = false;
         }
     }
+
+    public double getVx() { return vx; }
+
 }

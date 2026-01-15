@@ -29,10 +29,6 @@ public class Player extends Entity {
     private long lastShotMs = 0;
     private static final long SHOOT_COOLDOWN_MS = 500;
 
-    // Spawn offsets based on v1
-    private static final int SPAWN_Y_OFFSET = 10;
-    private static final int SPAWN_X_OFFSET_RIGHT = 47;
-    private static final int SPAWN_X_OFFSET_LEFT = -25;
 
     // Seconds-based speed (px/s)
     private static final double BULLET_SPEED_PX_PER_SEC = 600.0;
@@ -70,15 +66,17 @@ public class Player extends Entity {
         justShot = true;
         lastShotMs = System.currentTimeMillis();
 
-        double spawnX = x + (facingRight ? SPAWN_X_OFFSET_RIGHT : SPAWN_X_OFFSET_LEFT);
-        double spawnY = y + SPAWN_Y_OFFSET;
+        // V1 muzzle offsets
+        final double spawnX = x + (facingRight ? 52.0 : -2.0);
+        final double spawnY = y - 19.0;
 
-        double bulletVx = facingRight ? BULLET_SPEED_PX_PER_SEC : -BULLET_SPEED_PX_PER_SEC;
+        final double bulletVx = facingRight ? BULLET_SPEED_PX_PER_SEC : -BULLET_SPEED_PX_PER_SEC;
 
-        // Bullet hitbox: legacy used image bounds; for now keep a small stable box.
-        Bullet bullet = new Bullet(world, spawnX, spawnY, bulletVx, 12, 6);
+        // Match bullet art + your current measured size
+        final double bulletW = 8.0;
+        final double bulletH = 5.0;
 
-        world.spawnBullet(bullet);
+        world.spawnBullet(new Bullet(world, spawnX, spawnY, bulletVx, bulletW, bulletH));
         return true;
     }
 
@@ -115,6 +113,15 @@ public class Player extends Entity {
     public int getJumpCounter() {
         return jumpCounter;
     }
+
+    public double muzzleX(boolean facingRight) {
+        return x + (facingRight ? 47.0 : -25.0);
+    }
+
+    public double muzzleY() {
+        return y + 10.0; // BUT: tune this for V2 hitbox origin
+    }
+
 
     @Override
     public double getVY() {

@@ -28,12 +28,7 @@ import java.util.Objects;
 public final class Renderer {
 
     private static final int TILE_SIZE = 48;
-    private static final double PLAYER_VISUAL_WIDTH  = 30;
-    private static final double PLAYER_VISUAL_HEIGHT = 52;
-
-//    private static final double ENEMY_VISUAL_WIDTH = 26;
-//    private static final double ENEMY_VISUAL_HEIGHT = 64;
-
+    private static final double BASE_PLAYER_W = 30;
 
     private final Camera camera;
     private final AssetManager assets;
@@ -122,16 +117,29 @@ public final class Renderer {
         Image pImg = playerAnimator.resolve(ps, now);
         drawPlayerSprite(g, pImg, ps);
 
+        /// tuning
+//        double muzzleWorldX = player.getX() + (controller.isFacingRight() ? 52 : -2);
+//        double muzzleWorldY = player.getY() - 19;
+
+//        double mx = px(camera.worldToScreenX(muzzleWorldX));
+//        double my = px(camera.worldToScreenY(muzzleWorldY));
+//
+//        g.setStroke(Color.RED);
+//        g.strokeLine(mx - 4, my, mx + 4, my);
+//        g.strokeLine(mx, my - 4, mx, my + 4);
+
+
         // =========================
-        // Other entities
-        // - Enemy: sprite (Phase 6)
-        // - Bullet/others: debug rects for now
+        //           Enemy
         // =========================
+
         // track alive enemy IDs this frame so we can cleanup animators
         Set<Integer> aliveEnemyIds = new HashSet<>();
 
         for (Entity e : world.getEntities()) {
             if (e instanceof Player) continue;
+            if (e instanceof Bullet) continue;
+
 
             if (e instanceof Enemy enemy) {
                 int id = enemy.getId();
@@ -163,15 +171,16 @@ public final class Renderer {
             double ex = camera.worldToScreenX(e.getX());
             double ey = camera.worldToScreenY(e.getY());
 
-            if (e instanceof Bullet b) {
-                g.strokeRect(ex, ey, b.getWidth(), b.getHeight());
-            } else {
-                g.strokeRect(ex, ey, e.getWidth(), e.getHeight());
-            }
+//            if (e instanceof Bullet b) {
+//                g.strokeRect(ex, ey, b.getWidth(), b.getHeight());
+//            } else {
+//                g.strokeRect(ex, ey, e.getWidth(), e.getHeight());
+//            }
         }
 
         // animator clean up
         enemyAnimatorsById.keySet().removeIf(id -> !aliveEnemyIds.contains(id));
+        renderBullets(g, world);
 
 
         // HUD (screen-space)
@@ -187,10 +196,11 @@ public final class Renderer {
         g.fillText("Ammo: " + player.getAmmo(), hudX, hudY); hudY += line;
         g.fillText("Position: " + (int)player.getX() + ", " + (int)player.getY(), hudX, hudY); hudY += line;
         g.fillText("GameOver: " + controller.isGameOver(), hudX, hudY); hudY += line;
-
         g.fillText("+_____________________+", hudX, hudY); hudY += line;
         g.fillText("BG0 w/h: " + (int)bgs[0].getWidth() + " / " + (int)bgs[0].getHeight(), hudX, hudY); hudY += line;
         g.fillText("BG1 w/h: " + (int)bgs[1].getWidth() + " / " + (int)bgs[1].getHeight(), hudX, hudY); hudY += line;
+        g.fillText("+_____________________+", hudX, hudY); hudY += line;
+        g.fillText("Bullet Size: " + assets.bullet().getWidth() + ", " + assets.bullet().getHeight(), hudX, hudY); hudY += line;
         g.fillText("+_____________________+", hudX, hudY); hudY += line;
         g.fillText("Assets OK (tiles): " + assets.tiles().length, hudX, hudY); hudY += line;
         g.fillText("KillEM?: " + killFlag, hudX, hudY); hudY += line;
@@ -214,27 +224,38 @@ public final class Renderer {
         }
     }
 
+
+
+
+
     private void drawPlayerSprite(GraphicsContext g, Image img, PlayerRenderState ps) {
         double sx = camera.worldToScreenX(ps.x());
         double sy = camera.worldToScreenY(ps.y());
 
-        double drawW = PLAYER_VISUAL_WIDTH;
-        double drawH = PLAYER_VISUAL_HEIGHT;
+        double imgW = img.getWidth();
+        double imgH = img.getHeight();
 
-        // Foot-anchored positioning (V1-style)
-        double drawX = sx + (ps.w() / 2.0) - (drawW / 2.0);
-        double drawY = sy + ps.h() - drawH;
+        // Foot-anchored Y (stable across frames)
+        double drawY = sy + ps.h() - imgH;
 
-        g.save();
+        // Stable anchor X based on "normal" player width, not the current frame width
+        double baseX = sx + (ps.w() / 2.0) - (BASE_PLAYER_W / 2.0);
 
+        // If this frame is wider (e.g., shoot is 55px), extend forward instead of re-centering
+        double drawX = baseX;
         if (!ps.facingRight()) {
-            g.translate(drawX + drawW / 2.0, 0);
-            g.scale(-1, 1);
-            g.translate(-(drawX + drawW / 2.0), 0);
+            drawX = baseX - (imgW - BASE_PLAYER_W);
         }
-        g.drawImage(img, drawX, drawY, drawW, drawH);
-        g.restore();
+
+        // Pixel snap (reduces shaking from sub-pixel rendering)
+        drawX = px(drawX);
+        drawY = px(drawY);
+
+        // Use your existing flip helper
+        drawFlipped(g, img, drawX, drawY, imgW, imgH, ps.facingRight());
     }
+
+
 
     private void drawFlipped(
             GraphicsContext g,
@@ -260,6 +281,32 @@ public final class Renderer {
         }
     }
 
+    private void renderBullets(GraphicsContext g, World world) {
+        Image bulletImg = assets.bullet();
+        if (bulletImg == null) return;
 
+        double imgW = bulletImg.getWidth();
+        double imgH = bulletImg.getHeight();
+
+        for (Entity e : world.getEntities()) {
+            if (e instanceof Bullet b) {
+                double drawX = px(camera.worldToScreenX(b.getX()));
+                double drawY = px(camera.worldToScreenY(b.getY()));
+                drawFlipped(g, bulletImg, drawX, drawY, imgW, imgH, b.getVx() >= 0);
+
+                // hitbox overlay (same origin as b.x/b.y)
+                g.setStroke(Color.LIMEGREEN);
+                g.strokeRect(drawX, drawY, b.getWidth(), b.getHeight());
+
+                // sprite bounds overlay (should match image dims)
+                g.setStroke(Color.YELLOW);
+                g.strokeRect(drawX, drawY, imgW, imgH);
+
+            }
+        }
+    }
+
+
+    private static double px(double v) { return Math.floor(v); }
 }
 
