@@ -62,7 +62,6 @@ JaCoCo code coverage was generated as part of the Maven verification phase. Over
 ## Version 2: Carried Out Tests 
 | ID | Test Class | Version | Type | What it verifies | Notes |
 |----|-----------|---------|------|-----------------|-------|
-| V2-T1 | FixedTimestepLoopTest | V2 | Unit / Contract | World.update(dt) is called deterministically once per tick | Parameterised test verifies tick count for multiple step values |
 
 # CI/CD Setup
 Todo late november. So far, just managed to setup an automatic junit test pipeline.
