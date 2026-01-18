@@ -39,6 +39,14 @@ public final class FxLauncher extends Application {
 
     @Override
     public void start(Stage stage) {
+        // show title screen first; TitleScreen will call back to startGame
+        TitleScreen title = new TitleScreen(stage, () -> startGame(stage));
+        stage.setTitle("CyborgPlatformer V2");
+        stage.setScene(title.createScene());
+        stage.show();
+    }
+
+    private void startGame(Stage stage) {
         CyborgPlatformerApp app = new CyborgPlatformerApp();
 
         this.controller = app.getController();
@@ -92,7 +100,6 @@ public final class FxLauncher extends Application {
             }
         }.start();
     }
-
     private void hookInput(Scene scene) {
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -105,7 +112,6 @@ public final class FxLauncher extends Application {
 
                 case T -> showTiles = !showTiles;
 
-                // note: L toggles (like your original)
                 case L -> kill = !kill;
 
                 case Q -> cheat = true;

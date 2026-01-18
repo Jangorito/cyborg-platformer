@@ -17,8 +17,9 @@ import java.util.Objects;
  */
 public final class PlayerSpriteAnimator {
 
-    private static final long IDLE_FRAME_MS = 250L;
-    private static final long RUN_FRAME_MS  = 180L;
+    // frame durations in NANOSECONDS (originally ms)
+    private static final long IDLE_FRAME_NS = 250L * 1_000_000L;
+    private static final long RUN_FRAME_NS  = 180L * 1_000_000L;
 
     private static final int AERIAL_FRAME_INDEX = 5;
     private static final int HURT_FRAME_INDEX   = 1;
@@ -36,7 +37,7 @@ public final class PlayerSpriteAnimator {
         this.shoot = Objects.requireNonNull(assets.playerShoot(), "playerShoot");
     }
 
-    public Image resolve(PlayerRenderState s, long nowMs) {
+    public Image resolve(PlayerRenderState s, long nowNs) {
         Objects.requireNonNull(s, "state");
 
         if (s.shooting()) {
@@ -50,13 +51,13 @@ public final class PlayerSpriteAnimator {
             return run[AERIAL_FRAME_INDEX];
         }
         if (s.moving()) {
-            return frame(run, nowMs, RUN_FRAME_MS);
+            return frame(run, nowNs, RUN_FRAME_NS);
         }
-        return frame(idle, nowMs, IDLE_FRAME_MS);
+        return frame(idle, nowNs, IDLE_FRAME_NS);
     }
 
-    private Image frame(Image[] frames, long nowMs, long frameMs) {
-        int idx = (int) ((nowMs / frameMs) % frames.length);
+    private Image frame(Image[] frames, long nowNs, long frameNs) {
+        int idx = (int) ((nowNs / frameNs) % frames.length);
         return frames[idx];
     }
 

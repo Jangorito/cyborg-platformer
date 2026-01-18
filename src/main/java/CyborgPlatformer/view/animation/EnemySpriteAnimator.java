@@ -19,9 +19,10 @@ import javafx.scene.image.Image;
  */
 public final class EnemySpriteAnimator {
 
-    private static final long IDLE_MS = 250;
-    private static final long WALK_MS = 180;
-    private static final long RUN_MS  = 130;
+    // durations in nanoseconds
+    private static final long IDLE_NS = 250L * 1_000_000L;
+    private static final long WALK_NS = 180L * 1_000_000L;
+    private static final long RUN_NS  = 130L * 1_000_000L;
 
     private enum Mode { IDLE, WALK, RUN, HURT }
 
@@ -67,18 +68,18 @@ public final class EnemySpriteAnimator {
         // Resolve current frame
         return switch (mode) {
             case HURT -> hurt;
-            case RUN  -> animate(run, RUN_MS, now);
-            case WALK -> animate(walk, WALK_MS, now);
-            case IDLE -> animate(idle, IDLE_MS, now);
+            case RUN  -> animate(run, RUN_NS, now);
+            case WALK -> animate(walk, WALK_NS, now);
+            case IDLE -> animate(idle, IDLE_NS, now);
         };
     }
 
-    private Image animate(Image[] frames, long duration, long now) {
+    private Image animate(Image[] frames, long durationNs, long nowNs) {
         if (frames.length == 0) return null;
 
-        if (now - lastFrameTime > duration) {
+        if (nowNs - lastFrameTime > durationNs) {
             frame = (frame + 1) % frames.length;
-            lastFrameTime = now;
+            lastFrameTime = nowNs;
         }
         return frames[frame];
     }

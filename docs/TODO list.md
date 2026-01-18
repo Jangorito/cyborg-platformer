@@ -52,3 +52,9 @@ problems with the enemy right now:
 - enemies not in same spots
 - falling doesn't reset Player position
 - shooting doesn't kill enemies
+
+- pause button with title screen background
+- options for difficulty
+  - custom amount of zombies?
+- death doesn't reset zombies
+- capture the flag game mode

@@ -1,0 +1,46 @@
+/* arcadeStyle.css */
+
+/* Retro font (Optional) */
+/*@font-face {*/
+/*    font-family: 'Retroville';*/
+/*    src: url('fonts/RetrovilleNC.ttf');*/
+/*}*/
+
+/* Style for buttons */
+.button {
+    -fx-font-family: 'RetroVille NC';
+    -fx-font-size: 24px;
+    -fx-background-color: linear-gradient(#060644, #020203);
+    -fx-background-radius: 0; /* Sharp corners for a retro feel */
+    -fx-text-fill: #ffffff; /* White text color */
+    -fx-padding: 10px 20px; /* Padding for a button-like feel */
+    -fx-border-color: #ffffff; /* White border for contrast */
+    -fx-border-width: 2px; /* Thick border */
+    -fx-border-radius: 0; /* No border radius for sharp edges */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 5, 0, 0, 2); /* Add a shadow for depth */
+    -fx-cursor: hand; /* Hand cursor on hover */
+}
+
+.label {
+    -fx-font-family: 'RetroVille NC';
+    -fx-text-fill: #ffffff;
+}
+
+/* Hover effect */
+.button:hover {
+    -fx-background-color: linear-gradient(#020203, #060644);
+    -fx-border-color: #83cbeb; /* Change border color on hover */
+}
+
+/* Pressed effect */
+.button:pressed {
+    -fx-background-color: #7030A0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 10, 0, 0, 2); /* Deeper shadow on press */
+}
+
+.glow-label {
+    -fx-font-family: 'RetroVille NC';
+    -fx-font-size: 24px;
+    -fx-text-fill: white; /* Text color */
+    -fx-effect: dropshadow(three-pass-box, rgba(255,255,255,0.8), 10, 0.5, 0, 0);
+}
