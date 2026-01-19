@@ -223,11 +223,17 @@ public class GameController {
         player.setGrounded(false);
         player.resetJumpCounter();
         player.resetForRespawn();
-        win = false;
-    }
 
-    public boolean isGameWon() {
-        if (player.getX() > 7400) {
+        // If the level requests full enemy respawn on player death, rebuild them from the level spawns.
+        if (world.getLevelSettings() != null && world.getLevelSettings().isRespawnOnPlayerDeath()) {
+            world.respawnEnemiesFromLevel();
+            return;
+        }
+
+        // Otherwise preserve current enemy instances but put them back to sleep.
+        for (Enemy e : world.getEnemies()) {
+            e.sleep();
+        }
             win = true;
             gameOver = true;
         }

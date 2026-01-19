@@ -47,15 +47,15 @@ public final class FxLauncher extends Application {
 
     @Override
     public void start(Stage stage) {
-        // show title screen first; TitleScreen will call back to startGame
-        TitleScreen title = new TitleScreen(stage, () -> startGame(stage));
+        // show title screen first; TitleScreen will call back to startGame with selected settings
+        TitleScreen title = new TitleScreen(stage, (settings) -> startGame(stage, settings));
         stage.setTitle("CyborgPlatformer V2");
         stage.setScene(title.createScene());
         stage.show();
     }
 
-    private void startGame(Stage stage) {
-        CyborgPlatformerApp app = new CyborgPlatformerApp();
+    private void startGame(Stage stage, CyborgPlatformer.config.LevelSettings settings) {
+        CyborgPlatformerApp app = new CyborgPlatformerApp(settings);
 
         this.controller = app.getController();
         this.world = app.getWorld();

@@ -2,6 +2,8 @@ package CyborgPlatformer.app;
 
 import CyborgPlatformer.controller.GameController;
 import CyborgPlatformer.model.entities.Enemy;
+import CyborgPlatformer.config.LevelSettings;
+import CyborgPlatformer.config.GameMode;
 import CyborgPlatformer.model.entities.Player;
 import CyborgPlatformer.model.world.EnemySpawn;
 import CyborgPlatformer.model.world.TileLevel;
@@ -34,6 +36,10 @@ public final class CyborgPlatformerApp {
 
     private boolean debug = false;
     public CyborgPlatformerApp() {
+        this(LevelSettings.defaultsFor(GameMode.MEDIUM));
+    }
+
+    public CyborgPlatformerApp(LevelSettings settings) {
         this.world = new World();
 
         InputStream mapStream = CyborgPlatformerApp.class.getResourceAsStream("/Maps.txt");
@@ -44,6 +50,11 @@ public final class CyborgPlatformerApp {
         // Enemy hitbox used for validation
         final double ENEMY_W = 50;
         final double ENEMY_H = 64;
+
+        // Game mode / level settings
+        LevelSettings localSettings = (settings == null) ? LevelSettings.defaultsFor(GameMode.MEDIUM) : settings;
+        // Expose settings to world so systems can read difficulty parameters
+        world.setLevelSettings(localSettings);
 
         // setting enemy spawns
         int idx = 0;
@@ -62,7 +73,7 @@ public final class CyborgPlatformerApp {
                         + " (x=" + x + ", hp=" + s.hp() + ")");
             }
 
-            world.addEntity(new Enemy(x, adjustedY, ENEMY_W, ENEMY_H, s.hp()));
+            world.addEntity(new Enemy(x, adjustedY, ENEMY_W, ENEMY_H, s.hp(), localSettings));
             idx++;
         }
 
