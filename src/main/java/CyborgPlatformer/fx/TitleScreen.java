@@ -106,6 +106,9 @@ public class TitleScreen {
         Button options = new Button("Options");
         Button quit = new Button("Quit");
 
+        // holder for custom advanced settings (array used to allow modification from inner class)
+        final LevelSettings[] customSettings = new LevelSettings[1];
+
         final Scene[] sceneRef = new Scene[1];
 
         for (Button b : new Button[]{start, options, quit}) {
@@ -129,7 +132,6 @@ public class TitleScreen {
         quit.setCancelButton(true);
 
         // Advanced dialog: allow primitive tuning of LevelSettings
-        final LevelSettings[] customSettings = new LevelSettings[1];
         advanced.setOnAction(ev -> {
             Stage d = new Stage();
             VBox box = new VBox(8);
