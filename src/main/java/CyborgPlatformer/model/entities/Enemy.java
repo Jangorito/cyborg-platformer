@@ -1,5 +1,6 @@
 package CyborgPlatformer.model.entities;
 
+import CyborgPlatformer.config.LevelSettings;
 import CyborgPlatformer.model.world.World;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -57,10 +58,29 @@ public final class Enemy extends Entity implements Damageable {
     private static final double ENEMY_KB_VY = -180.0;
     private static final double OUT_OF_BOUNDS_Y = 2000.0;
 
+    // Default collision size used by spawn code.
+    public static final double DEFAULT_WIDTH = 50.0;
+    public static final double DEFAULT_HEIGHT = 64.0;
+
+    // Per-instance difficulty settings (injected at construction)
+    private final LevelSettings settings;
+
+    /**
+     * Backwards-compatible constructor that uses medium presets.
+     */
     public Enemy(double x, double y, double width, double height, int health) {
+        this(x, y, width, height, health, LevelSettings.medium());
+    }
+
+    /**
+     * Preferred constructor allowing per-level settings to be applied to this enemy.
+     */
+    public Enemy(double x, double y, double width, double height, int health, LevelSettings settings) {
         setPosition(x, y);
         setSize(width, height);
-        this.health = health;
+        this.settings = (settings == null) ? LevelSettings.medium() : settings;
+        // Apply health multiplier from settings (ensure at least 1 HP)
+        this.health = Math.max(1, (int) Math.round(health * this.settings.getHealthMultiplier()));
     }
 
     public boolean isAlive() { return alive; }
@@ -139,8 +159,9 @@ public final class Enemy extends Entity implements Damageable {
             return;
         }
 
-        // choose speed
-        double speed = (dist <= RUN_RADIUS) ? RUN_SPEED : WALK_SPEED;
+        // choose speed (apply level speed multiplier)
+        double baseSpeed = (dist <= RUN_RADIUS) ? RUN_SPEED : WALK_SPEED;
+        double speed = baseSpeed * this.settings.getSpeedMultiplier();
         running = dist <= RUN_RADIUS;
 
         // chase
@@ -174,8 +195,10 @@ public final class Enemy extends Entity implements Damageable {
 
         // contact damage + knockback both
         if (contactCooldown <= 0 && overlaps(player)) {
-            player.damage(CONTACT_DAMAGE);
-            contactCooldown = CONTACT_COOLDOWN_S;
+            int inflicted = Math.max(1, (int) Math.round(CONTACT_DAMAGE * this.settings.getDamageMultiplier()));
+            player.damage(inflicted);
+            // reduce cooldown when aggression is higher
+            contactCooldown = CONTACT_COOLDOWN_S / Math.max(0.0001, this.settings.getAggressionMultiplier());
 
             // Direction: push away from each other
             double dirToPlayer = (player.getX() >= x) ? 1.0 : -1.0;
