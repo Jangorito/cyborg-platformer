@@ -8,6 +8,9 @@ import CyborgPlatformer.model.world.TileLevel;
 import CyborgPlatformer.model.world.World;
 import CyborgPlatformer.view.Camera;
 import CyborgPlatformer.view.Renderer;
+import CyborgPlatformer.view.skin.PlayerSkin;
+import CyborgPlatformer.view.skin.PlayerSkinCache;
+import CyborgPlatformer.view.skin.PlayerSkins;
 import CyborgPlatformer.assets.AssetManager;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -16,12 +19,17 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import java.util.function.Supplier;
+
 
 // Launcher
 public final class FxLauncher extends Application {
 
     private GameController controller;
     private AssetManager assets;
+    private PlayerSkinCache skinCache;
+    private PlayerSkin currentSkin = PlayerSkins.CLASSIC;
+
     private World world;
     private Player player;
 
@@ -57,9 +65,12 @@ public final class FxLauncher extends Application {
         GraphicsContext g = canvas.getGraphicsContext2D();
 
         this.assets = new AssetManager();
+        this.skinCache = new PlayerSkinCache(this.assets);
+
         double levelWidthPx = computeLevelWidthPx(world);
         this.camera = new Camera(canvas.getWidth(), canvas.getHeight(), levelWidthPx);
-        this.renderer = new Renderer(camera, assets);
+        this.renderer = new Renderer(camera, assets, skinCache, () -> currentSkin);
+
 
         Scene scene = new Scene(new StackPane(canvas));
         hookInput(scene);
@@ -115,6 +126,11 @@ public final class FxLauncher extends Application {
                 case L -> kill = !kill;
 
                 case Q -> cheat = true;
+
+                case DIGIT1 -> currentSkin = PlayerSkins.CLASSIC;
+                case DIGIT2 -> currentSkin = PlayerSkins.STEALTH;
+                case DIGIT3 -> currentSkin = PlayerSkins.TEST;
+
             }
         });
 

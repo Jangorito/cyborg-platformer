@@ -1,7 +1,7 @@
 package CyborgPlatformer.view.animation;
 
-import CyborgPlatformer.assets.AssetManager;
 import CyborgPlatformer.view.model.PlayerRenderState;
+import CyborgPlatformer.view.skin.SkinnedPlayerAssets;
 import javafx.scene.image.Image;
 
 import java.util.Objects;
@@ -24,17 +24,20 @@ public final class PlayerSpriteAnimator {
     private static final int AERIAL_FRAME_INDEX = 5;
     private static final int HURT_FRAME_INDEX   = 1;
 
+    private static final int IDLE_LENGTH   = 3;
+
     private final Image[] idle;
     private final Image[] run;
     private final Image[] hurt;
     private final Image shoot;
 
-    public PlayerSpriteAnimator(AssetManager assets) {
+    public PlayerSpriteAnimator(SkinnedPlayerAssets assets) {
         Objects.requireNonNull(assets, "assets");
-        this.idle  = requireLen(assets.playerIdle(), 4, "playerIdle");
-        this.run   = requireLen(assets.playerRun(), 6, "playerRun");
-        this.hurt  = requireLen(assets.playerHurt(), 2, "playerHurt");
-        this.shoot = Objects.requireNonNull(assets.playerShoot(), "playerShoot");
+
+        this.idle  = requireLen(assets.idle(), IDLE_LENGTH, "idle");
+        this.run   = requireLen(assets.run(), 6, "run");
+        this.hurt  = requireLen(assets.hurt(), 2, "hurt");
+        this.shoot = Objects.requireNonNull(assets.shoot(), "shoot");
     }
 
     public Image resolve(PlayerRenderState s, long nowNs) {
@@ -69,4 +72,6 @@ public final class PlayerSpriteAnimator {
         }
         return arr;
     }
+
+
 }

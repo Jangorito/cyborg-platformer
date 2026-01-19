@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -22,7 +23,8 @@ import java.util.Objects;
 public final class AssetManager {
 
     // ===================== Player =====================
-    private final Image[] playerIdle;   // 4
+    private final Image[] playerIdle1;   // 4
+    private final Image[] playerIdle;   // 3
     private final Image[] playerRun;    // 6
     private final Image[] playerHurt;   // 2
     private final Image   playerShoot;  // 1
@@ -48,7 +50,17 @@ public final class AssetManager {
     public AssetManager() {
 
         // ---- Player ----
-        playerIdle  = loadNumbered1Based("/Sprites/Player/idle/Cyborg_idle_", 4);
+//        playerIdle1  = loadNumbered1Based("/Sprites/Player/idle/Cyborg_idle_", 4);
+        playerIdle1 = loadNumbered1Based(
+                "/Sprites/Player/idle/Cyborg_idle_",
+                4
+        );
+        playerIdle = Arrays.copyOfRange(
+                playerIdle1,
+                1, // start at index 1 (frame 2)
+                4  // exclusive (up to frame 4)
+        );
+
         playerRun   = loadNumbered1Based("/Sprites/Player/run/Cyborg_run_", 6);
         playerHurt  = loadNumbered1Based("/Sprites/Player/hurt/Cyborg_hurt_", 2);
         playerShoot = loadImage("/Sprites/Player/shoot/shootingSprite.png");

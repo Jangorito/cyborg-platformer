@@ -14,6 +14,8 @@ import CyborgPlatformer.view.model.EnemyRenderState;
 import CyborgPlatformer.view.model.EnemyRenderStateFactory;
 import CyborgPlatformer.view.model.PlayerRenderState;
 import CyborgPlatformer.view.model.PlayerRenderStateFactory;
+import CyborgPlatformer.view.skin.PlayerSkin;
+import CyborgPlatformer.view.skin.PlayerSkinCache;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -24,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public final class Renderer {
 
@@ -31,6 +34,13 @@ public final class Renderer {
     private static final double BASE_PLAYER_W = 30;
 
     private static final boolean DEBUG_HITBOXES = false;
+
+    private final PlayerSkinCache skinCache;
+    private final Supplier<PlayerSkin> skinSupplier;
+
+    private PlayerSkin lastSkin = null;
+    private PlayerSpriteAnimator playerAnimator;
+
 
 
     // HUD layout (screen space)
@@ -50,15 +60,17 @@ public final class Renderer {
     private final AssetManager assets;
 
     private final PlayerRenderStateFactory playerStateFactory = new PlayerRenderStateFactory();
-    private final PlayerSpriteAnimator playerAnimator;
 
     private final Map<Integer, EnemySpriteAnimator> enemyAnimatorsById = new HashMap<>();
 
 
-    public Renderer(Camera camera, AssetManager assets) {
-        this.camera = Objects.requireNonNull(camera);
-        this.assets = Objects.requireNonNull(assets);
-        this.playerAnimator = new PlayerSpriteAnimator(assets);
+    public Renderer(Camera camera, AssetManager assets,
+                    PlayerSkinCache skinCache,
+                    Supplier<PlayerSkin> skinSupplier) {
+        this.camera = camera;
+        this.assets = assets;
+        this.skinCache = skinCache;
+        this.skinSupplier = skinSupplier;
     }
 
     private int tileIndexFromChar(char c) {
@@ -123,6 +135,13 @@ public final class Renderer {
                 }
             }
         }
+
+        PlayerSkin skin = Objects.requireNonNull(skinSupplier.get(), "skinSupplier returned null");
+        if (!Objects.equals(skin, lastSkin)) {
+            this.playerAnimator = new PlayerSpriteAnimator(skinCache.get(skin));
+            this.lastSkin = skin;
+        }
+
 
         // =========================
         //       Player sprite
