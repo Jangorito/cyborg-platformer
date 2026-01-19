@@ -23,7 +23,7 @@ public final class Enemy extends Entity implements Damageable {
     private int health;
     private boolean alive = true;
 
-    // signals for HUD/renderer later
+    // signals for HUD/renderer
     private boolean running = false;
     private boolean facingRight = true;
     private boolean damaged = false;
@@ -41,8 +41,8 @@ public final class Enemy extends Entity implements Damageable {
     private static final double ACTIVATION_RADIUS = 400.0;
     private static final double RUN_RADIUS = 200.0;
 
-    private static final double WALK_SPEED = 110.0; // px/s
-    private static final double RUN_SPEED  = 160.0; // px/s
+    private static final double WALK_SPEED = 110.0;
+    private static final double RUN_SPEED  = 160.0;
 
     private static final double CONTACT_COOLDOWN_S = 1.5;
     private static final int CONTACT_DAMAGE = 1;
@@ -53,16 +53,16 @@ public final class Enemy extends Entity implements Damageable {
     // knockback (BOTH sides)
     private static final double PLAYER_KB_VX = 320.0;
     private static final double PLAYER_KB_VY = -420.0;
-
     private static final double ENEMY_KB_VX = 50;
     private static final double ENEMY_KB_VY = -180.0;
+
     private static final double OUT_OF_BOUNDS_Y = 2000.0;
 
     // Default collision size used by spawn code.
     public static final double DEFAULT_WIDTH = 50.0;
     public static final double DEFAULT_HEIGHT = 64.0;
 
-    // Per-instance difficulty settings (injected at construction)
+    // Per-instance difficulty settings
     private final LevelSettings settings;
 
     /**
@@ -91,7 +91,6 @@ public final class Enemy extends Entity implements Damageable {
 
 
     // Allow this enemy to be damaged by bullets/attacks.
-    // Previously this method incorrectly disabled damage; fix to enable damage.
     public void setCanDamage() { this.canDamage = true; }
 
     /**
@@ -190,7 +189,7 @@ public final class Enemy extends Entity implements Damageable {
         if (Math.abs(x - player.getX()) < 20) vx = 0;
         if (damaged) vx *= 0.5;
 
-        // jump logic (limited)
+        // jump logic
         if (grounded) jumpCounter = 0;
 
         boolean playerAbove = player.getY() < y;

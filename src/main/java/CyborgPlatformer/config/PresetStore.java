@@ -9,9 +9,6 @@ import java.util.Map;
 /**
  * Simple JSON-backed preset store for LevelSettings.
  *
- * Note: this is a lightweight parser/serializer tailored to the project's LevelSettings
- * structure — it intentionally avoids third-party JSON libraries to keep the project
- * dependency-free.
  */
 public final class PresetStore {
 

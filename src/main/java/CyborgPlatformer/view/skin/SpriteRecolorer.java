@@ -16,7 +16,7 @@ public final class SpriteRecolorer {
      * Returns a recoloured copy of the given image.
      *
      * @param src base sprite image
-     * @param argbMap map of sourceARGB -> targetARGB (both should include alpha)
+     * @param argbMap map of source -> target
      */
     public static Image recolor(Image src, Map<Integer, Integer> argbMap) {
         Objects.requireNonNull(src, "src");

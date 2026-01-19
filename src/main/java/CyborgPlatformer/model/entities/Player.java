@@ -3,7 +3,7 @@ package CyborgPlatformer.model.entities;
 import CyborgPlatformer.model.world.World;
 
 /**
- * V2 Player model.
+ * Player model.
  *
  * Responsibilities:
  * - Stores gameplay state (health, ammo).
@@ -29,11 +29,10 @@ public class Player extends Entity {
     private long lastShotMs = 0;
     private static final long SHOOT_COOLDOWN_MS = 500;
 
-
-    // Seconds-based speed (px/s)
+    // Seconds-based speed
     private static final double BULLET_SPEED_PX_PER_SEC = 600.0;
 
-    // Movement speed (px/s) — tune later
+    // Movement speed
     private static final double MOVE_SPEED_PX_PER_SEC = 200.0;
 
     public void moveLeft()  { vx = -MOVE_SPEED_PX_PER_SEC; }
@@ -66,7 +65,7 @@ public class Player extends Entity {
         justShot = true;
         lastShotMs = System.currentTimeMillis();
 
-        // V1 muzzle offsets
+        // muzzle offsets
         final double spawnX = x + (facingRight ? 52.0 : -2.0);
         final double spawnY = y - 19.0;
 
@@ -109,26 +108,20 @@ public class Player extends Entity {
     }
 
     public void setAmmo(int a) { this.ammo = a; }
-
-
     public int getJumpCounter() {
         return jumpCounter;
     }
-
     @Override
     public double getVY() {
         return super.getVY();
     }
-
     public boolean isAlive() { return alive; }
     public boolean isShootingVisualActive() {
         return justShot;
     }
-
     public void resetJumpCounter() {
         jumpCounter = 0;
     }
-
     public void incrementJumpCounter() {
         jumpCounter++;
     }

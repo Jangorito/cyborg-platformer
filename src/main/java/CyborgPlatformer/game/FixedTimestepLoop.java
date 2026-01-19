@@ -1,6 +1,5 @@
 package CyborgPlatformer.game;
 
-// Not for V2
 public class FixedTimestepLoop implements GameLoop {
     private final Updatable target;
     private final double dt;

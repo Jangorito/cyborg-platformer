@@ -10,7 +10,5 @@ package CyborgPlatformer.model.world;
  * - Pure data holder.
  * - Used by {@link TileLevel} for collision detection.
  *
- * V2 note:
- * - Replaces legacy {@code MapBlocks} instances that mixed rendering and collision.
  */
 public record SolidBlock(double x, double y, double width, double height) { }

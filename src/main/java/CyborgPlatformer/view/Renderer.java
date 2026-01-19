@@ -43,7 +43,7 @@ public final class Renderer {
 
 
 
-    // HUD layout (screen space)
+    // HUD layout
     private static final double HUD_PAD_X = 20;
     private static final double HUD_PAD_Y = 20;
 
@@ -191,13 +191,7 @@ public final class Renderer {
 
                     drawFlipped(g, sprite, drawX, drawY, enemyW, enemyH, rs.facingRight());
                 }
-
-                continue;
             }
-
-            // Fallback debug rects
-            double ex = camera.worldToScreenX(e.getX());
-            double ey = camera.worldToScreenY(e.getY());
 
         }
 
@@ -223,16 +217,16 @@ public final class Renderer {
         // Foot-anchored Y
         double drawY = sy + ps.h() - imgH;
 
-        // Stable anchor X based on "normal" player width, not the current frame width
+        // Stable anchor X based on player width
         double baseX = sx + (ps.w() / 2.0) - (BASE_PLAYER_W / 2.0);
 
-        // If this frame is wider (e.g., shoot is 55px), extend forward instead of re-centering
+        // If this frame is wider, extend forward instead of re-centering
         double drawX = baseX;
         if (!ps.facingRight()) {
             drawX = baseX - (imgW - BASE_PLAYER_W);
         }
 
-        // Pixel snap (reduces shaking from sub-pixel rendering)
+        // Pixel snap
         drawX = px(drawX);
         drawY = px(drawY);
 
@@ -333,7 +327,7 @@ public final class Renderer {
         try {
             ammoIcon = assets.bullet();
         } catch (Throwable ignored) {
-            ammoIcon = assets.bullet();     // fallback
+            ammoIcon = assets.bullet();
         }
 
         if (ammoIcon != null) {

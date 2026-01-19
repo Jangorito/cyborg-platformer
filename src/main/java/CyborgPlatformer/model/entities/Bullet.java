@@ -29,7 +29,6 @@ public final class Bullet extends Entity {
     private final double startX;
     private final double startY;
 
-    // simple hitbox. TODO: can tune later
     private final double width;
     private final double height;
 

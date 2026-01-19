@@ -11,18 +11,14 @@ import java.util.Scanner;
  * Loads tile-based level collision data from a text map resource.
  *
  * Responsibilities:
- * - Reads a tile map (e.g., Maps.txt) and builds a {@link TileLevel} containing solid collision blocks.
- * - Preserves the raw tile grid (Phase 3) for rendering.
- * - '0' = empty & other character = solid tile (collision rule matches V1).
+ * - Reads Maps.txt and builds a {@link TileLevel} containing solid collision blocks.
+ * - Preserves the raw tile grid for rendering.
+ * - '0' = empty & other character = solid tile.
  *
  * Notes:
  * - Does not load images or decide which sprite corresponds to which tile character.
  * - Does not render tiles or background.
  * - Does not manage World/game state directly (caller sets {@code world.setLevel(...)}).
- *
- * V2 note:
- * - Replaces legacy {@code MapBlocks.getMap()} which mixed file parsing, collision storage, and rendering.
- * - Produces data-only level geometry compatible with {@link PhysicsSystem} via {@link Level#isSolidRect}.
  */
 public final class TileLevelLoader {
 
@@ -32,7 +28,6 @@ public final class TileLevelLoader {
     public static final int TILE_SIZE = 48;
 
     private TileLevelLoader() {
-        // Utility class.
     }
 
     /**
@@ -49,7 +44,6 @@ public final class TileLevelLoader {
 
         List<SolidBlock> solids = new ArrayList<>();
 
-        // preserve raw lines for tile rendering
         List<String> lines = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(mapStream)) {
@@ -62,7 +56,7 @@ public final class TileLevelLoader {
                 for (int col = 0; col < line.length(); col++) {
                     char tile = line.charAt(col);
 
-                    // V1 rule: '0' means empty space (skip)
+                    // '0' means empty space (skip)
                     if (tile == '0') continue;
 
                     solids.add(new SolidBlock(

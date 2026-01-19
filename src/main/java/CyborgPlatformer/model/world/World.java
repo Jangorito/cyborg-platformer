@@ -8,6 +8,7 @@ import CyborgPlatformer.model.entities.Enemy;
 import CyborgPlatformer.model.entities.Entity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import CyborgPlatformer.model.world.TileLevelLoader;
@@ -34,7 +35,6 @@ public class World implements Updatable {
 
     // Level/collision backing store
     private Level level;
-
     // Current level difficulty/settings
     private LevelSettings levelSettings = LevelSettings.medium();
     // Spawn scheduling
@@ -60,10 +60,10 @@ public class World implements Updatable {
     }
 
     public List<Entity> getEntities() {
-        return entities;
+        return Collections.unmodifiableList(entities);
     }
     public List<Enemy> getEnemies() {
-        return enemies;
+        return Collections.unmodifiableList(enemies);
     }
     public Level getLevel() {return level; }
 
@@ -109,10 +109,8 @@ public class World implements Updatable {
             e.update(dt);
 
             // Horizontal collision resolution for non-bullets
-            // (Bullets already do their own predictive collision checks)
             if (!(e instanceof Bullet) && level != null) {
                 if (level.isSolidRect(e.getX(), e.getY(), e.getWidth(), e.getHeight())) {
-                    // Revert X; keep Y (PhysicsSystem owns Y)
                     e.setPosition(prevX, prevY);
                     e.setVX(0);
                 }
@@ -155,7 +153,6 @@ public class World implements Updatable {
 
             if (e instanceof CyborgPlatformer.model.entities.Enemy enemy && !enemy.isAlive()) {
                 it.remove();
-                continue;
             }
 
 

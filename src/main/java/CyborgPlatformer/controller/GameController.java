@@ -193,15 +193,6 @@ public class GameController {
         // reset ammo only when the player actually dies
         player.setAmmo(10);
 
-        /// TODO: wrap this around level functionality when extending
-//        if (lives == 0) {
-//            respawnPlayer();
-//            gameOver = true;
-//            // Freeze the player so the game stops feeling alive
-//            player.stop();
-//            return;
-//        }
-
         resetPlayer();
         enemiesAwake = false;
         movedAfterReset = false;
@@ -209,7 +200,6 @@ public class GameController {
         lastShoot = false;
         lastReset = false;
 
-        // Decide whether to rebuild enemies (respawn) or keep them asleep based on settings
         if (world.getLevelSettings() != null && world.getLevelSettings().isRespawnOnPlayerDeath()) {
             world.respawnEnemiesFromLevel();
         } else {

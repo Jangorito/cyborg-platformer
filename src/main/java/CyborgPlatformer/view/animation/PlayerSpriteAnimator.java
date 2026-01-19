@@ -7,13 +7,7 @@ import javafx.scene.image.Image;
 import java.util.Objects;
 
 /**
- * V1 parity animation resolver for player.
- *
- * V1 updateState priority:
- *   shooting > hurt > aerial > running > idle
- *
- *
- * Facing handled by Renderer (flip).
+ * Animation resolver for player.
  */
 public final class PlayerSpriteAnimator {
 

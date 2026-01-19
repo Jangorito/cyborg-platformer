@@ -28,16 +28,11 @@ public final class FxLauncher extends Application {
     private GameController controller;
     private AssetManager assets;
     private PlayerSkinCache skinCache;
-    // current skin is stored centrally so preview can update it live
-
     private World world;
     private Player player;
-
     private Canvas canvas;
-
     // input flags
     private boolean left, right, jump, shoot, reset, kill, cheat;
-
     // debug flags
     private boolean showTiles = true;
 
@@ -47,7 +42,7 @@ public final class FxLauncher extends Application {
 
     @Override
     public void start(Stage stage) {
-        // show title screen first; TitleScreen will call back to startGame with selected settings
+        // title screen first
         TitleScreen title = new TitleScreen(stage, (settings) -> startGame(stage, settings));
         stage.setTitle("CyborgPlatformer V2");
         stage.setScene(title.createScene());
@@ -92,7 +87,6 @@ public final class FxLauncher extends Application {
                 double dt = (now - last) / 1_000_000_000.0;
                 last = now;
 
-                // avoid huge dt when tabbing/window dragging
                 dt = Math.min(dt, 1.0 / 30.0);
 
                 InputState input = new InputState(left, right, jump, shoot, reset, kill, cheat);
@@ -159,7 +153,6 @@ public final class FxLauncher extends Application {
                 return grid[0].length * 48.0; // TILE_SIZE
             }
         }
-        // Fallback: if level width can't be inferred, keep camera locked
         return 0.0;
     }
 

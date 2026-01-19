@@ -22,7 +22,7 @@ public final class Camera {
         this.levelWidth = levelWidth;
 
         this.camX = 0;
-        this.camY = 0; // V1 parity: no vertical scrolling
+        this.camY = 0;
     }
 
     /**

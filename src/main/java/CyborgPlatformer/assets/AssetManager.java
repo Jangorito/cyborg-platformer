@@ -9,16 +9,6 @@ import java.util.Objects;
 
 /**
  * Loads and owns all JavaFX assets .
- *
- * Folder layout:
- * - /Background
- * - /Font
- * - /Sprites
- * - /Tiles
- *
- * Notes:
- * - Frame numbering is 1-based in your resources (e.g., Idle_1.png).
- * - Paths are case-sensitive when packaged -> match folder/file casing exactly.
  */
 public final class AssetManager {
 
@@ -51,15 +41,14 @@ public final class AssetManager {
     public AssetManager() {
 
         // ---- Player ----
-//        playerIdle1  = loadNumbered1Based("/Sprites/Player/idle/Cyborg_idle_", 4);
         playerIdle1 = loadNumbered1Based(
                 "/Sprites/Player/idle/Cyborg_idle_",
                 4
         );
         playerIdle = Arrays.copyOfRange(
                 playerIdle1,
-                1, // start at index 1 (frame 2)
-                4  // exclusive (up to frame 4)
+                1,
+                4
         );
 
         playerRun   = loadNumbered1Based("/Sprites/Player/run/Cyborg_run_", 6);

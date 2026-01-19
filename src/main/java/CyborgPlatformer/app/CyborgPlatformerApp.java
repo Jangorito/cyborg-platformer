@@ -22,7 +22,6 @@ import java.io.InputStream;
  *
  * Notes:
  * - This replaces legacy static setup in Game / MapBlocks.
- * - Rendering and input will be attached here (JavaFX).
  */
 public final class CyborgPlatformerApp {
 
@@ -35,6 +34,7 @@ public final class CyborgPlatformerApp {
     private final double spawnY;
 
     private boolean debug = false;
+
     public CyborgPlatformerApp() {
         this(LevelSettings.defaultsFor(GameMode.MEDIUM));
     }
@@ -47,16 +47,12 @@ public final class CyborgPlatformerApp {
         TileLevel level = TileLevelLoader.load(mapStream);
         world.setLevel(level);
 
-        // Enemy hitbox used for validation
-        final double ENEMY_W = 50;
-        final double ENEMY_H = 64;
-
         // Game mode / level settings
         LevelSettings localSettings = (settings == null) ? LevelSettings.defaultsFor(GameMode.MEDIUM) : settings;
-        // Expose settings to world so systems can read difficulty parameters
+        // let systems read difficulty parameters
         world.setLevelSettings(localSettings);
 
-        // Initialize spawn scheduling in the world (will spawn enemies according to level settings)
+        // Initialize spawn
         world.respawnEnemiesFromLevel();
 
         // creating Player
@@ -68,7 +64,9 @@ public final class CyborgPlatformerApp {
         this.spawnX = spawn[0];
         this.spawnY = spawn[1];
 
-        if (debug) {spawn[0] = 1000;}
+        if (debug) {
+            spawn[0] = 1000;
+        }
 
         // Player spawn
         player.setPosition(spawn[0], spawn[1]);
@@ -80,7 +78,6 @@ public final class CyborgPlatformerApp {
         var solids = level.getSolids();
         if (solids.isEmpty()) return new double[]{96, 96};
 
-        // Search a left-side window so we start near the beginning of the level.
         double maxX = TileLevelLoader.TILE_SIZE * 60;
 
         double bestX = 96, bestY = 96;
@@ -118,29 +115,10 @@ public final class CyborgPlatformerApp {
         return new double[]{bestX, bestY};
     }
 
-    private static double adjustSpawnY(TileLevel level, double x, double y, double w, double h) {
-        // If it fits already, keep legacy value exactly
-        if (!level.isSolidRect(x, y, w, h)) return y;
-
-        // Nudge up by one tile at a time
-        final int MAX_STEPS = 6; // up to 6 tiles upward
-        for (int step = 1; step <= MAX_STEPS; step++) {
-            double candY = y - step * TileLevelLoader.TILE_SIZE;
-            if (!level.isSolidRect(x, candY, w, h)) {
-                return candY;
-            }
-        }
-
-        // If we can't find a free spot quickly, keep original and let logs show it
-        System.out.println("WARNING: Could not find valid spawn for x=" + x + " y=" + y);
-        return y;
-    }
-
 
     public GameController getController() {
         return controller;
     }
-
 
 
     public World getWorld() {
@@ -150,13 +128,5 @@ public final class CyborgPlatformerApp {
 
     public Player getPlayer() {
         return player;
-    }
-
-    public double getSpawnX() {
-        return spawnX;
-    }
-
-    public double getSpawnY() {
-        return spawnY;
     }
 }

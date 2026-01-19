@@ -48,7 +48,6 @@ public class TitleScreen {
 
         Text pressAnyKey = new Text("PRESS ANY BUTTON TO START");
         pressAnyKey.getStyleClass().add("glow-label");
-        // apply larger blue label style to the press-any-key prompt as well
         pressAnyKey.setStyle("-fx-font-size:20px; -fx-fill: #83CBEB; -fx-effect: dropshadow(gaussian, white, 2, 0.0, 0, 0);");
 
         pressAnyKeyLayer.getChildren().add(pressAnyKey);
@@ -70,11 +69,9 @@ public class TitleScreen {
 
         VBox menuArea = new VBox();
         menuArea.setAlignment(Pos.TOP_CENTER);
-        // allow submenu panes (like Game Settings) to expand vertically
         menuArea.setPrefWidth(BOX_W);
         menuArea.setPrefHeight(BOX_H * 4); // taller area for submenus
         menuArea.setMaxWidth(BOX_W);
-        // use the chosen default position (340) so menu sits below the title
         menuArea.setTranslateY(340);
         menuArea.setTranslateX(0);
         menuArea.setVisible(false);
@@ -101,17 +98,16 @@ public class TitleScreen {
         Button options = new Button("Options");
         Button quit = new Button("Quit");
 
-        // holder for custom advanced settings (array used to allow modification from inner class)
+        // holder for custom advanced settings
         final LevelSettings[] customSettings = new LevelSettings[1];
 
-        // helper to visually indicate selected difficulty (toggle color on selection)
+        // toggle color on selection
         Runnable updateDifficultyStyles = () -> {
             String activeStyle = "-fx-background-color: #83CBEB; -fx-text-fill: #000000; -fx-border-color: white; -fx-border-width:1;";
             String inactiveStyle = "-fx-background-color: rgba(30,60,120,0.55); -fx-text-fill: white;";
             easyBtn.setStyle(selectedMode[0] == GameMode.EASY ? activeStyle : inactiveStyle);
             medBtn.setStyle(selectedMode[0] == GameMode.MEDIUM ? activeStyle : inactiveStyle);
             hardBtn.setStyle(selectedMode[0] == GameMode.HARD ? activeStyle : inactiveStyle);
-            // custom remains using a bordered style when selected
             customBtn.setStyle(selectedMode[0] == GameMode.CUSTOM ? "-fx-border-color: white; -fx-border-width:2; -fx-background-color: rgba(30,60,120,0.55); -fx-text-fill: white;" : inactiveStyle);
         };
 
@@ -129,7 +125,7 @@ public class TitleScreen {
         difficultyRow.setSpacing(DIFF_SPACING);
         difficultyRow.setPrefWidth(BOX_W);
 
-        // make custom button a perfect square (height == width)
+        // button height == width
         double customSize = DIFF_H; // square
 
         // remaining width split between three difficulty buttons
@@ -148,10 +144,9 @@ public class TitleScreen {
         }
         updateDifficultyStyles.run();
 
-        // label style used across the title screen (larger blue text with white outline-ish effect)
+        // label style used across the title screen
         String labelStyle = "-fx-font-size:18px; -fx-text-fill: #83CBEB; -fx-effect: dropshadow(gaussian, white, 2, 0.0, 0, 0);";
 
-        // replace the custom button text with a cog icon from resources (fits into the button)
         try {
             var cogStream = getClass().getResourceAsStream("/Background/SettingsCog.png");
                 if (cogStream != null) {
@@ -167,18 +162,15 @@ public class TitleScreen {
             customBtn.setText("Custom");
         }
 
-        // Start: launch with DEFAULT settings (Medium)
-        start.setOnAction(e -> onStart.accept(LevelSettings.defaultsFor(GameMode.MEDIUM)));
+        start.setOnAction(e -> onStart.accept(LevelSettings.defaultsFor(GameMode.EASY)));
         quit.setOnAction(e -> stage.close());
 
         start.setDefaultButton(true);
         quit.setCancelButton(true);
 
-        // Build separate option panes so we can navigate between them
-        // Stack main menu buttons vertically so labels are never clipped
         VBox mainMenuBar = new VBox(12);
         mainMenuBar.setAlignment(Pos.CENTER);
-        // compute main button width to match the visual inner width of the difficulty row
+
         double BTN_W = Math.min(BOX_W, (otherW * 3.0) + (DIFF_SPACING * 2.0));
         for (Button b : new Button[]{start, options, quit}) {
             b.setPrefWidth(BTN_W);
@@ -191,7 +183,6 @@ public class TitleScreen {
         Button playerCustomBtn = new Button("Player Customisation");
         Button gameSettingsBtn = new Button("Game Settings");
         Button optionsBack = new Button("Back");
-        // Stack options so long labels are visible
         VBox optionsMenu = new VBox(8, playerCustomBtn, gameSettingsBtn, optionsBack);
         optionsMenu.setAlignment(Pos.CENTER);
         for (Button b : new Button[]{playerCustomBtn, gameSettingsBtn, optionsBack}) {
@@ -206,26 +197,34 @@ public class TitleScreen {
         gameSettingsPane.setPrefWidth(BOX_W);
         gameSettingsPane.setMaxWidth(BOX_W);
         gameSettingsPane.setStyle("-fx-padding:12 24 12 24;");
+
         Button gsToPlayer = new Button("Player Customisation");
         Button gsBack = new Button("Done");
+
+
         VBox gsButtons = new VBox(8, gsToPlayer, gsBack);
+
         gsButtons.setAlignment(Pos.CENTER);
-        // make these buttons the same visual width as the other rows
+
         gsToPlayer.setPrefWidth(BTN_W);
         gsToPlayer.setMaxWidth(BTN_W);
         gsToPlayer.setMinWidth(BTN_W);
+
         gsBack.setPrefWidth(BTN_W);
         gsBack.setMaxWidth(BTN_W);
         gsBack.setMinWidth(BTN_W);
+
+
         HBox rightControlsBox = new HBox(8, difficultyRow);
         rightControlsBox.setAlignment(Pos.CENTER);
         rightControlsBox.setMaxWidth(BOX_W);
 
         Label difficultyLabel = new Label("Difficulty");
         difficultyLabel.setStyle(labelStyle);
+
         gameSettingsPane.getChildren().addAll(difficultyLabel, rightControlsBox, gsButtons);
 
-        // Custom settings pane (full screen within menuArea) for manual tuning
+        // Custom settings pane for manual tuning
         VBox customSettingsPane = new VBox(6);
         customSettingsPane.setAlignment(Pos.TOP_CENTER);
         customSettingsPane.setPrefWidth(BOX_W);
@@ -284,13 +283,12 @@ public class TitleScreen {
             VBox customBtns = new VBox(8, saveCustom, cancelCustom);
             customBtns.setAlignment(Pos.CENTER);
 
-            
-
-        // arrange custom pane into two columns: left (speed/health/damage/checkbox) and right (max enemies + buttons)
+        // two columns: left (speed/health/damage/checkbox) & right (max enemies + buttons)
         VBox leftCol = new VBox(6, speedLbl, speedSlider, healthLbl, healthSlider, damageLbl, damageSlider, respawnChk);
         leftCol.setAlignment(Pos.TOP_CENTER);
         leftCol.setFillWidth(true);
         leftCol.setPrefWidth(BOX_W * 0.55);
+
         // center the labels inside the left column
         speedLbl.setMaxWidth(Double.MAX_VALUE); speedLbl.setAlignment(Pos.CENTER);
         healthLbl.setMaxWidth(Double.MAX_VALUE); healthLbl.setAlignment(Pos.CENTER);
@@ -343,11 +341,6 @@ public class TitleScreen {
         mainMenuBar.setSpacing(8);
         menuArea.getChildren().setAll(mainMenuBar);
 
-        // Advanced dialog removed; custom settings pane is embedded in menuArea instead.
-
-        // Do not add the original menuBar directly; we'll show a properly sized main menu HBox
-
-        // preset persistence moved into Custom settings pane; handlers removed
 
         // Navigation handlers
         options.setOnAction(ev -> menuArea.getChildren().setAll(optionsMenu));
@@ -359,14 +352,12 @@ public class TitleScreen {
         };
 
         playerCustomBtn.setOnAction(ev -> {
-            // ensure returning from customisation shows the Options menu (stacked buttons)
             menuArea.getChildren().setAll(optionsMenu);
             SkinPreviewScene preview = new SkinPreviewScene(stage, sceneRef[0], () -> onStart.accept(currentSettings.get()));
             stage.setScene(preview.createScene());
         });
 
         gsToPlayer.setOnAction(ev -> {
-            // ensure returning from customisation shows the Options menu (stacked buttons)
             menuArea.getChildren().setAll(optionsMenu);
             SkinPreviewScene preview = new SkinPreviewScene(stage, sceneRef[0], () -> onStart.accept(currentSettings.get()));
             stage.setScene(preview.createScene());

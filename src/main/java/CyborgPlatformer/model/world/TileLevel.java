@@ -17,9 +17,6 @@ import java.util.List;
  * - Does not load files or resources.
  * - Does not store images.
  *
- * V2 note:
- * - Replaces static global {@code MapBlocks.map} with instance-owned level data.
- * - Enables multiple levels and testable collision logic.
  */
 public class TileLevel implements Level {
 

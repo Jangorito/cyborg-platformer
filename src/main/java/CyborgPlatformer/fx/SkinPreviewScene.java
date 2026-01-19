@@ -51,8 +51,6 @@ public class SkinPreviewScene {
         final double W = 1280;
         final double H = 720;
 
-            // Declare canvas and graphics context here; create canvas after UI so we can
-            // size it relative to the UI width (ui.getPrefWidth()).
             Canvas canvas;
             GraphicsContext g;
 
@@ -102,7 +100,6 @@ public class SkinPreviewScene {
 
             root.setRight(ui);
 
-            // Now create the canvas sized to leave room for the right-side UI and add it.
             double canvasW = W - ui.getPrefWidth();
             canvas = new Canvas(canvasW, H);
             g = canvas.getGraphicsContext2D();
@@ -123,10 +120,10 @@ public class SkinPreviewScene {
         TileLevel level = TileLevelLoader.load(getClass().getResourceAsStream("/Maps.txt"));
         char[][] tileGrid = level.getTiles();
 
-        // Fixed preview zoom (no camera UI in presets)
+        // Fixed preview zoom
         final double previewZoom = 2.0;
 
-        // Build minimal model objects required by Renderer
+        // Build objects necessary for Renderer
         World world = new World();
         world.setLevel(level);
 
@@ -141,15 +138,10 @@ public class SkinPreviewScene {
         player.setPosition(spawnX, spawnY);
         player.setGrounded(true);
 
-        // controller (won't be stepped) - used for render state
+        // controller for render state
         GameController controller = new GameController(world, player, spawnX, spawnY);
         world.setController(controller);
 
-        // No camera UI in presets; advanced menu will provide customisation controls
-        int cols = tileGrid.length > 0 ? tileGrid[0].length : 0;
-        int rows = tileGrid.length;
-        final int TILE_PX = TileLevelLoader.TILE_SIZE;
-        double levelWidthPx = cols * TILE_PX;
 
         // Animation loop
         new AnimationTimer() {
@@ -175,24 +167,23 @@ public class SkinPreviewScene {
                 int spawnRow = (int) Math.floor(spawnY / TILE_PX);
                 final int VIEW_TILES = 7;
                 int defaultStartCol = Math.max(0, Math.min(cols - VIEW_TILES, Math.max(0, spawnCol - 1)));
-                int defaultStartRow = Math.max(0, Math.min(rows - VIEW_TILES, Math.max(0, spawnRow - 1)));
 
                 double desiredCamX = defaultStartCol * TILE_PX;
-                // Fixed vertical offset for preview (seeded to previous preference)
+                // Fixed vertical offset for preview
                 double desiredCamY = 360.0;
 
                 double levelWidthPx = cols * TILE_PX;
 
-                // Create a Camera sized for the unscaled viewport and level width
+                // Create a Camera sized for the viewport and level width
                 Camera cam = new Camera(viewW_unscaled, viewH_unscaled, levelWidthPx);
 
                 // Position camera directly (keep player at spawn so tiles line up)
                 cam.setCamX(desiredCamX);
                 cam.setLockX(true);
-                // set vertical camera offset from slider (default 0 to match game)
+                // set vertical camera offset
                 cam.setCamY(desiredCamY);
 
-                // Draw the cropped preview backgrounds (no scaling/cropping math)
+                // Draw the cropped preview backgrounds
                 if (bgs != null) {
                     for (int bi = 1; bi <= 3; bi++) {
                         if (bi >= bgs.length) break;
@@ -203,7 +194,7 @@ public class SkinPreviewScene {
                         g.drawImage(bg, 0, 0, canvas.getWidth(), canvas.getHeight());
                     }
                 } else {
-                    // fallback to original backgrounds if cropped variants missing
+                    // OG backgrounds if cropped is missing
                     Image[] full = assets.backgrounds();
                     if (full != null) {
                         for (int bi = 1; bi <= 3; bi++) {
@@ -215,13 +206,12 @@ public class SkinPreviewScene {
                     }
                 }
 
-                // Build renderer with fresh camera (cheap for preview)
+                // Build renderer with fresh camera ##
                 Renderer renderer = new Renderer(cam, assets, skinCache, () -> PlayerSkinStore.get());
 
                 // Apply fixed preview zoom by scaling the GraphicsContext
                 g.save();
                 g.scale(previewZoom, previewZoom);
-                // don't clear canvas here (we drew backgrounds already)
                 renderer.render(g, viewW_unscaled, viewH_unscaled, world, player, controller, false, false, true, false, false);
                 g.restore();
             }
@@ -230,26 +220,26 @@ public class SkinPreviewScene {
         // Skin selector wiring is handled by the presets ComboBox
 
         // --- Advanced customisation data and UI builder ---
-        // Options arrays (ints are ARGB colors as used by PlayerSkin)
+        // Options arrays
         // HAIR options (use the middle/base color from each option group)
         int[] hairOptions = new int[] {
             // include hair hexes found across presets
             PlayerSkin.hex("158968"), // Muted Tech Teal (CLASSIC)
-            PlayerSkin.hex("2A2A2A"), // Dark Stealth (STEALTH)
-            PlayerSkin.hex("1BD4C4"), // Neon Cyber Accent (ELITE_NEON_UNIT)
-            PlayerSkin.hex("3C8F76")  // Military Green (TACTICAL_RECON)
+            PlayerSkin.hex("2A2A2A"), // Dark Stealth
+            PlayerSkin.hex("1BD4C4"), // Neon Cyber Accent
+            PlayerSkin.hex("3C8F76")  // Military Green
         };
 
         // SKIN options
         int[] skinOptions = new int[] {
-            PlayerSkin.hex("FFDBA5"), // Natural Light (CLASSIC)
-            PlayerSkin.hex("E7B87F"), // Warm Tan (TACTICAL_RECON)
+            PlayerSkin.hex("FFDBA5"), // Natural Light
+            PlayerSkin.hex("E7B87F"), // Warm Tan
             PlayerSkin.hex("8A5A3B"),  // Warm Brown
             PlayerSkin.hex("6A4027"),  // Deep Cocoa
-            PlayerSkin.hex("4F3F39"),  // Cool Dark (Synth)
+            PlayerSkin.hex("4F3F39"),  // Cool Dark
             PlayerSkin.hex("3E2617"),  // Rich Ebony
-            PlayerSkin.hex("C8A77B"),  // Stealth Tan (STEALTH)
-            PlayerSkin.hex("F0D4B8")   // Synth-Human (ELITE_NEON_UNIT)
+            PlayerSkin.hex("C8A77B"),  // Stealth Tan
+            PlayerSkin.hex("F0D4B8")   // Synth-Human
         };
 
         // VISOR options
@@ -278,8 +268,8 @@ public class SkinPreviewScene {
 
         int[] ledOptions = new int[] {
             PlayerSkin.hex("5BECF1"), // Classic Cyan
-            PlayerSkin.hex("74D8FF"), // Ice Blue (TACTICAL_RECON)
-            PlayerSkin.hex("5FFFFF")  // High-Energy Neon (ELITE_NEON_UNIT)
+            PlayerSkin.hex("74D8FF"), // Ice Blue
+            PlayerSkin.hex("5FFFFF")  // High-Energy Neon
         };
 
         // Current indices (mutable holders)

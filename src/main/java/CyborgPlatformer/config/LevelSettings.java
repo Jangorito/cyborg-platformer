@@ -1,10 +1,7 @@
 package CyborgPlatformer.config;
 
 /**
- * Encapsulates tunable parameters that affect level difficulty and enemy behaviour.
- *
- * Instances are immutable Kotlin-style POJOs (simple getters) and include a few
- * convenient factory methods for presets.
+ * Encapsulates parameters that affect level difficulty and enemy behaviour.
  */
 public final class LevelSettings {
 
@@ -14,7 +11,7 @@ public final class LevelSettings {
     private final double healthMultiplier;
     private final double damageMultiplier;
     private final double spawnIntervalMultiplier;
-    private final double aggressionMultiplier; // affects contact cooldown / frequency
+    private final double aggressionMultiplier;
 
     public LevelSettings(int maxEnemies,
                          boolean respawnOnPlayerDeath,
@@ -42,7 +39,7 @@ public final class LevelSettings {
 
     public static LevelSettings easy() {
         return new LevelSettings(
-                6,      // maxEnemies
+                3,      // maxEnemies
                 false,  // respawn
                 0.85,   // speed
                 0.9,    // health
@@ -54,7 +51,7 @@ public final class LevelSettings {
 
     public static LevelSettings medium() {
         return new LevelSettings(
-                10,
+                7,
                 true,
                 1.0,
                 1.0,
@@ -66,7 +63,7 @@ public final class LevelSettings {
 
     public static LevelSettings hard() {
         return new LevelSettings(
-                16,
+                10,
                 true,
                 1.25,
                 1.5,
