@@ -3,6 +3,7 @@ package CyborgPlatformer.fx;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -15,8 +16,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import java.util.function.Consumer;
+import java.util.Map;
 import CyborgPlatformer.config.LevelSettings;
 import CyborgPlatformer.config.GameMode;
+import CyborgPlatformer.config.PresetStore;
 
 public class TitleScreen {
     private final Stage stage;
@@ -83,12 +86,21 @@ public class TitleScreen {
         menuBar.setPrefSize(BOX_W, BOX_H);
         menuBar.setMaxSize(BOX_W, BOX_H);
 
-        // Difficulty selector + advanced
+        // Difficulty selector + advanced + saved presets
         ComboBox<GameMode> modeSelect = new ComboBox<>();
         modeSelect.getItems().addAll(GameMode.values());
         modeSelect.setValue(GameMode.MEDIUM);
 
         Button advanced = new Button("Advanced");
+
+        // saved presets (loaded from user config)
+        javafx.scene.control.ComboBox<String> savedPresets = new javafx.scene.control.ComboBox<>();
+        Button savePreset = new Button("Save Preset");
+        Button deletePreset = new Button("Delete Preset");
+
+        // populate saved presets
+        Map<String, LevelSettings> loaded = PresetStore.loadAll();
+        savedPresets.getItems().addAll(loaded.keySet());
 
         Button start = new Button("Start");
         Button options = new Button("Options");
@@ -152,8 +164,41 @@ public class TitleScreen {
         });
 
         HBox rightControls = new HBox(8, modeSelect, advanced);
-        menuBar.getChildren().addAll(start, options, quit, rightControls);
+        HBox presetControls = new HBox(6, savedPresets, savePreset, deletePreset);
+        menuBar.getChildren().addAll(start, options, quit, rightControls, presetControls);
         menuArea.getChildren().add(menuBar);
+
+        // Save preset handler: prompt for a name and persist
+        savePreset.setOnAction(ev -> {
+            LevelSettings toSave = (customSettings[0] != null) ? customSettings[0] : LevelSettings.defaultsFor(modeSelect.getValue());
+            TextInputDialog tid = new TextInputDialog();
+            tid.setTitle("Save Preset");
+            tid.setHeaderText("Enter preset name:");
+            tid.initOwner(stage);
+            tid.showAndWait().ifPresent(name -> {
+                try {
+                    PresetStore.savePreset(name, toSave);
+                    // refresh list
+                    savedPresets.getItems().clear();
+                    savedPresets.getItems().addAll(PresetStore.loadAll().keySet());
+                    savedPresets.setValue(name);
+                } catch (Exception ex) {
+                    // ignore for now
+                }
+            });
+        });
+
+        deletePreset.setOnAction(ev -> {
+            String sel = savedPresets.getValue();
+            if (sel == null) return;
+            try {
+                PresetStore.deletePreset(sel);
+                savedPresets.getItems().clear();
+                savedPresets.getItems().addAll(PresetStore.loadAll().keySet());
+            } catch (Exception ex) {
+                // ignore
+            }
+        });
 
         Scene scene = new Scene(root, 1280, 720);
         sceneRef[0] = scene;
