@@ -1,6 +1,7 @@
 package CyborgPlatformer.model.world;
 
 import CyborgPlatformer.controller.GameController;
+import CyborgPlatformer.config.LevelSettings;
 import CyborgPlatformer.game.Updatable;
 import CyborgPlatformer.model.entities.Bullet;
 import CyborgPlatformer.model.entities.Enemy;
@@ -9,6 +10,7 @@ import CyborgPlatformer.model.entities.Entity;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import CyborgPlatformer.model.world.TileLevelLoader;
 
 /**
  * Headless simulation container for gameplay state.
@@ -33,6 +35,9 @@ public class World implements Updatable {
     // Level/collision backing store
     private Level level;
 
+    // Current level difficulty/settings
+    private LevelSettings levelSettings = LevelSettings.medium();
+
     // allows for levels expansion
     public void setLevel(Level level) {
         this.level = level;
@@ -46,7 +51,19 @@ public class World implements Updatable {
     }
     public Level getLevel() {return level; }
 
+    public LevelSettings getLevelSettings() { return levelSettings; }
+
+    public void setLevelSettings(LevelSettings settings) { this.levelSettings = (settings == null) ? LevelSettings.medium() : settings; }
+
     public void addEntity(Entity e) {
+        // Enforce a spawn cap based on current level settings for enemies.
+        if (e instanceof Enemy) {
+            if (enemies.size() >= levelSettings.getMaxEnemies()) {
+                // Skip adding; spawn cap reached.
+                return;
+            }
+        }
+
         entities.add(e);
         if (e instanceof Enemy enemy) {
             enemies.add(enemy);
@@ -160,6 +177,37 @@ public class World implements Updatable {
 
     public void setController(GameController control){
         this.controller = control;
+    }
+
+    /**
+     * Remove all existing enemies and recreate them from the current TileLevel's spawn list.
+     * Uses the world's `levelSettings` when constructing enemies.
+     */
+    public void respawnEnemiesFromLevel() {
+        if (!(level instanceof TileLevel)) return;
+        TileLevel tl = (TileLevel) level;
+
+        // Clear existing enemies from the entity list
+        entities.removeIf(e -> e instanceof Enemy);
+        enemies.clear();
+
+        // Recreate from spawns
+        for (EnemySpawn s : tl.getEnemySpawns()) {
+            double x = s.x();
+            double y = s.y();
+            double adjustedY = adjustSpawnY(tl, x, y, Enemy.DEFAULT_WIDTH, Enemy.DEFAULT_HEIGHT);
+            addEntity(new Enemy(x, adjustedY, Enemy.DEFAULT_WIDTH, Enemy.DEFAULT_HEIGHT, s.hp(), levelSettings));
+        }
+    }
+
+    private static double adjustSpawnY(TileLevel level, double x, double y, double w, double h) {
+        if (!level.isSolidRect(x, y, w, h)) return y;
+        final int MAX_STEPS = 6;
+        for (int step = 1; step <= MAX_STEPS; step++) {
+            double candY = y - step * TileLevelLoader.TILE_SIZE;
+            if (!level.isSolidRect(x, candY, w, h)) return candY;
+        }
+        return y;
     }
 
 }
