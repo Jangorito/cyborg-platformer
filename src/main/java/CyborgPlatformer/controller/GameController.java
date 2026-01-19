@@ -198,10 +198,6 @@ public class GameController {
 //            return;
 //        }
 
-        respawnPlayer();
-    }
-
-    private void respawnPlayer() {
         resetPlayer();
         enemiesAwake = false;
         movedAfterReset = false;
@@ -209,12 +205,16 @@ public class GameController {
         lastShoot = false;
         lastReset = false;
 
-
-
-        for (Enemy e : world.getEnemies()) {
-            e.sleep();
+        // Decide whether to rebuild enemies (respawn) or keep them asleep based on settings
+        if (world.getLevelSettings() != null && world.getLevelSettings().isRespawnOnPlayerDeath()) {
+            world.respawnEnemiesFromLevel();
+        } else {
+            for (Enemy e : world.getEnemies()) {
+                e.sleep();
+            }
         }
     }
+
 
     private void resetPlayer() {
         player.setPosition(spawnX, spawnY);
@@ -223,26 +223,17 @@ public class GameController {
         player.setGrounded(false);
         player.resetJumpCounter();
         player.resetForRespawn();
+        win = false;
+    }
 
-        // If the level settings request enemies to respawn on player death, rebuild them.
-        if (world.getLevelSettings() != null && world.getLevelSettings().isRespawnOnPlayerDeath()) {
-            world.respawnEnemiesFromLevel();
-        } else {
-            for (Enemy e : world.getEnemies()) {
-                e.sleep();
-            }
-        }
-        }
-
-        // Otherwise preserve current enemy instances but put them back to sleep.
-        for (Enemy e : world.getEnemies()) {
-            e.sleep();
-        }
+    public boolean isGameWon() {
+        if (player.getX() > 7400) {
             win = true;
             gameOver = true;
         }
         return win;
     }
+    
 
     public boolean isFacingRight() { return facingRight; }
     public boolean moveIntent() { return moveIntent; }
