@@ -82,7 +82,7 @@ public final class TileLevelLoader {
                 new EnemySpawn(1475, 230, 2),
                 new EnemySpawn(2570, 196, 2),
                 new EnemySpawn(2750, 320, 2),
-                new EnemySpawn(3060, 470, 2),
+                new EnemySpawn(3060, 480, 2),
                 new EnemySpawn(4219, 100, 2),
                 new EnemySpawn(4900, 530, 2),
                 new EnemySpawn(4970, 530, 2),

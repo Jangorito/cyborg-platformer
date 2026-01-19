@@ -67,20 +67,29 @@ public final class Enemy extends Entity implements Damageable {
 
     /**
      * Backwards-compatible constructor that uses medium presets.
+     * Package-private to discourage direct construction outside entity package.
      */
-    public Enemy(double x, double y, double width, double height, int health) {
+    Enemy(double x, double y, double width, double height, int health) {
         this(x, y, width, height, health, LevelSettings.medium());
     }
 
     /**
      * Preferred constructor allowing per-level settings to be applied to this enemy.
+     * Package-private to discourage direct construction; use `create(...)` factory instead.
      */
-    public Enemy(double x, double y, double width, double height, int health, LevelSettings settings) {
+    Enemy(double x, double y, double width, double height, int health, LevelSettings settings) {
         setPosition(x, y);
         setSize(width, height);
         this.settings = (settings == null) ? LevelSettings.medium() : settings;
         // Apply health multiplier from settings (ensure at least 1 HP)
         this.health = Math.max(1, (int) Math.round(health * this.settings.getHealthMultiplier()));
+    }
+
+    /**
+     * Public factory for controlled construction from other packages.
+     */
+    public static Enemy create(double x, double y, double width, double height, int health, LevelSettings settings) {
+        return new Enemy(x, y, width, height, health, settings);
     }
 
     public boolean isAlive() { return alive; }

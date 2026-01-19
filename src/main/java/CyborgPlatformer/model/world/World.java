@@ -71,6 +71,11 @@ public class World implements Updatable {
 
     public void setLevelSettings(LevelSettings settings) { this.levelSettings = (settings == null) ? LevelSettings.medium() : settings; }
 
+    // Debug / inspection helpers for spawn state
+    public int getSpawnIndex() { return this.spawnIndex; }
+    public int getSpawnListSize() { return this.spawnList == null ? 0 : this.spawnList.size(); }
+    public double getSpawnTimer() { return this.spawnTimer; }
+
     public void addEntity(Entity e) {
         // Enforce a spawn cap based on current level settings for enemies.
         if (e instanceof Enemy) {
@@ -91,6 +96,15 @@ public class World implements Updatable {
             } catch (Exception ignored) {
             }
         }
+    }
+
+    /**
+     * Convenience: attempt to create and add an enemy, respecting the level's spawn cap.
+     * If the cap has been reached this is a no-op.
+     */
+    public void spawnEnemy(double x, double y, double width, double height, int hp, LevelSettings settings) {
+        if (enemies.size() >= levelSettings.getMaxEnemies()) return;
+        addEntity(CyborgPlatformer.model.entities.Enemy.create(x, y, width, height, hp, settings));
     }
 
     /**
@@ -125,16 +139,27 @@ public class World implements Updatable {
             spawnTimer -= dt;
             double interval = Math.max(0.05, BASE_SPAWN_INTERVAL_S * levelSettings.getSpawnIntervalMultiplier());
             while (spawnIndex < spawnList.size() && spawnTimer <= 0) {
-                // respect maxEnemies
-                if (enemies.size() >= levelSettings.getMaxEnemies()) break;
-
                 EnemySpawn s = spawnList.get(spawnIndex);
                 double x = s.x();
                 double y = s.y();
                 double adjustedY = adjustSpawnYIfTileLevel(level, x, y, Enemy.DEFAULT_WIDTH, Enemy.DEFAULT_HEIGHT);
-                addEntity(new CyborgPlatformer.model.entities.Enemy(x, adjustedY, Enemy.DEFAULT_WIDTH, Enemy.DEFAULT_HEIGHT, s.hp(), levelSettings));
+
+                boolean didSpawn = false;
+                if (enemies.size() < levelSettings.getMaxEnemies()) {
+                    spawnEnemy(x, adjustedY, Enemy.DEFAULT_WIDTH, Enemy.DEFAULT_HEIGHT, s.hp(), levelSettings);
+                    didSpawn = true;
+                } else {
+                    // spawn skipped due to cap — consume the spawn entry so it's not retried later
+                    // and reset the timer so we don't immediately attempt another spawn this frame
+                }
+
+                // consume the spawn entry regardless of whether we spawned an enemy
                 spawnIndex++;
-                spawnTimer += interval;
+
+                // Advance the timer: if we did spawn, add the interval; if we skipped, set timer to interval
+                if (didSpawn) spawnTimer += interval;
+                else spawnTimer = interval;
+
                 // small safeguard to avoid tight loop
                 if (spawnTimer > 10.0) break;
             }

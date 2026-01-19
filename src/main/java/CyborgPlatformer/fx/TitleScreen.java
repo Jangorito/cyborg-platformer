@@ -101,6 +101,11 @@ public class TitleScreen {
         // holder for custom advanced settings
         final LevelSettings[] customSettings = new LevelSettings[1];
 
+        java.util.function.Supplier<LevelSettings> currentSettings = () -> {
+            if (customSettings[0] != null) return customSettings[0];
+            return LevelSettings.defaultsFor(selectedMode[0]);
+        };
+
         // toggle color on selection
         Runnable updateDifficultyStyles = () -> {
             String activeStyle = "-fx-background-color: #83CBEB; -fx-text-fill: #000000; -fx-border-color: white; -fx-border-width:1;";
@@ -162,7 +167,7 @@ public class TitleScreen {
             customBtn.setText("Custom");
         }
 
-        start.setOnAction(e -> onStart.accept(LevelSettings.defaultsFor(GameMode.EASY)));
+        start.setOnAction(e -> onStart.accept(currentSettings.get()));
         quit.setOnAction(e -> stage.close());
 
         start.setDefaultButton(true);
@@ -191,7 +196,8 @@ public class TitleScreen {
             b.setMinWidth(BTN_W);
         }
 
-        // Game Settings pane (difficulty buttons, presets, save/delete, back)
+        // Game Settings pane (difficulty buttons, presets,
+        // /delete, back)
         VBox gameSettingsPane = new VBox(12);
         gameSettingsPane.setAlignment(Pos.TOP_CENTER);
         gameSettingsPane.setPrefWidth(BOX_W);
@@ -328,6 +334,7 @@ public class TitleScreen {
                 double hp = Math.round(healthSlider.getValue() * 2.0) / 2.0;
                 double dm = Math.round(damageSlider.getValue() * 2.0) / 2.0;
                 int me = (int)Math.round(maxESlider.getValue());
+                System.out.println("you selected: " + me + " enemies");
                 customSettings[0] = new LevelSettings(me, respawnChk.isSelected(), sp, hp, dm, 1.0, 1.0);
                 menuArea.getChildren().setAll(gameSettingsPane);
             } catch (Exception ex) {
@@ -346,10 +353,7 @@ public class TitleScreen {
         options.setOnAction(ev -> menuArea.getChildren().setAll(optionsMenu));
         optionsBack.setOnAction(ev -> menuArea.getChildren().setAll(mainMenuBar));
 
-        java.util.function.Supplier<LevelSettings> currentSettings = () -> {
-            if (customSettings[0] != null) return customSettings[0];
-            return LevelSettings.defaultsFor(selectedMode[0]);
-        };
+        
 
         playerCustomBtn.setOnAction(ev -> {
             menuArea.getChildren().setAll(optionsMenu);

@@ -58,7 +58,7 @@ public class SkinPreviewScene {
         VBox ui = new VBox(8);
         ui.setPadding(new Insets(12));
         ui.setPrefWidth(260);
-        ui.setStyle("-fx-background-color: rgba(0,0,0,0.4);");
+        ui.setStyle("-fx-background-color: rgba(255,255,255,0.4);");
 
         Label title = new Label("Skin Preview");
         title.setTextFill(Color.WHITE);
@@ -300,11 +300,6 @@ public class SkinPreviewScene {
             ui.getChildren().clear();
             ui.getChildren().add(title);
 
-            // category builder helper
-            java.util.function.BiConsumer<String, java.util.function.Consumer<java.lang.Runnable>> addCategory = (name, build) -> {};
-
-            // For each category, create arrows and label
-            java.util.function.Consumer<java.lang.String> addRow = (cat) -> {};
 
             // HAIR row (color swatch)
             Label hairLabel = new Label(); hairLabel.setTextFill(Color.WHITE);
@@ -418,12 +413,14 @@ public class SkinPreviewScene {
         lbl.setStyle(css);
     }
 
-    // Copied spawn selection logic from CyborgPlatformerApp.pickSpawnOnFloor
     private static double[] pickSpawnOnFloor(TileLevel level, double playerW, double playerH) {
         var solids = level.getSolids();
-        if (solids.isEmpty()) return new double[]{96, 96};
 
-        // Search a left-side window so we start near the beginning of the level.
+        if (solids.isEmpty()) {
+            return new double[]{96, 96};
+        }
+
+        // Search a left-side window, so we start near the beginning of the level.
         double maxX = TileLevelLoader.TILE_SIZE * 60;
 
         double bestX = 96, bestY = 96;

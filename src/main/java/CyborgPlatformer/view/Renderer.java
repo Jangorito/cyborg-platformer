@@ -203,7 +203,7 @@ public final class Renderer {
             drawDebugHitboxes(g, world);
         }
 
-        if (showHud) drawHud(g, controller);
+        if (showHud) drawHud(g, world, controller);
     }
 
 
@@ -283,9 +283,10 @@ public final class Renderer {
         }
     }
 
-    private void drawHud(GraphicsContext gc, GameController controller) {
+    private void drawHud(GraphicsContext gc, World world, GameController controller) {
         Objects.requireNonNull(gc);
         Objects.requireNonNull(controller);
+        Objects.requireNonNull(world);
 
         final Player p = controller.getPlayer();
         if (p == null) return;
@@ -343,6 +344,28 @@ public final class Renderer {
          gc.fillText("Time: " + controller.getTimeSeconds(), x0, y + 16);
          y += 20;
          gc.fillText("Attempts: " + controller.getAttempts(), x0, y + 16);
+
+        // -------------------------
+        // Debug: spawn state
+        // -------------------------
+        y += 28;
+        try {
+            int active = world.getEnemies().size();
+            int spawnIndex = world.getSpawnIndex();
+            int spawnTotal = world.getSpawnListSize();
+            double spawnTimer = world.getSpawnTimer();
+            int cap = (world.getLevelSettings() == null) ? 0 : world.getLevelSettings().getMaxEnemies();
+
+            gc.fillText("Active Enemies: " + active, x0, y + 16);
+            y += 18;
+            gc.fillText("SpawnIndex: " + spawnIndex + " / " + spawnTotal, x0, y + 16);
+            y += 18;
+            gc.fillText("SpawnTimer: " + String.format("%.2f", spawnTimer), x0, y + 16);
+            y += 18;
+            gc.fillText("Spawn Cap (maxEnemies): " + cap, x0, y + 16);
+            y += 18;
+        } catch (Exception ignored) {
+        }
 
         // -------------------------
         // Game Over / Win banner (top-center)
