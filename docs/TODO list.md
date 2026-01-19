@@ -112,3 +112,18 @@ The hexes shouldn't be visible to the player, I chose SUIT_BODY because it's a c
 - those enemies that flag you before you can even drop down...
 - tests...?
 - vamos
+![img.png](img.png)
+- remove the custom text and replace it with the settings cog png in resources (make it fit into the box)
+- widen the container so that all the option texts can be seen
+- remove that random drop down button
+- put the done button below player customisation
+- replace any "customization" spellings with "customisation"
+- give the Difficulty and Saved Presets buttons a tinted background and decrease their upper and lower padding so there's more space for the rest of the buttons
+
+- make all labels text bigger with blue hex colour with white text outline
+- in custom settings:
+  - make each option sliders
+    - speed 0.5 -> 3 with 0.5 step
+    - same with health & damage
+    - max enemies 1 -> 10 with 1 step 
+    - make checkbox text the same as a labels

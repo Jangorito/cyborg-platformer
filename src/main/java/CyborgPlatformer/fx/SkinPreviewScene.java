@@ -69,7 +69,7 @@ public class SkinPreviewScene {
         javafx.scene.control.ComboBox<String> presets = new javafx.scene.control.ComboBox<>();
         Button advanced = new Button("Advanced Customisation");
         Button go = new Button("Go");
-        Button back = new Button("Back");
+        Button back = new Button("Done");
 
         // select current skin state
         PlayerSkin cur = PlayerSkinStore.get();
@@ -145,7 +145,7 @@ public class SkinPreviewScene {
         GameController controller = new GameController(world, player, spawnX, spawnY);
         world.setController(controller);
 
-        // No camera UI in presets; advanced menu will provide customization controls
+        // No camera UI in presets; advanced menu will provide customisation controls
         int cols = tileGrid.length > 0 ? tileGrid[0].length : 0;
         int rows = tileGrid.length;
         final int TILE_PX = TileLevelLoader.TILE_SIZE;
@@ -229,7 +229,7 @@ public class SkinPreviewScene {
 
         // Skin selector wiring is handled by the presets ComboBox
 
-        // --- Advanced customization data and UI builder ---
+        // --- Advanced customisation data and UI builder ---
         // Options arrays (ints are ARGB colors as used by PlayerSkin)
         // HAIR options (use the middle/base color from each option group)
         int[] hairOptions = new int[] {
