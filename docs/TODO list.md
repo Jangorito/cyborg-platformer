@@ -111,3 +111,4 @@ The hexes shouldn't be visible to the player, I chose SUIT_BODY because it's a c
   - anything else...?
 - those enemies that flag you before you can even drop down...
 - tests...?
+- vamos
