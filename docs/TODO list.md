@@ -58,3 +58,43 @@ problems with the enemy right now:
   - custom amount of zombies?
 - death doesn't reset zombies
 - capture the flag game mode
+
+
+edit the ui such that:
+- the first screen has just the presets including only normal and stealth then a button called advanced customisation
+  (remove all the camera ui functionality from the class)
+- the advanced button switches the ui menu that has:
+  - HAIR
+  - SKIN
+  - VISOR
+  - BELT
+  - SUIT_BODY
+  - SUIT_LED
+- each of these should have a left and right arrow button with these options in the middle which will scroll through options for each
+- when they're pressed the corresponding element on the player should change
+- here are the options for the SUIT_BODY so that I can see trial how it looks/works:
+  - SUIT_BODY:
+    - dark:  #222A5C
+    - mid:   #566A89
+    - light: #8BABBF
+  - SUIT_BODY:
+    - dark:  #111827
+    - mid:   #374151
+    - light: #6B7280
+  - SUIT_BODY:
+    - dark:  #4A3B00
+    - mid:   #8F7A1A
+    - light: #E3C84A
+  - SUIT_BODY:
+    - dark:  #2A0F3D
+    - mid:   #6B2FA3
+    - light: #B46CFF
+  - SUIT_BODY:
+    - dark:  #6B7280
+    - mid:   #CBD5E1
+    - light: #F8FAFC
+  - SUIT_BODY:
+    - dark:  #3A0D0D
+    - mid:   #8F2D2D
+    - light: #D16C6C
+The hexes shouldn't be visible to the player, I chose SUIT_BODY because it's a colour grouping so all 3 hexes should be edited at once 

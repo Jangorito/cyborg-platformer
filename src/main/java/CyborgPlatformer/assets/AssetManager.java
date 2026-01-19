@@ -37,7 +37,8 @@ public final class AssetManager {
 
     // ===================== World ======================
     private final Image[] tiles;        //
-    private final Image[] backgrounds;  //
+    private final Image[] backgrounds;  // original full backgrounds
+    private final Image[] backgroundsCropped; // cropped backgrounds for preview
     private final Image   bullet;       //
 
     // ====================== UI ========================
@@ -100,12 +101,20 @@ public final class AssetManager {
                 loadImage("/Tiles/J_TreadRight.png")                // 18
         };
 
-        // ---- Background layers  ----
+        // ---- Background layers (full) ----
         backgrounds = new Image[] {
-                loadImage("/Background/1_Background.png"),
-                loadImage("/Background/2_Background.png"),
-                loadImage("/Background/3_Background.png"),
-                loadImage("/Background/4_Background.png")
+            loadImage("/Background/1_Background.png"),
+            loadImage("/Background/2_Background.png"),
+            loadImage("/Background/3_Background.png"),
+            loadImage("/Background/4_Background.png")
+        };
+
+        // ---- Cropped backgrounds for preview UI  ----
+        backgroundsCropped = new Image[] {
+            safeLoadImage("/Background/Cropped/1_Background.png"),
+            safeLoadImage("/Background/Cropped/2_Background.png"),
+            safeLoadImage("/Background/Cropped/3_Background.png"),
+            safeLoadImage("/Background/Cropped/4_Background.png")
         };
 
         // ---- Font ----
@@ -118,14 +127,11 @@ public final class AssetManager {
     public Image[] playerRun()   { return playerRun.clone(); }
     public Image[] playerHurt()  { return playerHurt.clone(); }
     public Image   playerShoot() { return playerShoot; }
-
     public Image[] enemyIdle()   { return enemyIdle.clone(); }
     public Image[] enemyWalk()   { return enemyWalk.clone(); }
     public Image[] enemyRun()    { return enemyRun.clone(); }
     public Image   enemyHurt()   { return enemyHurt; }
-
     public Image   bullet()      { return bullet; }
-
     public Image   uiHeart()     { return uiHeart; }
     public Image   uiBox()       { return uiBox; }
     public Image   uiAmmo()      { return uiAmmo; }
@@ -133,6 +139,8 @@ public final class AssetManager {
 
     public Image[] tiles()       { return tiles.clone(); }
     public Image[] backgrounds() { return backgrounds.clone(); }
+    /** Cropped background variants intended for UI previews. May contain nulls if files missing. */
+    public Image[] backgroundsCropped() { return backgroundsCropped.clone(); }
 
     // =================== Load helpers =================
 
@@ -146,6 +154,17 @@ public final class AssetManager {
             return new Image(in);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to load image: " + path, e);
+        }
+    }
+
+    /** Like loadImage but returns null when resource not found (caller can fall back). */
+    private static Image safeLoadImage(String path) {
+        Objects.requireNonNull(path);
+        try (InputStream in = AssetManager.class.getResourceAsStream(path)) {
+            if (in == null) return null;
+            return new Image(in);
+        } catch (Exception e) {
+            return null;
         }
     }
 

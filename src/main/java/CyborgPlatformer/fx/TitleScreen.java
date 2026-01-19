@@ -80,6 +80,8 @@ public class TitleScreen {
         Button options = new Button("Options");
         Button quit = new Button("Quit");
 
+        final Scene[] sceneRef = new Scene[1];
+
         for (Button b : new Button[]{start, options, quit}) {
             b.setMaxWidth(Double.MAX_VALUE);
             b.setMaxHeight(Double.MAX_VALUE);
@@ -87,6 +89,11 @@ public class TitleScreen {
         }
 
         start.setOnAction(e -> onStart.run());
+        options.setOnAction(e -> {
+            // open skin preview scene
+            SkinPreviewScene preview = new SkinPreviewScene(stage, sceneRef[0]);
+            stage.setScene(preview.createScene());
+        });
         quit.setOnAction(e -> stage.close());
 
         start.setDefaultButton(true);
@@ -96,6 +103,7 @@ public class TitleScreen {
         menuArea.getChildren().add(menuBar);
 
         Scene scene = new Scene(root, 1280, 720);
+        sceneRef[0] = scene;
 
         // ---------- INPUT HANDLING ----------
         scene.setOnKeyPressed(e -> {

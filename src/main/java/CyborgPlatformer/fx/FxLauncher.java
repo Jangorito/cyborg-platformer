@@ -8,8 +8,8 @@ import CyborgPlatformer.model.world.TileLevel;
 import CyborgPlatformer.model.world.World;
 import CyborgPlatformer.view.Camera;
 import CyborgPlatformer.view.Renderer;
-import CyborgPlatformer.view.skin.PlayerSkin;
 import CyborgPlatformer.view.skin.PlayerSkinCache;
+import CyborgPlatformer.view.skin.PlayerSkinStore;
 import CyborgPlatformer.view.skin.PlayerSkins;
 import CyborgPlatformer.assets.AssetManager;
 import javafx.animation.AnimationTimer;
@@ -28,7 +28,7 @@ public final class FxLauncher extends Application {
     private GameController controller;
     private AssetManager assets;
     private PlayerSkinCache skinCache;
-    private PlayerSkin currentSkin = PlayerSkins.CLASSIC;
+    // current skin is stored centrally so preview can update it live
 
     private World world;
     private Player player;
@@ -69,7 +69,7 @@ public final class FxLauncher extends Application {
 
         double levelWidthPx = computeLevelWidthPx(world);
         this.camera = new Camera(canvas.getWidth(), canvas.getHeight(), levelWidthPx);
-        this.renderer = new Renderer(camera, assets, skinCache, () -> currentSkin);
+        this.renderer = new Renderer(camera, assets, skinCache, () -> PlayerSkinStore.get());
 
 
         Scene scene = new Scene(new StackPane(canvas));
@@ -99,14 +99,17 @@ public final class FxLauncher extends Application {
                 controller.step(dt, input);
 
                 renderer.render(
-                        g,
-                        canvas.getWidth(),
-                        canvas.getHeight(),
-                        world,
-                        player,
-                        controller,
-                        showTiles,
-                        kill
+                    g,
+                    canvas.getWidth(),
+                    canvas.getHeight(),
+                    world,
+                    player,
+                    controller,
+                    true, // clear canvas
+                    true, // draw backgrounds
+                    showTiles,
+                    kill,
+                    true
                 );
             }
         }.start();
@@ -127,9 +130,9 @@ public final class FxLauncher extends Application {
 
                 case Q -> cheat = true;
 
-                case DIGIT1 -> currentSkin = PlayerSkins.CLASSIC;
-                case DIGIT2 -> currentSkin = PlayerSkins.STEALTH;
-                case DIGIT3 -> currentSkin = PlayerSkins.TEST;
+                case DIGIT1 -> PlayerSkinStore.set(PlayerSkins.CLASSIC);
+                case DIGIT2 -> PlayerSkinStore.set(PlayerSkins.STEALTH);
+                case DIGIT3 -> PlayerSkinStore.set(PlayerSkins.TEST);
 
             }
         });

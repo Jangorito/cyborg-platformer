@@ -96,20 +96,25 @@ public final class Renderer {
                        World world,
                        Player player,
                        GameController controller,
+                       boolean clearCanvas,
+                       boolean drawBackgrounds,
                        boolean showTiles,
-                       boolean killFlag) {
+                       boolean killFlag,
+                       boolean showHud) {
 
-        g.clearRect(0, 0, w, h);
+        if (clearCanvas) g.clearRect(0, 0, w, h);
 
         camera.followX(player.getX());
 
         double camX = camera.camX();
 
         // Backgrounds (parallax)
-        Image[] bgs = assets.backgrounds();
-        drawParallaxLayer(g, bgs[1], camX / 16.0); // clouds
-        drawParallaxLayer(g, bgs[2], camX / 8.0);  // far industry
-        drawParallaxLayer(g, bgs[3], camX / 4.0);  // mid industry
+        if (drawBackgrounds) {
+            Image[] bgs = assets.backgrounds();
+            drawParallaxLayer(g, bgs[1], camX / 16.0); // clouds
+            drawParallaxLayer(g, bgs[2], camX / 8.0);  // far industry
+            drawParallaxLayer(g, bgs[3], camX / 4.0);  // mid industry
+        }
 
         // Tiles
         if (showTiles && world.getLevel() instanceof TileLevel tl) {
@@ -204,7 +209,7 @@ public final class Renderer {
             drawDebugHitboxes(g, world);
         }
 
-        drawHud(g, controller);
+        if (showHud) drawHud(g, controller);
     }
 
 
