@@ -90,7 +90,19 @@ public final class Enemy extends Entity implements Damageable {
     public boolean isDamaged() { return damaged; }
 
 
-    public void setCanDamage() { this.canDamage = false; }
+    // Allow this enemy to be damaged by bullets/attacks.
+    // Previously this method incorrectly disabled damage; fix to enable damage.
+    public void setCanDamage() { this.canDamage = true; }
+
+    /**
+     * Immediately kill this enemy — mark as not alive and zero health.
+     * Use for debug or force-death situations where we want the enemy
+     * to be removed from the world.
+     */
+    public void kill() {
+        this.health = 0;
+        this.alive = false;
+    }
 
     /** Called by controller once player has moved at least once. */
     public void awaken() { this.awakened = true; }

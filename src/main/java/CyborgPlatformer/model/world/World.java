@@ -83,6 +83,13 @@ public class World implements Updatable {
         entities.add(e);
         if (e instanceof Enemy enemy) {
             enemies.add(enemy);
+            // newly spawned enemies start active so they immediately behave.
+            try {
+                if (controller != null && controller.areEnemiesAwake()) {
+                    enemy.awaken();
+                }
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -230,6 +237,13 @@ public class World implements Updatable {
         this.spawnList = new ArrayList<>(tl.getEnemySpawns());
         this.spawnIndex = 0;
         this.spawnTimer = 0.0;
+    }
+
+    /**
+     * Remove all bullets from the world (used when player dies / respawns).
+     */
+    public void clearBullets() {
+        entities.removeIf(e -> e instanceof Bullet);
     }
     private static double adjustSpawnYIfTileLevel(Level level, double x, double y, double w, double h) {
         if (!(level instanceof TileLevel tl)) return y;

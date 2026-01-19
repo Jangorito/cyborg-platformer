@@ -180,14 +180,18 @@ public class GameController {
         }
 
         if (killPressed) {
+            // Debug
             for (Enemy e : world.getEnemies()){
-                e.setCanDamage();
+                e.kill();
             }
         }
     }
 
     private void handleDeath() {
         attempts++;
+
+        // reset ammo only when the player actually dies
+        player.setAmmo(10);
 
         /// TODO: wrap this around level functionality when extending
 //        if (lives == 0) {
@@ -217,6 +221,8 @@ public class GameController {
 
 
     private void resetPlayer() {
+        // remove existing bullets so world is clean on respawn
+        if (world != null) world.clearBullets();
         player.setPosition(spawnX, spawnY);
         player.setVX(0);
         player.setVY(0);
@@ -237,6 +243,7 @@ public class GameController {
 
     public boolean isFacingRight() { return facingRight; }
     public boolean moveIntent() { return moveIntent; }
+    public boolean areEnemiesAwake() { return enemiesAwake; }
     public int getLives() { return this.lives; }
     public boolean isGameOver() { return gameOver; }
     public int getAttempts() { return attempts; }

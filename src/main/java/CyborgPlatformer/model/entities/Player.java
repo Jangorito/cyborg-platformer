@@ -103,10 +103,12 @@ public class Player extends Entity {
 
     public void resetForRespawn() {
         this.alive = true;
-        this.health = MAX_HEALTH;   // whatever you use
-        this.invulnTimer = INVULN_SECONDS;     // optional
-        this.justShot = false;      // if you track shooting cooldown
+        this.health = MAX_HEALTH;
+        this.invulnTimer = INVULN_SECONDS;
+        this.justShot = false;
     }
+
+    public void setAmmo(int a) { this.ammo = a; }
 
 
     public int getJumpCounter() {
