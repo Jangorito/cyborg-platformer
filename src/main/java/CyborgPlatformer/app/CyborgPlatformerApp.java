@@ -56,26 +56,8 @@ public final class CyborgPlatformerApp {
         // Expose settings to world so systems can read difficulty parameters
         world.setLevelSettings(localSettings);
 
-        // setting enemy spawns
-        int idx = 0;
-        for (EnemySpawn s : level.getEnemySpawns()) {
-            double x = s.x();
-            double y = s.y();
-
-            if (idx == 3) {
-                y = 224;
-            }
-            double adjustedY = adjustSpawnY(level, x, y, ENEMY_W, ENEMY_H);
-
-            if (adjustedY != y) {
-                System.out.println("Adjusted enemy spawn idx=" + idx
-                        + " from y=" + y + " to y=" + adjustedY
-                        + " (x=" + x + ", hp=" + s.hp() + ")");
-            }
-
-            world.addEntity(new Enemy(x, adjustedY, ENEMY_W, ENEMY_H, s.hp(), localSettings));
-            idx++;
-        }
+        // Initialize spawn scheduling in the world (will spawn enemies according to level settings)
+        world.respawnEnemiesFromLevel();
 
         // creating Player
         this.player = new Player();

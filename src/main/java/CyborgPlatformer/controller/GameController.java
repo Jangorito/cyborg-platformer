@@ -224,10 +224,14 @@ public class GameController {
         player.resetJumpCounter();
         player.resetForRespawn();
 
-        // If the level requests full enemy respawn on player death, rebuild them from the level spawns.
+        // If the level settings request enemies to respawn on player death, rebuild them.
         if (world.getLevelSettings() != null && world.getLevelSettings().isRespawnOnPlayerDeath()) {
             world.respawnEnemiesFromLevel();
-            return;
+        } else {
+            for (Enemy e : world.getEnemies()) {
+                e.sleep();
+            }
+        }
         }
 
         // Otherwise preserve current enemy instances but put them back to sleep.

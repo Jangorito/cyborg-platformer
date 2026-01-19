@@ -37,10 +37,26 @@ public class World implements Updatable {
 
     // Current level difficulty/settings
     private LevelSettings levelSettings = LevelSettings.medium();
+    // Spawn scheduling
+    private List<EnemySpawn> spawnList = new ArrayList<>();
+    private int spawnIndex = 0;
+    private double spawnTimer = 0.0;
+    private static final double BASE_SPAWN_INTERVAL_S = 2.0; // seconds between spawns (multiplied)
 
     // allows for levels expansion
     public void setLevel(Level level) {
         this.level = level;
+        // If the level provides spawn info, initialize spawn list for scheduling
+        if (level instanceof TileLevel tl) {
+            this.spawnList = new ArrayList<>(tl.getEnemySpawns());
+            // default: assume initial entities will be spawned via respawnEnemiesFromLevel()
+            this.spawnIndex = 0;
+            this.spawnTimer = 0.0;
+        } else {
+            this.spawnList = new ArrayList<>();
+            this.spawnIndex = 0;
+            this.spawnTimer = 0.0;
+        }
     }
 
     public List<Entity> getEntities() {
@@ -98,6 +114,26 @@ public class World implements Updatable {
 
         cleanupDeadEntities();
         rebuildEnemyIndex();
+
+        // Spawn scheduling: attempt to spawn next enemy if under cap
+        if (!spawnList.isEmpty() && spawnIndex < spawnList.size()) {
+            spawnTimer -= dt;
+            double interval = Math.max(0.05, BASE_SPAWN_INTERVAL_S * levelSettings.getSpawnIntervalMultiplier());
+            while (spawnIndex < spawnList.size() && spawnTimer <= 0) {
+                // respect maxEnemies
+                if (enemies.size() >= levelSettings.getMaxEnemies()) break;
+
+                EnemySpawn s = spawnList.get(spawnIndex);
+                double x = s.x();
+                double y = s.y();
+                double adjustedY = adjustSpawnYIfTileLevel(level, x, y, Enemy.DEFAULT_WIDTH, Enemy.DEFAULT_HEIGHT);
+                addEntity(new CyborgPlatformer.model.entities.Enemy(x, adjustedY, Enemy.DEFAULT_WIDTH, Enemy.DEFAULT_HEIGHT, s.hp(), levelSettings));
+                spawnIndex++;
+                spawnTimer += interval;
+                // small safeguard to avoid tight loop
+                if (spawnTimer > 10.0) break;
+            }
+        }
     }
 
     private void cleanupDeadEntities() {
@@ -190,22 +226,18 @@ public class World implements Updatable {
         // Clear existing enemies from the entity list
         entities.removeIf(e -> e instanceof Enemy);
         enemies.clear();
-
-        // Recreate from spawns
-        for (EnemySpawn s : tl.getEnemySpawns()) {
-            double x = s.x();
-            double y = s.y();
-            double adjustedY = adjustSpawnY(tl, x, y, Enemy.DEFAULT_WIDTH, Enemy.DEFAULT_HEIGHT);
-            addEntity(new Enemy(x, adjustedY, Enemy.DEFAULT_WIDTH, Enemy.DEFAULT_HEIGHT, s.hp(), levelSettings));
-        }
+        // Initialize spawn scheduling so enemies are respawned according to interval
+        this.spawnList = new ArrayList<>(tl.getEnemySpawns());
+        this.spawnIndex = 0;
+        this.spawnTimer = 0.0;
     }
-
-    private static double adjustSpawnY(TileLevel level, double x, double y, double w, double h) {
-        if (!level.isSolidRect(x, y, w, h)) return y;
+    private static double adjustSpawnYIfTileLevel(Level level, double x, double y, double w, double h) {
+        if (!(level instanceof TileLevel tl)) return y;
+        if (!tl.isSolidRect(x, y, w, h)) return y;
         final int MAX_STEPS = 6;
         for (int step = 1; step <= MAX_STEPS; step++) {
             double candY = y - step * TileLevelLoader.TILE_SIZE;
-            if (!level.isSolidRect(x, candY, w, h)) return candY;
+            if (!tl.isSolidRect(x, candY, w, h)) return candY;
         }
         return y;
     }
