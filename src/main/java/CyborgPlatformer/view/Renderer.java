@@ -346,28 +346,6 @@ public final class Renderer {
          gc.fillText("Attempts: " + controller.getAttempts(), x0, y + 16);
 
         // -------------------------
-        // Debug: spawn state
-        // -------------------------
-        y += 28;
-        try {
-            int active = world.getEnemies().size();
-            int spawnIndex = world.getSpawnIndex();
-            int spawnTotal = world.getSpawnListSize();
-            double spawnTimer = world.getSpawnTimer();
-            int cap = (world.getLevelSettings() == null) ? 0 : world.getLevelSettings().getMaxEnemies();
-
-            gc.fillText("Active Enemies: " + active, x0, y + 16);
-            y += 18;
-            gc.fillText("SpawnIndex: " + spawnIndex + " / " + spawnTotal, x0, y + 16);
-            y += 18;
-            gc.fillText("SpawnTimer: " + String.format("%.2f", spawnTimer), x0, y + 16);
-            y += 18;
-            gc.fillText("Spawn Cap (maxEnemies): " + cap, x0, y + 16);
-            y += 18;
-        } catch (Exception ignored) {
-        }
-
-        // -------------------------
         // Game Over / Win banner (top-center)
         // -------------------------
         if (controller.isGameOver()) {

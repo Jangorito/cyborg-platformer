@@ -81,7 +81,6 @@ public class GameController {
 
 
         if (gameOver) {
-            System.out.println("Game Won");
             return;
         }
 
@@ -224,8 +223,11 @@ public class GameController {
 
     public boolean isGameWon() {
         if (player.getX() > 7400) {
-            win = true;
-            gameOver = true;
+            if (!win) {
+                win = true;
+                gameOver = true;
+                System.out.println("Game Won");
+            }
         }
         return win;
     }
