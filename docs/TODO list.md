@@ -98,3 +98,16 @@ edit the ui such that:
     - mid:   #8F2D2D
     - light: #D16C6C
 The hexes shouldn't be visible to the player, I chose SUIT_BODY because it's a colour grouping so all 3 hexes should be edited at once 
+
+
+- capture the flag mode!!
+  - prolly includes custom 'win' condition
+- edit title page to become a winner's page
+- add high score functionality including: 
+  - name 
+  - custom skin
+  - time taken
+  - bullets
+  - anything else...?
+- those enemies that flag you before you can even drop down...
+- tests...?
