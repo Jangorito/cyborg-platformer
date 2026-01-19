@@ -91,7 +91,7 @@ public class TitleScreen {
         start.setOnAction(e -> onStart.run());
         options.setOnAction(e -> {
             // open skin preview scene
-            SkinPreviewScene preview = new SkinPreviewScene(stage, sceneRef[0]);
+            SkinPreviewScene preview = new SkinPreviewScene(stage, sceneRef[0], onStart);
             stage.setScene(preview.createScene());
         });
         quit.setOnAction(e -> stage.close());

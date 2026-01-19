@@ -37,10 +37,12 @@ public class SkinPreviewScene {
 
     private final Stage stage;
     private final Scene previous;
+    private final Runnable onStart;
 
-    public SkinPreviewScene(Stage stage, Scene previous) {
+    public SkinPreviewScene(Stage stage, Scene previous, Runnable onStart) {
         this.stage = stage;
         this.previous = previous;
+        this.onStart = onStart;
     }
 
     public Scene createScene() {
@@ -63,25 +65,39 @@ public class SkinPreviewScene {
         Label title = new Label("Skin Preview");
         title.setTextFill(Color.WHITE);
 
-        ToggleGroup skins = new ToggleGroup();
-        ToggleButton classic = new ToggleButton("Classic");
-        ToggleButton stealth = new ToggleButton("Stealth");
-        ToggleButton test = new ToggleButton("Test");
-
-        classic.setToggleGroup(skins);
-        stealth.setToggleGroup(skins);
-        test.setToggleGroup(skins);
-
-        // select current
-        PlayerSkin cur = PlayerSkinStore.get();
-        if (cur.equals(PlayerSkins.STEALTH)) stealth.setSelected(true);
-        else if (cur.equals(PlayerSkins.TEST)) test.setSelected(true);
-        else classic.setSelected(true);
-
+        // Presets dropdown (first-screen) + advanced/go/back
+        javafx.scene.control.ComboBox<String> presets = new javafx.scene.control.ComboBox<>();
+        Button advanced = new Button("Advanced Customisation");
+        Button go = new Button("Go");
         Button back = new Button("Back");
+
+        // select current skin state
+        PlayerSkin cur = PlayerSkinStore.get();
+
+        // Populate presets list
+        presets.getItems().addAll("Classic", "Stealth", "Elite Neon Unit", "Tactical Recon");
+
+        // initial selection: match current skin if known
+        PlayerSkin curSkin = PlayerSkinStore.get();
+        if (curSkin.equals(PlayerSkins.CLASSIC)) presets.setValue("Classic");
+        else if (curSkin.equals(PlayerSkins.STEALTH)) presets.setValue("Stealth");
+        else if (curSkin.equals(PlayerSkins.ELITE_NEON_UNIT)) presets.setValue("Elite Neon Unit");
+        else if (curSkin.equals(PlayerSkins.TACTICAL_RECON)) presets.setValue("Tactical Recon");
+
+        presets.setOnAction(e -> {
+            String v = presets.getValue();
+            if (v == null) return;
+            switch (v) {
+                case "Classic" -> PlayerSkinStore.set(PlayerSkins.CLASSIC);
+                case "Stealth" -> PlayerSkinStore.set(PlayerSkins.STEALTH);
+                case "Elite Neon Unit" -> PlayerSkinStore.set(PlayerSkins.ELITE_NEON_UNIT);
+                case "Tactical Recon" -> PlayerSkinStore.set(PlayerSkins.TACTICAL_RECON);
+            }
+        });
+
         back.setOnAction(e -> stage.setScene(previous));
 
-        ui.getChildren().addAll(title, classic, stealth, test, back);
+        ui.getChildren().addAll(title, presets, advanced, go, back);
         ui.setAlignment(Pos.TOP_CENTER);
 
             root.setRight(ui);
@@ -107,11 +123,8 @@ public class SkinPreviewScene {
         TileLevel level = TileLevelLoader.load(getClass().getResourceAsStream("/Maps.txt"));
         char[][] tileGrid = level.getTiles();
 
-        // Camera control holders (mutable via UI sliders)
-        // Seed sliders with your preferred values (zoom ~2, camY ~360)
-        double[] cameraZoom = new double[]{2.0};
-        double[] cameraWorldX = new double[]{0.0};
-        double[] cameraWorldY = new double[]{360.0};
+        // Fixed preview zoom (no camera UI in presets)
+        final double previewZoom = 2.0;
 
         // Build minimal model objects required by Renderer
         World world = new World();
@@ -132,64 +145,11 @@ public class SkinPreviewScene {
         GameController controller = new GameController(world, player, spawnX, spawnY);
         world.setController(controller);
 
-        // --- UI sliders for camera tuning ---
+        // No camera UI in presets; advanced menu will provide customization controls
         int cols = tileGrid.length > 0 ? tileGrid[0].length : 0;
         int rows = tileGrid.length;
         final int TILE_PX = TileLevelLoader.TILE_SIZE;
         double levelWidthPx = cols * TILE_PX;
-
-        Slider zoomSlider = new Slider(0.5, 3.0, cameraZoom[0]);
-        zoomSlider.setMajorTickUnit(0.5);
-        zoomSlider.setShowTickMarks(true);
-        zoomSlider.setShowTickLabels(true);
-        zoomSlider.setPrefWidth(140);
-
-        Label zoomValue = new Label(String.format("%.2f", cameraZoom[0]));
-        zoomValue.setTextFill(Color.WHITE);
-        zoomSlider.valueProperty().addListener((obs, o, n) -> {
-            cameraZoom[0] = n.doubleValue();
-            zoomValue.setText(String.format("%.2f", n.doubleValue()));
-        });
-
-        Slider xSlider = new Slider(0, Math.max(0, levelWidthPx), cameraWorldX[0]);
-        xSlider.setMajorTickUnit(Math.max(1, levelWidthPx / 4.0));
-        xSlider.setShowTickMarks(false);
-        xSlider.setPrefWidth(140);
-
-        Label xValue = new Label(String.valueOf((int)cameraWorldX[0]));
-        xValue.setTextFill(Color.WHITE);
-        xSlider.valueProperty().addListener((obs, o, n) -> {
-            cameraWorldX[0] = n.doubleValue();
-            xValue.setText(String.valueOf((int)Math.round(n.doubleValue())));
-        });
-
-        Slider ySlider = new Slider(0, Math.max(0, rows * TILE_PX), cameraWorldY[0]);
-        ySlider.setMajorTickUnit(Math.max(1, rows * TILE_PX / 4.0));
-        ySlider.setShowTickMarks(false);
-        ySlider.setPrefWidth(140);
-
-        Label yValue = new Label(String.valueOf((int)cameraWorldY[0]));
-        yValue.setTextFill(Color.WHITE);
-        ySlider.valueProperty().addListener((obs, o, n) -> {
-            cameraWorldY[0] = n.doubleValue();
-            yValue.setText(String.valueOf((int)Math.round(n.doubleValue())));
-        });
-
-        // Layout sliders in UI (place before Back button for visibility)
-        Label zoomLabel = new Label("Zoom"); zoomLabel.setTextFill(Color.WHITE);
-        Label xLabel = new Label("Cam X"); xLabel.setTextFill(Color.WHITE);
-        Label yLabel = new Label("Cam Y"); yLabel.setTextFill(Color.WHITE);
-
-        HBox zoomRow = new HBox(8, zoomLabel, zoomSlider, zoomValue);
-        HBox xRow = new HBox(8, xLabel, xSlider, xValue);
-        HBox yRow = new HBox(8, yLabel, ySlider, yValue);
-        zoomRow.setAlignment(Pos.CENTER_LEFT);
-        xRow.setAlignment(Pos.CENTER_LEFT);
-        yRow.setAlignment(Pos.CENTER_LEFT);
-
-        // Insert the sliders before the Back button so they are visible above it.
-        ui.getChildren().remove(back);
-        ui.getChildren().addAll(zoomRow, xRow, yRow, back);
 
         // Animation loop
         new AnimationTimer() {
@@ -203,9 +163,9 @@ public class SkinPreviewScene {
 
                 int TILE_PX = TileLevelLoader.TILE_SIZE;
 
-                // Compute viewport in unscaled world pixels so we can apply GC.scale(zoom)
-                double viewW_unscaled = W / cameraZoom[0];
-                double viewH_unscaled = H / cameraZoom[0];
+                // Compute viewport in unscaled world pixels using fixed preview zoom
+                double viewW_unscaled = W / previewZoom;
+                double viewH_unscaled = H / previewZoom;
 
                 int cols = tileGrid.length > 0 ? tileGrid[0].length : 0;
                 int rows = tileGrid.length;
@@ -217,9 +177,9 @@ public class SkinPreviewScene {
                 int defaultStartCol = Math.max(0, Math.min(cols - VIEW_TILES, Math.max(0, spawnCol - 1)));
                 int defaultStartRow = Math.max(0, Math.min(rows - VIEW_TILES, Math.max(0, spawnRow - 1)));
 
-                double desiredCamX = cameraWorldX[0] != 0.0 ? cameraWorldX[0] : defaultStartCol * TILE_PX;
-                // Always use the slider value for vertical camera offset. Default is 0 (no vertical scroll)
-                double desiredCamY = cameraWorldY[0];
+                double desiredCamX = defaultStartCol * TILE_PX;
+                // Fixed vertical offset for preview (seeded to previous preference)
+                double desiredCamY = 360.0;
 
                 double levelWidthPx = cols * TILE_PX;
 
@@ -258,30 +218,214 @@ public class SkinPreviewScene {
                 // Build renderer with fresh camera (cheap for preview)
                 Renderer renderer = new Renderer(cam, assets, skinCache, () -> PlayerSkinStore.get());
 
-                // Apply zoom by scaling the GraphicsContext; renderer expects unscaled w/h
+                // Apply fixed preview zoom by scaling the GraphicsContext
                 g.save();
-                g.scale(cameraZoom[0], cameraZoom[0]);
+                g.scale(previewZoom, previewZoom);
                 // don't clear canvas here (we drew backgrounds already)
                 renderer.render(g, viewW_unscaled, viewH_unscaled, world, player, controller, false, false, true, false, false);
                 g.restore();
             }
         }.start();
 
-        // Skin selector wiring (live)
-        classic.setOnAction(e -> {
-            PlayerSkinStore.set(PlayerSkins.CLASSIC);
-            currentSkin[0] = PlayerSkins.CLASSIC;
-        });
-        stealth.setOnAction(e -> {
-            PlayerSkinStore.set(PlayerSkins.STEALTH);
-            currentSkin[0] = PlayerSkins.STEALTH;
-        });
-        test.setOnAction(e -> {
-            PlayerSkinStore.set(PlayerSkins.TEST);
-            currentSkin[0] = PlayerSkins.TEST;
-        });
+        // Skin selector wiring is handled by the presets ComboBox
+
+        // --- Advanced customization data and UI builder ---
+        // Options arrays (ints are ARGB colors as used by PlayerSkin)
+        // HAIR options (use the middle/base color from each option group)
+        int[] hairOptions = new int[] {
+            // include hair hexes found across presets
+            PlayerSkin.hex("158968"), // Muted Tech Teal (CLASSIC)
+            PlayerSkin.hex("2A2A2A"), // Dark Stealth (STEALTH)
+            PlayerSkin.hex("1BD4C4"), // Neon Cyber Accent (ELITE_NEON_UNIT)
+            PlayerSkin.hex("3C8F76")  // Military Green (TACTICAL_RECON)
+        };
+
+        // SKIN options
+        int[] skinOptions = new int[] {
+            PlayerSkin.hex("FFDBA5"), // Natural Light (CLASSIC)
+            PlayerSkin.hex("E7B87F"), // Warm Tan (TACTICAL_RECON)
+            PlayerSkin.hex("8A5A3B"),  // Warm Brown
+            PlayerSkin.hex("6A4027"),  // Deep Cocoa
+            PlayerSkin.hex("4F3F39"),  // Cool Dark (Synth)
+            PlayerSkin.hex("3E2617"),  // Rich Ebony
+            PlayerSkin.hex("C8A77B"),  // Stealth Tan (STEALTH)
+            PlayerSkin.hex("F0D4B8")   // Synth-Human (ELITE_NEON_UNIT)
+        };
+
+        // VISOR options
+        int[] visorOptions = new int[] {
+            PlayerSkin.hex("663B93"), // Royal Tech Purple
+            PlayerSkin.hex("A23BBF"), // Neon Magenta
+            PlayerSkin.hex("3F1F5E")  // Dark Tactical
+        };
+
+        // BELT options
+        int[] beltOptions = new int[] {
+            PlayerSkin.hex("38002C"), // Industrial Red
+            PlayerSkin.hex("1B1B24"), // Carbon Black
+            PlayerSkin.hex("7A5228")  // Brass Tech
+        };
+
+        // SUIT_BODY palettes (user-provided groups)
+        int[][] suitBodyOptions = new int[][]{
+                { PlayerSkin.hex("222A5C"), PlayerSkin.hex("566A89"), PlayerSkin.hex("8BABBF") },
+                { PlayerSkin.hex("111827"), PlayerSkin.hex("374151"), PlayerSkin.hex("6B7280") },
+                { PlayerSkin.hex("4A3B00"), PlayerSkin.hex("8F7A1A"), PlayerSkin.hex("E3C84A") },
+                { PlayerSkin.hex("2A0F3D"), PlayerSkin.hex("6B2FA3"), PlayerSkin.hex("B46CFF") },
+                { PlayerSkin.hex("6B7280"), PlayerSkin.hex("CBD5E1"), PlayerSkin.hex("F8FAFC") },
+                { PlayerSkin.hex("3A0D0D"), PlayerSkin.hex("8F2D2D"), PlayerSkin.hex("D16C6C") }
+        };
+
+        int[] ledOptions = new int[] {
+            PlayerSkin.hex("5BECF1"), // Classic Cyan
+            PlayerSkin.hex("74D8FF"), // Ice Blue (TACTICAL_RECON)
+            PlayerSkin.hex("5FFFFF")  // High-Energy Neon (ELITE_NEON_UNIT)
+        };
+
+        // Current indices (mutable holders)
+        int[] hairIdx = new int[]{0};
+        int[] skinIdx = new int[]{0};
+        int[] visorIdx = new int[]{0};
+        int[] beltIdx = new int[]{0};
+        int[] suitIdx = new int[]{0};
+        int[] ledIdx = new int[]{0};
+
+        // Helper to apply current selections to the PlayerSkinStore
+        Runnable applySelection = () -> {
+            PlayerSkin s = new PlayerSkin(
+                    hairOptions[hairIdx[0]],
+                    skinOptions[skinIdx[0]],
+                    visorOptions[visorIdx[0]],
+                    beltOptions[beltIdx[0]],
+                    suitBodyOptions[suitIdx[0]][0],
+                    suitBodyOptions[suitIdx[0]][1],
+                    suitBodyOptions[suitIdx[0]][2],
+                    ledOptions[ledIdx[0]]
+            );
+            PlayerSkinStore.set(s);
+        };
+
+        // Build advanced UI when requested
+        Runnable showAdvanced = () -> {
+            ui.getChildren().clear();
+            ui.getChildren().add(title);
+
+            // category builder helper
+            java.util.function.BiConsumer<String, java.util.function.Consumer<java.lang.Runnable>> addCategory = (name, build) -> {};
+
+            // For each category, create arrows and label
+            java.util.function.Consumer<java.lang.String> addRow = (cat) -> {};
+
+            // HAIR row (color swatch)
+            Label hairLabel = new Label(); hairLabel.setTextFill(Color.WHITE);
+            hairLabel.setMinSize(36, 18);
+            hairLabel.setPrefSize(36, 18);
+            Button hairLeft = new Button("<");
+            Button hairRight = new Button(">");
+            Label hairText = new Label("Hair"); hairText.setTextFill(Color.WHITE);
+            HBox hairRow = new HBox(8, hairLeft, hairLabel, hairText, hairRight);
+            hairRow.setAlignment(Pos.CENTER_LEFT);
+            hairLeft.setOnAction(e -> {
+                hairIdx[0] = (hairIdx[0] - 1 + hairOptions.length) % hairOptions.length;
+                updateSwatch(hairLabel, hairOptions[hairIdx[0]]);
+                applySelection.run();
+            });
+            hairRight.setOnAction(e -> {
+                hairIdx[0] = (hairIdx[0] + 1) % hairOptions.length;
+                updateSwatch(hairLabel, hairOptions[hairIdx[0]]);
+                applySelection.run();
+            });
+            // initialize swatch
+            updateSwatch(hairLabel, hairOptions[hairIdx[0]]);
+
+            // SKIN row (color swatch)
+            Label skinLabel = new Label(); skinLabel.setMinSize(36,18); skinLabel.setPrefSize(36,18); skinLabel.setTextFill(Color.WHITE);
+            Button skinLeft = new Button("<");
+            Button skinRight = new Button(">");
+            Label skinText = new Label("Skin"); skinText.setTextFill(Color.WHITE);
+            HBox skinRow = new HBox(8, skinLeft, skinLabel, skinText, skinRight);
+            skinRow.setAlignment(Pos.CENTER_LEFT);
+            skinLeft.setOnAction(e -> { skinIdx[0] = (skinIdx[0]-1 + skinOptions.length) % skinOptions.length; updateSwatch(skinLabel, skinOptions[skinIdx[0]]); applySelection.run(); });
+            skinRight.setOnAction(e -> { skinIdx[0] = (skinIdx[0]+1) % skinOptions.length; updateSwatch(skinLabel, skinOptions[skinIdx[0]]); applySelection.run(); });
+            updateSwatch(skinLabel, skinOptions[skinIdx[0]]);
+
+            // VISOR row (color swatch)
+            Label visorLabel = new Label(); visorLabel.setMinSize(36,18); visorLabel.setPrefSize(36,18); visorLabel.setTextFill(Color.WHITE);
+            Button visorLeft = new Button("<");
+            Button visorRight = new Button(">");
+            Label visorText = new Label("Visor"); visorText.setTextFill(Color.WHITE);
+            HBox visorRow = new HBox(8, visorLeft, visorLabel, visorText, visorRight);
+            visorRow.setAlignment(Pos.CENTER_LEFT);
+            visorLeft.setOnAction(e -> { visorIdx[0] = (visorIdx[0]-1 + visorOptions.length) % visorOptions.length; updateSwatch(visorLabel, visorOptions[visorIdx[0]]); applySelection.run(); });
+            visorRight.setOnAction(e -> { visorIdx[0] = (visorIdx[0]+1) % visorOptions.length; updateSwatch(visorLabel, visorOptions[visorIdx[0]]); applySelection.run(); });
+            updateSwatch(visorLabel, visorOptions[visorIdx[0]]);
+
+            // BELT row (color swatch)
+            Label beltLabel = new Label(); beltLabel.setMinSize(36,18); beltLabel.setPrefSize(36,18); beltLabel.setTextFill(Color.WHITE);
+            Button beltLeft = new Button("<");
+            Button beltRight = new Button(">");
+            Label beltText = new Label("Belt"); beltText.setTextFill(Color.WHITE);
+            HBox beltRow = new HBox(8, beltLeft, beltLabel, beltText, beltRight);
+            beltRow.setAlignment(Pos.CENTER_LEFT);
+            beltLeft.setOnAction(e -> { beltIdx[0] = (beltIdx[0]-1 + beltOptions.length) % beltOptions.length; updateSwatch(beltLabel, beltOptions[beltIdx[0]]); applySelection.run(); });
+            beltRight.setOnAction(e -> { beltIdx[0] = (beltIdx[0]+1) % beltOptions.length; updateSwatch(beltLabel, beltOptions[beltIdx[0]]); applySelection.run(); });
+            updateSwatch(beltLabel, beltOptions[beltIdx[0]]);
+
+            // SUIT_BODY row (show middle swatch)
+            Label suitLabel = new Label(); suitLabel.setMinSize(48,18); suitLabel.setPrefSize(48,18); suitLabel.setTextFill(Color.WHITE);
+            Button suitLeft = new Button("<");
+            Button suitRight = new Button(">");
+            Label suitText = new Label("Suit Body"); suitText.setTextFill(Color.WHITE);
+            HBox suitRow = new HBox(8, suitLeft, suitLabel, suitText, suitRight);
+            suitRow.setAlignment(Pos.CENTER_LEFT);
+            suitLeft.setOnAction(e -> { suitIdx[0] = (suitIdx[0]-1 + suitBodyOptions.length) % suitBodyOptions.length; updateSwatch(suitLabel, suitBodyOptions[suitIdx[0]][1]); applySelection.run(); });
+            suitRight.setOnAction(e -> { suitIdx[0] = (suitIdx[0]+1) % suitBodyOptions.length; updateSwatch(suitLabel, suitBodyOptions[suitIdx[0]][1]); applySelection.run(); });
+            updateSwatch(suitLabel, suitBodyOptions[suitIdx[0]][1]);
+
+            // SUIT_LED row (color swatch)
+            Label ledLabel = new Label(); ledLabel.setMinSize(36,18); ledLabel.setPrefSize(36,18); ledLabel.setTextFill(Color.WHITE);
+            Button ledLeft = new Button("<");
+            Button ledRight = new Button(">");
+            Label ledText = new Label("LED"); ledText.setTextFill(Color.WHITE);
+            HBox ledRow = new HBox(8, ledLeft, ledLabel, ledText, ledRight);
+            ledRow.setAlignment(Pos.CENTER_LEFT);
+            ledLeft.setOnAction(e -> { ledIdx[0] = (ledIdx[0]-1 + ledOptions.length) % ledOptions.length; updateSwatch(ledLabel, ledOptions[ledIdx[0]]); applySelection.run(); });
+            ledRight.setOnAction(e -> { ledIdx[0] = (ledIdx[0]+1) % ledOptions.length; updateSwatch(ledLabel, ledOptions[ledIdx[0]]); applySelection.run(); });
+            updateSwatch(ledLabel, ledOptions[ledIdx[0]]);
+
+            // Add all rows to UI
+            ui.getChildren().addAll(hairRow, skinRow, visorRow, beltRow, suitRow, ledRow);
+
+            // Add control row with Presets and Go
+            Button showPresets = new Button("Presets");
+            showPresets.setOnAction(ev -> {
+                ui.getChildren().clear();
+                ui.getChildren().addAll(title, presets, advanced, go, back);
+            });
+            go.setOnAction(ev -> {
+                applySelection.run();
+                if (onStart != null) onStart.run();
+            });
+            HBox ctrl = new HBox(8, showPresets, go);
+            ctrl.setAlignment(Pos.CENTER);
+            ui.getChildren().add(ctrl);
+        };
+
+        // Advanced button wiring
+        advanced.setOnAction(e -> showAdvanced.run());
+        go.setOnAction(e -> { applySelection.run(); if (onStart != null) onStart.run(); });
 
         return scene;
+    }
+
+    private static String toCssColor(int argb) {
+        int rgb = argb & 0xFFFFFF;
+        return String.format("#%06X", rgb);
+    }
+
+    private static void updateSwatch(Label lbl, int argb) {
+        String css = "-fx-background-color: " + toCssColor(argb) + "; -fx-border-color: white; -fx-border-width: 1; -fx-border-radius: 2; -fx-background-radius: 2;";
+        lbl.setStyle(css);
     }
 
     // Copied spawn selection logic from CyborgPlatformerApp.pickSpawnOnFloor

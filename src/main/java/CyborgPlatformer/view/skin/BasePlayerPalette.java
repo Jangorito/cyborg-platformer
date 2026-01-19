@@ -3,7 +3,7 @@ package CyborgPlatformer.view.skin;
 public final class BasePlayerPalette {
     private BasePlayerPalette() {}
 
-    public static final int HAIR      = PlayerSkin.hex("158868");
+    public static final int HAIR      = PlayerSkin.hex("158968");
     public static final int SKIN      = PlayerSkin.hex("FFDBA5");
     public static final int VISOR     = PlayerSkin.hex("663B93");
     public static final int BELT      = PlayerSkin.hex("38002C");

@@ -132,7 +132,7 @@ public final class FxLauncher extends Application {
 
                 case DIGIT1 -> PlayerSkinStore.set(PlayerSkins.CLASSIC);
                 case DIGIT2 -> PlayerSkinStore.set(PlayerSkins.STEALTH);
-                case DIGIT3 -> PlayerSkinStore.set(PlayerSkins.TEST);
+                case DIGIT3 -> PlayerSkinStore.set(PlayerSkins.CLASSIC);
 
             }
         });
