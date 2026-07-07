@@ -1,5 +1,7 @@
 # Cyborg Platformer CyborgPlatformer.legacy.Game
 
+![Title Screen](src/main/resources/Background/title_bg.png)
+
 This is a zombie shooter platformer built for the COMP2013 coursework at the University of Nottingham. The module hands out a small, deliberately messy **Java Swing** codebase (V1) as a legacy baseline, and the coursework is to restore, document, test, refactor, and extend it across three versions. All of the V1 gameplay code, assets, and initial docs were provided as the starting point; everything from V1's runnable-baseline fixes onward, the V2 refactor, and the V3 feature work is my own.
 
 In the game, you navigate a level, avoiding obstacles and zombies and tracking your score. It features:
