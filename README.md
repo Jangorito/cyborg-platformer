@@ -1,4 +1,4 @@
-Cyborg Platformer
+# Cyborg Platformer
 
 ![Title Screen](src/main/resources/Background/title_bg.png)
 
