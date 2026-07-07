@@ -1,4 +1,4 @@
-# Cyborg Platformer CyborgPlatformer.legacy.Game
+# Cyborg Platformer
 
 ![Title Screen](src/main/resources/Background/title_bg.png)
 
