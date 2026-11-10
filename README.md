@@ -2,34 +2,24 @@
 
 ![Title Screen](src/main/resources/Background/title_bg.png)
 
-This is a zombie shooter platformer built for the COMP2013 coursework at the University of Nottingham. The module hands out a small, deliberately messy **Java Swing** codebase (V1) as a legacy baseline, and the coursework is to restore, document, test, refactor, and extend it across three versions. All of the V1 gameplay code, assets, and initial docs were provided as the starting point; everything from V1's runnable-baseline fixes onward, the V2 refactor, and the V3 feature work is my own.
+A zombie shooter platformer built from scratch in **Java Swing**, then progressively refactored and extended across three versions. The project started from a deliberately messy legacy codebase and was rebuilt into a clean layered architecture — separating concerns, replacing global state with proper ownership, and adding a JSON-driven configuration system in the final version.
 
 In the game, you navigate a level, avoiding obstacles and zombies and tracking your score. It features:
 
-- **Physics-Based Movement**: Simple gravity and collision detection mechanics made by hand.
+- **Physics-Based Movement**: Gravity and collision detection coded by hand.
 - **Zombie Shooter**: Engage with enemies while platforming through the levels.
 - **HUD**: Displays health, score, attempts, and a timer.
 - **Dynamic Level Loading**: Levels are loaded from a text file, where each character represents a different platform or object type.
+- **Configurable Game Modes**: JSON-backed presets for difficulty and level settings, selectable from the title screen.
 
-All sprites and images are from [CraftPix](https://craftpix.net/freebies/). Big thanks to them for providing these awesome assets for free!
-
-To play, ensure all required image files are organized in the `src` directory as per the setup instructions, and launch the game by running `CyborgPlatformer.legacy.CyborgPlatform.java`.
-
-# COMP2013 Context
-
-This repository is used for the COMP2013 Coursework. Work is completed across:
- - V1 - maintenance
- - V2 - refactoring
- - V3 - extension
-
-Development is carried out on `dev` and per-task branches.
+All sprites and images are from [CraftPix](https://craftpix.net/freebies/).
 
 ## Evolution (V1 → V3)
 
-**V1 (provided baseline):** A working but structurally poor Swing game. `canvas` acted as a God Object,
+**V1 (legacy baseline):** A working but structurally poor Swing game. `canvas` acted as a God Object,
 driving both rendering and simulation via `paint(Graphics g)`, while gameplay entities (`Player`, `Enemy`,
 `bullet`) reached back into global static state (`CyborgPlatform.game`, `canvas.activeBullets`, etc.) instead
-of being owned by a proper controller. Collision logic was tightly coupled to movement code. My Task 1-3 work
+of being owned by a proper controller. Collision logic was tightly coupled to movement code. First pass work
 restored a runnable baseline, Javadoc'd the legacy code, and added the first regression test suite over it.
 
 **V2 (refactor):** The legacy code was moved into a `legacy` package (`cc3e404`) so it stayed intact while a
@@ -82,14 +72,14 @@ mvn exec:java -Dexec.mainClass=CyborgPlatformer.legacy.CyborgPlatform
 - Restart: ESC
 - Pause: N/A
 
-> Note: The in-game instruction overlay does not match these controls yet (tracked as a Task 2 fix).
+> Note: The in-game instruction overlay does not match these controls yet.
 
 ## Project Structure
 
 - `src/` – Java source files
 - `src/<resources>` – sprite/image assets
 - `gifs/` – gameplay preview GIFs
-- `docs/` (or root mark down files) – coursework documentation
+- `docs/` – design documents and changelogs
 
 ## Documentation
 
